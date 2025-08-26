@@ -137,22 +137,19 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                     // Product image
                     Expanded(
                       child: Center(
-                        child: Hero(
-                          tag: 'product_image_${widget.product.id}',
-                          child: Container(
-                            padding: const EdgeInsets.all(8),
-                            child: Image.asset(
-                              ProductUtils.getImagePath(typeName),
-                              height: 60,
-                              fit: BoxFit.contain,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  _getProductIcon(typeName),
-                                  size: 60,
-                                  color: primaryColor.withOpacity(0.5),
-                                );
-                              },
-                            ),
+                        child: Container(
+                          padding: const EdgeInsets.all(8),
+                          child: Image.asset(
+                            ProductUtils.getImagePath(typeName),
+                            height: 60,
+                            fit: BoxFit.contain,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Icon(
+                                _getProductIcon(typeName),
+                                size: 60,
+                                color: primaryColor.withOpacity(0.5),
+                              );
+                            },
                           ),
                         ),
                       ),
