@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:home_care/components/call_button.dart';
 import 'package:home_care/components/edit_product_bottom_sheet.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -797,7 +796,7 @@ class _ProductPageState extends State<ProductPage>
       animation: _fadeAnimation,
       builder: (context, child) {
         return Transform.translate(
-          offset: Offset(0, _slideAnimation.value * 30),
+          offset: Offset(0, _slideAnimation.value.dy * 30),
           child: Opacity(
             opacity: _fadeAnimation.value,
             child: Container(
