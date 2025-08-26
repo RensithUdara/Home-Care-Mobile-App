@@ -84,34 +84,41 @@ Home Care App is a modern Flutter application designed to help users manage thei
 
 ```
 lib/
-├── components/           # Reusable UI components
-│   ├── add_product.dart
-│   ├── app_icon.dart
-│   ├── bottom_add_bar.dart
-│   ├── call_button.dart
-│   ├── edit_product_bottom_sheet.dart
-│   ├── item_tile.dart
-│   ├── main_button.dart
-│   ├── search_bar.dart
-│   └── text_input_field.dart
-├── models/              # Data models
-│   └── products.dart
-├── screens/             # App screens
-│   ├── home.dart
-│   ├── login.dart
-│   ├── product.dart
-│   ├── profile.dart
-│   └── register.dart
-├── services/            # Business logic
-│   ├── auth/           # Authentication services
-│   └── firestore/      # Database services
-├── themes/             # App theming
-│   ├── dark_mode.dart
-│   ├── light_mode.dart
-│   └── theme_provider.dart
-├── utils/              # Utility functions
-├── firebase_options.dart
-└── main.dart           # App entry point
+├── components/              # Reusable UI components
+│   ├── add_product.dart        # Enhanced product addition form
+│   ├── app_icon.dart           # Application logo component
+│   ├── bottom_add_bar.dart     # Bottom action bar
+│   ├── call_button.dart        # Direct calling functionality
+│   ├── edit_product_bottom_sheet.dart  # Product editing interface
+│   ├── enhanced_item_tile.dart # Modern product card with animations
+│   ├── item_tile.dart          # Original product card component
+│   ├── main_button.dart        # Enhanced button with gradient design
+│   ├── search_bar.dart         # Search functionality component
+│   └── text_input_field.dart   # Enhanced input field with eye icon
+├── models/                  # Data models
+│   └── products.dart           # Product data structure
+├── screens/                 # App screens
+│   ├── home.dart               # Redesigned modern home dashboard
+│   ├── home_original.dart      # Original home screen (backup)
+│   ├── login.dart              # Enhanced login with error handling
+│   ├── product.dart            # Product details screen
+│   ├── profile.dart            # User profile management
+│   └── register.dart           # Enhanced signup with password strength
+├── services/               # Business logic
+│   ├── auth/              # Authentication services
+│   │   ├── auth_check.dart     # Authentication state management
+│   │   ├── authentication.dart # Enhanced Firebase auth with error handling
+│   │   └── login_or_register.dart # Auth flow management
+│   └── firestore/         # Database services
+│       └── firestore_services.dart # Cloud database operations
+├── themes/                # App theming
+│   ├── dark_mode.dart         # Enhanced dark theme
+│   ├── light_mode.dart        # Enhanced light theme
+│   └── theme_provider.dart    # Theme state management
+├── utils/                 # Utility functions
+│   └── product_utils.dart     # Product helper functions
+├── firebase_options.dart   # Firebase configuration
+└── main.dart              # App entry point
 ```
 
 ## 🚀 Getting Started
@@ -140,6 +147,7 @@ lib/
 3. **Firebase Setup**
    - Create a new Firebase project
    - Enable Authentication (Email/Password)
+   - Enable Password Reset functionality
    - Create Firestore database
    - Download and add configuration files:
      - `android/app/google-services.json`
@@ -165,31 +173,82 @@ lib/
 3. **Storage (Optional)**
    - Enable Firebase Storage for image uploads
 
-## 📸 Screenshots
+## 📸 Screenshots & UI Showcase
 
-### Authentication Screens
-- **Login Screen**: Modern design with gradient background, enhanced input fields with shadows, password visibility toggle
-- **Register Screen**: Comprehensive form with password strength indicator, real-time validation
+### 🔐 Enhanced Authentication Screens
+- **Login Screen**: 
+  - Modern gradient background with time-based greetings
+  - Enhanced input fields with shadows and rounded corners
+  - Password visibility toggle with animated eye icon
+  - Comprehensive error handling with user-friendly messages
+  - Loading states with smooth animations
+  - Forgot password functionality fully integrated
+  - Social login buttons (Apple & Google) ready for implementation
 
-### Main App Screens
-- **Home Dashboard**: Clean appliance inventory with search and filter options
-- **Product Details**: Detailed view with service history and direct calling
-- **Profile Management**: User settings and theme toggle
+- **Register Screen**: 
+  - Multi-step validation with real-time feedback
+  - Password strength indicator with visual progress bar
+  - Password requirements checklist with dynamic validation
+  - Enhanced error messages and success notifications
+  - Smooth animations and haptic feedback
 
-## 🎨 UI/UX Features
+### 🏠 Redesigned Main App Screens
+- **Modern Home Dashboard**: 
+  - Dynamic greeting based on time of day with emojis
+  - Statistics cards showing appliance counts and categories
+  - Advanced search with real-time filtering
+  - Interactive category pills with smooth animations
+  - Enhanced product cards with warranty status badges
+  - Hero animations for seamless navigation
+  - Custom floating action button spanning full width
 
-### Enhanced Design Elements
-- **Gradient Backgrounds**: Subtle gradients for visual depth
-- **Shadow Effects**: Enhanced shadows on buttons and input fields
-- **Rounded Corners**: Modern 12px border radius throughout
-- **Password Eye Icon**: Toggle password visibility with smooth animations
-- **Social Login Buttons**: Sleek Apple and Google login options
-- **Color Theming**: Carefully crafted light and dark color schemes
+- **Enhanced Product Management**: 
+  - Smart warranty tracking with visual indicators
+  - Status badges (Active, Expiring, Expired)
+  - Modern card designs with gradient backgrounds
+  - Interactive animations and haptic feedback
+  - Improved product details with better organization
 
-### Responsive Design
-- Adaptive layouts for different screen sizes
-- Touch-friendly button sizes
-- Proper spacing and typography scaling
+- **Profile Management**: 
+  - Enhanced user settings interface
+  - Theme toggle with smooth transitions
+  - Better navigation and user experience
+
+## 🎨 Advanced UI/UX Features
+
+### 🎭 Modern Design System
+- **Material Design 3** principles throughout the app
+- **Gradient Backgrounds** with subtle depth effects
+- **Enhanced Shadows** with proper layering and blur radius
+- **Rounded Corners** (12-20px radius) for modern appearance
+- **Color-coded Categories** for quick appliance identification
+- **Smart Status Indicators** for warranty and maintenance tracking
+
+### ⚡ Interactive Elements
+- **Haptic Feedback** for all user interactions
+- **Scale Animations** on tap for better feedback
+- **Hero Animations** for smooth screen transitions
+- **Fade-in Effects** for content loading
+- **Smooth Scrolling** with custom physics
+- **Interactive Cards** with press animations
+- **Loading States** with elegant progress indicators
+
+### 📱 Enhanced User Experience
+- **Time-based Greetings** with appropriate emojis
+- **Smart Search** with category filtering
+- **Real-time Validation** with immediate feedback
+- **Empty State Designs** with engaging call-to-action
+- **Error Handling** with user-friendly messages
+- **Network Status** awareness with appropriate feedback
+- **Warranty Monitoring** with proactive notifications
+
+### 🎯 Accessibility & Responsiveness
+- **Adaptive Layouts** for different screen sizes
+- **Touch-friendly Button Sizes** (minimum 48px)
+- **Proper Color Contrast** for readability
+- **Semantic Labels** for screen readers
+- **Keyboard Navigation** support
+- **High-resolution Asset** support
 
 ## 🔧 Configuration
 
@@ -204,9 +263,12 @@ ENVIRONMENT=development
 
 ### Theme Customization
 
-The app supports custom theming through `theme_provider.dart`. You can modify colors in:
-- `themes/light_mode.dart`
-- `themes/dark_mode.dart`
+The app supports advanced theming through `theme_provider.dart`. You can modify:
+- **Light Mode Colors** in `themes/light_mode.dart`
+- **Dark Mode Colors** in `themes/dark_mode.dart`
+- **Component Styles** throughout the app
+- **Animation Durations** and curves
+- **Shadow Effects** and elevations
 
 ## 🧪 Testing
 
