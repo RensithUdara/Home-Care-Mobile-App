@@ -268,115 +268,91 @@ class _LoginState extends State<Login> {
                                 text: 'Sign In',
                               ),
                       ),
-                    TextInputField(
-                      controller: _passwordController,
-                      labelText: 'Password',
-                      icon: Icons.lock_outline,
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 8),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          // TODO: Implement forgot password
-                        },
-                        child: Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.blue.shade600,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 32),
-                    MainButton(
-                      onTap: () {
-                        login();
-                      },
-                      text: 'Sign In',
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          "Don't have an account?",
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
-                            fontSize: 15,
-                          ),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            widget.onTap();
-                          },
-                          child: Text(
-                            "Sign Up",
+                      const SizedBox(height: 24),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "Don't have an account?",
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
                               fontSize: 15,
-                              color: Colors.blue.shade600,
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Divider(
-                            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
-                            thickness: 1,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            'or continue with',
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
-                              fontSize: 14,
+                          TextButton(
+                            onPressed: _isLoading ? null : () {
+                              widget.onTap();
+                            },
+                            child: Text(
+                              "Sign Up",
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 15,
+                                color: _isLoading 
+                                    ? Colors.grey 
+                                    : Colors.blue.shade600,
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                      const SizedBox(height: 32),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Divider(
+                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
+                              thickness: 1,
                             ),
                           ),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
-                            thickness: 1,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 16),
+                            child: Text(
+                              'or continue with',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+                                fontSize: 14,
+                              ),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _SocialLoginButton(
-                            onTap: () {
-                              // TODO: Implement Apple login
-                            },
-                            imagePath: 'images/apple.png',
-                            text: 'Apple',
-                            imageHeight: 24,
+                          Expanded(
+                            child: Divider(
+                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
+                              thickness: 1,
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: _SocialLoginButton(
-                            onTap: () {
-                              // TODO: Implement Google login
-                            },
-                            imagePath: 'images/google.png',
-                            text: 'Google',
-                            imageHeight: 24,
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: _SocialLoginButton(
+                              onTap: _isLoading ? () {} : () {
+                                // TODO: Implement Apple login
+                              },
+                              imagePath: 'images/apple.png',
+                              text: 'Apple',
+                              imageHeight: 24,
+                              isEnabled: !_isLoading,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _SocialLoginButton(
+                              onTap: _isLoading ? () {} : () {
+                                // TODO: Implement Google login
+                              },
+                              imagePath: 'images/google.png',
+                              text: 'Google',
+                              imageHeight: 24,
+                              isEnabled: !_isLoading,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -392,34 +368,38 @@ class _SocialLoginButton extends StatelessWidget {
   final String imagePath;
   final String text;
   final double imageHeight;
+  final bool isEnabled;
 
   const _SocialLoginButton({
     required this.onTap,
     required this.imagePath,
     required this.text,
     required this.imageHeight,
+    this.isEnabled = true,
   });
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: isEnabled ? onTap : null,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.tertiary,
+          color: isEnabled 
+              ? Theme.of(context).colorScheme.tertiary
+              : Colors.grey.shade200,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.1),
             width: 1,
           ),
-          boxShadow: [
+          boxShadow: isEnabled ? [
             BoxShadow(
               color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
-          ],
+          ] : null,
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -427,12 +407,15 @@ class _SocialLoginButton extends StatelessWidget {
             Image.asset(
               imagePath,
               height: imageHeight,
+              color: isEnabled ? null : Colors.grey,
             ),
             const SizedBox(width: 8),
             Text(
               text,
               style: TextStyle(
-                color: Theme.of(context).colorScheme.inversePrimary,
+                color: isEnabled 
+                    ? Theme.of(context).colorScheme.inversePrimary
+                    : Colors.grey,
                 fontSize: 15,
                 fontWeight: FontWeight.w500,
               ),
