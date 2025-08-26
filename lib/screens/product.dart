@@ -202,118 +202,287 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
               ),
             ),
           ),
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                type,
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Theme.of(context).colorScheme.inversePrimary),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Column(
+          
+          // Main Content
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    width: double.infinity,
-                    child: Row(
+                  // Product Title and Type
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Container(
-                            height: screenHeight / 6,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: Colors.amberAccent.shade100
-                                    .withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Location - ",
-                                  style: TextStyle(
-                                    // color: Colors.black54,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  widget.product.location,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "Purchased $purchasedDate",
-                                  style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
-                            ),
+                        Text(
+                          widget.product.name,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 32,
+                            color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                         ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: screenHeight / 6,
-                            padding: const EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                                color: isExpired
-                                    ? Colors.redAccent.shade100.withOpacity(0.6)
-                                    : Colors.greenAccent.shade100
-                                        .withOpacity(0.6),
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  "Warranty - ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Text(
-                                  isExpired ? "Expired" : "Active",
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                Text(
-                                  "Coverage valid til  $warranty",
-                                  style: const TextStyle(
-                                      color: Colors.black54,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              ],
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: primaryColor.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            type,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14,
+                              color: primaryColor,
                             ),
                           ),
                         ),
                       ],
                     ),
-                  )
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Warranty Status Banner
+                  AnimatedBuilder(
+                    animation: _fadeAnimation,
+                    builder: (context, child) {
+                      return Transform.translate(
+                        offset: Offset(0, _slideAnimation.value * 20),
+                        child: Opacity(
+                          opacity: _fadeAnimation.value,
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: isExpired
+                                    ? [Colors.red.shade400, Colors.red.shade600]
+                                    : isExpiringSoon
+                                        ? [Colors.orange.shade400, Colors.orange.shade600]
+                                        : [Colors.green.shade400, Colors.green.shade600],
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (isExpired ? Colors.red : isExpiringSoon ? Colors.orange : Colors.green)
+                                      .withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(
+                                  isExpired
+                                      ? Icons.error
+                                      : isExpiringSoon
+                                          ? Icons.warning
+                                          : Icons.check_circle,
+                                  color: Colors.white,
+                                  size: 28,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        isExpired
+                                            ? 'Warranty Expired'
+                                            : isExpiringSoon
+                                                ? 'Warranty Expiring Soon'
+                                                : 'Warranty Active',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                      ),
+                                      Text(
+                                        isExpired
+                                            ? 'Expired on $warranty'
+                                            : isExpiringSoon
+                                                ? 'Expires in $daysUntilExpiry days'
+                                                : 'Valid until $warranty',
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  
+                  const SizedBox(height: 24),
+                  
+                  // Details Cards
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDetailCard(
+                          'Location',
+                          widget.product.location,
+                          Icons.location_on,
+                          Colors.blue,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildDetailCard(
+                          'Purchase Date',
+                          purchasedDate,
+                          Icons.calendar_today,
+                          Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 12),
+                  
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildDetailCard(
+                          'Warranty Until',
+                          warranty,
+                          Icons.shield,
+                          isExpired ? Colors.red : isExpiringSoon ? Colors.orange : Colors.green,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: _buildDetailCard(
+                          'Service Contact',
+                          contactNumber,
+                          Icons.phone,
+                          Colors.purple,
+                        ),
+                      ),
+                    ],
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Call Button
+                  FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: CallButton(contactNumber: contactNumber),
+                  ),
+                  
+                  const SizedBox(height: 20),
                 ],
               ),
-              const SizedBox(
-                height: 10,
-              ),
-              CallButton(contactNumber: contactNumber)
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
+  }
+
+  Widget _buildDetailCard(String title, String value, IconData icon, Color color) {
+    return AnimatedBuilder(
+      animation: _fadeAnimation,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(0, _slideAnimation.value * 30),
+          child: Opacity(
+            opacity: _fadeAnimation.value,
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.tertiary,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withOpacity(0.1),
+                    blurRadius: 8,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: color.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(icon, color: color, size: 20),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          title,
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    value,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Theme.of(context).colorScheme.inversePrimary,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteConfirmation() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete Appliance'),
+        content: Text('Are you sure you want to delete "${widget.product.name}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      widget.onDelete(widget.product.id);
+      Navigator.pop(context);
+    }
   }
 
   Future<void> _showEditProductBottomSheet(BuildContext context) async {
