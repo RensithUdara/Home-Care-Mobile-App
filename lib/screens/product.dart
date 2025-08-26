@@ -322,59 +322,59 @@ class _ProductPageState extends State<ProductPage> with SingleTickerProviderStat
                   ),
                 ),
               ),
-                    Icons.delete_outline,
-                    color: Colors.red.shade600,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 8),
-            ],
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      primaryColor.withOpacity(0.1),
-                      Theme.of(context).colorScheme.surface,
-                    ],
-                  ),
-                ),
-                child: Hero(
-                  tag: 'product_${widget.product.id}',
-                  child: Center(
-                    child: AnimatedBuilder(
-                      animation: _slideAnimation,
-                      builder: (context, child) {
-                        return Transform.translate(
-                          offset: Offset(0, _slideAnimation.value * 50),
-                          child: FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Container(
-                              margin: const EdgeInsets.only(top: 60),
-                              padding: const EdgeInsets.all(20),
-                              child: Image.asset(
-                                imgPath,
-                                height: 200,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Icon(
-                                    ProductUtils.getIconData(type),
-                                    size: 120,
-                                    color: primaryColor,
-                                  );
-                                },
-                              ),
+              
+              // Warranty Status Banner
+              if (isExpired || isExpiringSoon)
+                SlideTransition(
+                  position: Tween<Offset>(
+                    begin: const Offset(0, 0.7),
+                    end: Offset.zero,
+                  ).animate(_slideAnimation),
+                  child: FadeTransition(
+                    opacity: _fadeAnimation,
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 15),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: isExpired
+                              ? [Colors.red.shade600, Colors.red.shade400]
+                              : [Colors.orange.shade600, Colors.orange.shade400],
+                        ),
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: (isExpired ? Colors.red : Colors.orange).withOpacity(0.3),
+                            blurRadius: 8,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            isExpired ? Icons.warning_rounded : Icons.schedule_rounded,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            isExpired 
+                                ? 'Warranty Expired'
+                                : 'Expires in $daysUntilExpiry days',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 13,
                             ),
                           ),
-                        );
-                      },
+                        ],
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
+            ],
           ),
           
           // Main Content
