@@ -54,6 +54,7 @@ class _ProductPageState extends State<ProductPage>
 
   @override
   void dispose() {
+    _animationController.stop();
     _animationController.dispose();
     super.dispose();
   }
@@ -810,7 +811,7 @@ class _ProductPageState extends State<ProductPage>
   Widget _buildDetailCard(
       String title, String value, IconData icon, Color color) {
     return AnimatedBuilder(
-      animation: _fadeAnimation,
+      animation: Listenable.merge([_fadeAnimation, _slideAnimation]),
       builder: (context, child) {
         return Transform.translate(
           offset: Offset(0, _slideAnimation.value.dy * 30),
