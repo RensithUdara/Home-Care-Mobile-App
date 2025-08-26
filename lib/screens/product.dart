@@ -386,10 +386,11 @@ class _ProductPageState extends State<ProductPage>
       decoration: BoxDecoration(
         color: isDark
             ? Colors.white.withOpacity(0.1)
-            : Colors.black.withOpacity(0.05),
+            : color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withOpacity(isDark ? 0.3 : 0.5),
+          width: isDark ? 1 : 1.5,
         ),
       ),
       child: Material(
@@ -401,7 +402,7 @@ class _ProductPageState extends State<ProductPage>
             padding: const EdgeInsets.all(8),
             child: Icon(
               icon,
-              color: theme.colorScheme.onSurface,
+              color: isDark ? theme.colorScheme.onSurface : color,
               size: 20,
             ),
           ),
@@ -445,11 +446,19 @@ class _ProductPageState extends State<ProductPage>
       decoration: BoxDecoration(
         color: isDark
             ? Colors.white.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.1),
+            : color.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withOpacity(isDark ? 0.3 : 0.6),
+          width: isDark ? 1 : 1.5,
         ),
+        boxShadow: isDark ? null : [
+          BoxShadow(
+            color: color.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -458,7 +467,8 @@ class _ProductPageState extends State<ProductPage>
           Text(
             title,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.7 : 0.8),
+              fontWeight: FontWeight.w500,
             ),
             textAlign: TextAlign.center,
           ),
