@@ -279,10 +279,7 @@ class _ProductPageState extends State<ProductPage>
 
                         // Product Name with Animation
                         SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, 0.3),
-                            end: Offset.zero,
-                          ).animate(_slideAnimation),
+                          position: _slideAnimation,
                           child: FadeTransition(
                             opacity: _fadeAnimation,
                             child: Text(
@@ -306,10 +303,7 @@ class _ProductPageState extends State<ProductPage>
 
                         // Product Type Badge
                         SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(0, 0.5),
-                            end: Offset.zero,
-                          ).animate(_slideAnimation),
+                          position: _slideAnimation,
                           child: FadeTransition(
                             opacity: _fadeAnimation,
                             child: Container(
@@ -351,10 +345,7 @@ class _ProductPageState extends State<ProductPage>
               // Warranty Status Banner
               if (isExpired || isExpiringSoon)
                 SlideTransition(
-                  position: Tween<Offset>(
-                    begin: const Offset(0, 0.7),
-                    end: Offset.zero,
-                  ).animate(_slideAnimation),
+                  position: _slideAnimation,
                   child: FadeTransition(
                     opacity: _fadeAnimation,
                     child: Container(
