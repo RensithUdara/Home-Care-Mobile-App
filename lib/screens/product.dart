@@ -368,36 +368,183 @@ class _ProductPageState extends State<ProductPage>
           ),
         ],
       ),
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryColor.withOpacity(0.5),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                type,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+    );
+  }
+
+  // Helper methods for compact design
+  Widget _buildIconButton(IconData icon, VoidCallback onTap, ThemeData theme, Color color) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.1)
+          : Colors.black.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(
+              icon,
+              color: theme.colorScheme.onSurface,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(ThemeData theme, String purchaseDate, String warranty, bool isExpired) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            'Purchase Date',
+            purchaseDate,
+            Icons.calendar_today_outlined,
+            theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            'Warranty Until',
+            warranty,
+            Icons.security_outlined,
+            isExpired ? Colors.red : Colors.green,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(ThemeData theme, String title, String value, IconData icon, Color color) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactCard(ThemeData theme, String title, IconData icon, Color accentColor, List<Widget> children) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: accentColor.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: accentColor.withOpacity(0.1),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
             ),
+            child: Row(
+              children: [
+                Icon(icon, color: accentColor, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
 
-            // Ultra-modern content cards
-            SliverToBoxAdapter(
+  Widget _buildDetailRow(String label, String value, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.end,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
                 decoration: BoxDecoration(
