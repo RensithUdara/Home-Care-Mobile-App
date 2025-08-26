@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:home_care/components/add_product.dart';
 import 'package:home_care/components/enhanced_item_tile.dart';
 import 'package:home_care/models/products.dart';
-import 'package:home_care/screens/product_details.dart';
+import 'package:home_care/screens/product.dart';
 import 'package:home_care/screens/profile.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 
