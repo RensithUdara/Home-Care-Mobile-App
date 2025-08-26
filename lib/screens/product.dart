@@ -410,19 +410,17 @@ class _ProductPageState extends State<ProductPage>
                     ),
                   ),
                 ),
-            ],
-          ),
 
-          // Enhanced Main Content
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.only(top: 20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
+              // Enhanced Main Content
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -612,6 +610,7 @@ class _ProductPageState extends State<ProductPage>
                 ),
               ),
             ),
+            ],
           ),
         ],
       ),
