@@ -241,10 +241,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                       ),
                     ],
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.arrow_forward_ios_rounded,
                     size: 14,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSecondary,
                   ),
                 ),
               ),
