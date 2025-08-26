@@ -545,8 +545,71 @@ class _ProductPageState extends State<ProductPage>
       ),
     );
   }
-              child: Container(
-                margin: const EdgeInsets.only(top: 20),
+
+  // Method to handle calling support
+  void _callSupport(String phoneNumber) {
+    try {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Calling $phoneNumber...'),
+          action: SnackBarAction(
+            label: 'Dismiss',
+            onPressed: () {},
+          ),
+        ),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to call $phoneNumber'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _showDeleteConfirmation() async {
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Delete Appliance'),
+        content: Text(
+            'Are you sure you want to delete "${widget.product.name}"? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text('Cancel', 
+              style: TextStyle(color: Colors.grey.shade600)),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Delete', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      widget.onDelete(widget.product.id);
+      Navigator.pop(context);
+    }
+  }
+
+  Future<void> _showEditProductBottomSheet(BuildContext context) async {
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      showDragHandle: true,
+      builder: (context) {
+        return EditProductBottomSheet(
+          product: widget.product,
+          onProductEdited: widget.onProductEdited,
+        );
+      },
+    );
+  }
+}
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
