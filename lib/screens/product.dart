@@ -813,6 +813,8 @@ class _ProductPageState extends State<ProductPage>
     return AnimatedBuilder(
       animation: Listenable.merge([_fadeAnimation, _slideAnimation]),
       builder: (context, child) {
+        if (!mounted) return const SizedBox.shrink();
+        
         return Transform.translate(
           offset: Offset(0, _slideAnimation.value.dy * 30),
           child: Opacity(
