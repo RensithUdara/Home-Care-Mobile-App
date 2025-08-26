@@ -15,16 +15,27 @@ class MainButton extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-            color: color ?? Theme.of(context).colorScheme.inverseSurface,
-            borderRadius: BorderRadius.circular(8)),
+          color: color ?? Theme.of(context).colorScheme.inverseSurface,
+          borderRadius: BorderRadius.circular(8),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.10),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
         child: Center(
-            child: Text(
-          text,
-          style: TextStyle(
+          child: Text(
+            text,
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Theme.of(context).colorScheme.primary,
-              fontSize: 16),
-        )),
+              fontSize: 16,
+              letterSpacing: 0.5,
+            ),
+          ),
+        ),
       ),
     );
   }
