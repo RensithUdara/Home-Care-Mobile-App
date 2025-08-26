@@ -72,10 +72,12 @@ class _ProductPageState extends State<ProductPage>
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+    
     String type = ProductUtils.getTypeName(widget.product.type.toString());
     String imgPath = ProductUtils.getImagePath(type);
-    String purchasedDate =
-        DateFormat.yMMMd().format(widget.product.purchasedDate);
+    String purchasedDate = DateFormat.yMMMd().format(widget.product.purchasedDate);
     String warranty = DateFormat.yMMMd().format(widget.product.warrantyPeriod);
     String contactNumber = widget.product.contactNumber.toString();
     Color primaryColor = ProductUtils.getColor(type);
@@ -86,239 +88,162 @@ class _ProductPageState extends State<ProductPage>
     }
 
     bool isExpired = checkWarrantyExpiration(widget.product.warrantyPeriod);
-
-    // Calculate days until warranty expiry
-    int daysUntilExpiry =
-        widget.product.warrantyPeriod.difference(DateTime.now()).inDays;
+    int daysUntilExpiry = widget.product.warrantyPeriod.difference(DateTime.now()).inDays;
     bool isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
     return Scaffold(
-      backgroundColor: Colors.black,
-      extendBodyBehindAppBar: true,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: Container(
-          margin: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: Colors.black.withOpacity(0.4),
-            borderRadius: BorderRadius.circular(50),
-            border: Border.all(color: Colors.white.withOpacity(0.2)),
-          ),
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              borderRadius: BorderRadius.circular(50),
-              onTap: () {
-                HapticFeedback.lightImpact();
-                Navigator.pop(context);
-              },
-              child: const Icon(
-                Icons.arrow_back_ios_new,
-                color: Colors.white,
-                size: 20,
-              ),
-            ),
-          ),
-        ),
+        backgroundColor: Colors.transparent,
+        foregroundColor: theme.colorScheme.onSurface,
+        leading: _buildIconButton(Icons.arrow_back_ios_new, () {
+          HapticFeedback.lightImpact();
+          Navigator.pop(context);
+        }, theme, primaryColor),
         actions: [
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: Colors.white.withOpacity(0.2)),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(50),
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  _showEditProductBottomSheet(context);
-                },
-                child: const Icon(
-                  Icons.edit,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.4),
-              borderRadius: BorderRadius.circular(50),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
-            ),
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                borderRadius: BorderRadius.circular(50),
-                onTap: () {
-                  HapticFeedback.mediumImpact();
-                  _showDeleteConfirmation();
-                },
-                child: const Icon(
-                  Icons.delete_outline,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
-            ),
-          ),
+          _buildIconButton(Icons.edit_outlined, () {
+            HapticFeedback.lightImpact();
+            _showEditProductBottomSheet(context);
+          }, theme, primaryColor),
+          _buildIconButton(Icons.delete_outline, () {
+            HapticFeedback.mediumImpact();
+            _showDeleteConfirmation();
+          }, theme, Colors.red),
+          const SizedBox(width: 8),
         ],
       ),
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: RadialGradient(
-            center: Alignment.topCenter,
-            radius: 1.2,
-            colors: [
-              primaryColor.withOpacity(0.4),
-              primaryColor.withOpacity(0.2),
-              Colors.black.withOpacity(0.9),
-              Colors.black,
-            ],
+      body: CustomScrollView(
+        physics: const BouncingScrollPhysics(),
+        slivers: [
+          // Compact Hero Section
+          SliverToBoxAdapter(
+            child: Container(
+              height: 280,
+              margin: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: isDark 
+                    ? [
+                        primaryColor.withOpacity(0.3),
+                        primaryColor.withOpacity(0.1),
+                        theme.colorScheme.surface,
+                      ]
+                    : [
+                        primaryColor.withOpacity(0.1),
+                        primaryColor.withOpacity(0.05),
+                        theme.colorScheme.surface,
+                      ],
+                ),
+                borderRadius: BorderRadius.circular(24),
+                boxShadow: [
+                  BoxShadow(
+                    color: isDark 
+                      ? Colors.black.withOpacity(0.3)
+                      : Colors.grey.withOpacity(0.2),
+                    blurRadius: 20,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // Product Image
+                  Hero(
+                    tag: 'product_${widget.product.id}',
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          color: primaryColor.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Image.asset(
+                          imgPath,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) {
+                            return Icon(
+                              ProductUtils.getIconData(type),
+                              size: 60,
+                              color: primaryColor,
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 16),
+                  
+                  // Product Name
+                  SlideTransition(
+                    position: _slideAnimation,
+                    child: Text(
+                      widget.product.name,
+                      style: theme.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                      textAlign: TextAlign.center,
+                      maxLines: 2,
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 8),
+                  
+                  // Product Type Badge
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: primaryColor,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Text(
+                      type,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-        child: CustomScrollView(
-          physics: const BouncingScrollPhysics(),
-          slivers: [
-            // Hero product section
+
+          // Warranty Status Banner
+          if (isExpired || isExpiringSoon)
             SliverToBoxAdapter(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height * 0.65,
-                child: Stack(
+              child: Container(
+                margin: const EdgeInsets.symmetric(horizontal: 20),
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: isExpired ? Colors.red : Colors.orange,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    // Animated glowing orb background
-                    Positioned(
-                      top: 120,
-                      left: MediaQuery.of(context).size.width * 0.5 - 120,
-                      child: ScaleTransition(
-                        scale: _scaleAnimation,
-                        child: Container(
-                          width: 240,
-                          height: 240,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: RadialGradient(
-                              colors: [
-                                primaryColor.withOpacity(0.6),
-                                primaryColor.withOpacity(0.3),
-                                primaryColor.withOpacity(0.1),
-                                Colors.transparent,
-                              ],
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: primaryColor.withOpacity(0.5),
-                                blurRadius: 50,
-                                spreadRadius: 20,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
+                    Icon(
+                      isExpired ? Icons.warning_rounded : Icons.schedule_rounded,
+                      color: Colors.white,
+                      size: 18,
                     ),
-                    
-                    // Product image
-                    Positioned(
-                      top: 150,
-                      left: MediaQuery.of(context).size.width * 0.5 - 80,
-                      child: Hero(
-                        tag: 'product_${widget.product.id}',
-                        child: FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: SlideTransition(
-                            position: _slideAnimation,
-                            child: SizedBox(
-                              width: 160,
-                              height: 160,
-                              child: Image.asset(
-                                imgPath,
-                                fit: BoxFit.contain,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Container(
-                                    decoration: BoxDecoration(
-                                      color: primaryColor.withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(80),
-                                    ),
-                                    child: Icon(
-                                      ProductUtils.getIconData(type),
-                                      size: 80,
-                                      color: primaryColor,
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    
-                    // Product title overlay
-                    Positioned(
-                      bottom: 80,
-                      left: 0,
-                      right: 0,
-                      child: FadeTransition(
-                        opacity: _fadeAnimation,
-                        child: Column(
-                          children: [
-                            Text(
-                              widget.product.name,
-                              style: TextStyle(
-                                fontSize: 32,
-                                fontWeight: FontWeight.w900,
-                                color: Colors.white,
-                                letterSpacing: -1.0,
-                                shadows: [
-                                  Shadow(
-                                    color: Colors.black.withOpacity(0.7),
-                                    offset: const Offset(0, 2),
-                                    blurRadius: 10,
-                                  ),
-                                ],
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 24,
-                                vertical: 10,
-                              ),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    primaryColor,
-                                    primaryColor.withOpacity(0.8),
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(30),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryColor.withOpacity(0.5),
-                                    blurRadius: 20,
-                                    offset: const Offset(0, 8),
-                                  ),
-                                ],
-                              ),
-                              child: Text(
-                                type,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
+                    const SizedBox(width: 8),
+                    Text(
+                      isExpired
+                          ? 'Warranty Expired'
+                          : 'Expires in $daysUntilExpiry days',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 13,
                       ),
                     ),
                   ],
@@ -326,8 +251,300 @@ class _ProductPageState extends State<ProductPage>
               ),
             ),
 
-            // Ultra-modern content cards
-            SliverToBoxAdapter(
+          // Compact Info Cards
+          SliverPadding(
+            padding: const EdgeInsets.all(20),
+            sliver: SliverList(
+              delegate: SliverChildListDelegate([
+                // Quick Stats
+                _buildStatsRow(theme, purchasedDate, warranty, isExpired),
+                
+                const SizedBox(height: 16),
+                
+                // Product Details
+                _buildCompactCard(
+                  theme,
+                  'Product Details',
+                  Icons.info_outline,
+                  primaryColor,
+                  [
+                    _buildDetailRow('Product Name', widget.product.name, theme),
+                    _buildDetailRow('Category', type, theme),
+                    _buildDetailRow('Location', widget.product.location, theme),
+                  ],
+                ),
+                
+                const SizedBox(height: 12),
+                
+                // Support Details
+                _buildCompactCard(
+                  theme,
+                  'Support & Warranty',
+                  Icons.support_agent,
+                  isExpired ? Colors.red : Colors.green,
+                  [
+                    _buildDetailRow('Purchase Date', purchasedDate, theme),
+                    _buildDetailRow('Warranty Until', warranty, theme),
+                    _buildDetailRow('Support Number', contactNumber, theme),
+                  ],
+                ),
+                
+                const SizedBox(height: 24),
+                
+                // Action Buttons
+                ScaleTransition(
+                  scale: _scaleAnimation,
+                  child: Column(
+                    children: [
+                      // Call Support Button
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            HapticFeedback.mediumImpact();
+                            _callSupport(contactNumber);
+                          },
+                          icon: const Icon(Icons.phone, size: 20),
+                          label: const Text('Call Support'),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Secondary Actions
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                _showEditProductBottomSheet(context);
+                              },
+                              icon: const Icon(Icons.edit_outlined, size: 18),
+                              label: const Text('Edit'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: theme.colorScheme.primary,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: OutlinedButton.icon(
+                              onPressed: () {
+                                HapticFeedback.lightImpact();
+                                _showDeleteConfirmation();
+                              },
+                              icon: const Icon(Icons.delete_outline, size: 18),
+                              label: const Text('Delete'),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: Colors.red,
+                                side: const BorderSide(color: Colors.red),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const SizedBox(height: 20),
+              ]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Helper methods for compact design
+  Widget _buildIconButton(IconData icon, VoidCallback onTap, ThemeData theme, Color color) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      margin: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.1)
+          : Colors.black.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(
+              icon,
+              color: theme.colorScheme.onSurface,
+              size: 20,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatsRow(ThemeData theme, String purchaseDate, String warranty, bool isExpired) {
+    return Row(
+      children: [
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            'Purchase Date',
+            purchaseDate,
+            Icons.calendar_today_outlined,
+            theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: _buildStatCard(
+            theme,
+            'Warranty Until',
+            warranty,
+            Icons.security_outlined,
+            isExpired ? Colors.red : Colors.green,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(ThemeData theme, String title, String value, IconData icon, Color color) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: color.withOpacity(0.3),
+        ),
+      ),
+      child: Column(
+        children: [
+          Icon(icon, color: color, size: 24),
+          const SizedBox(height: 8),
+          Text(
+            title,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: theme.colorScheme.onSurface,
+            ),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCompactCard(ThemeData theme, String title, IconData icon, Color accentColor, List<Widget> children) {
+    final isDark = theme.brightness == Brightness.dark;
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark 
+          ? Colors.white.withOpacity(0.05)
+          : Colors.grey.withOpacity(0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: accentColor.withOpacity(0.2),
+        ),
+      ),
+      child: Column(
+        children: [
+          // Header
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: accentColor.withOpacity(0.1),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(icon, color: accentColor, size: 20),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          // Content
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(children: children),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value, ThemeData theme) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface.withOpacity(0.7),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.onSurface,
+              ),
+              textAlign: TextAlign.end,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
               child: Container(
                 margin: const EdgeInsets.only(top: 20),
                 decoration: BoxDecoration(
