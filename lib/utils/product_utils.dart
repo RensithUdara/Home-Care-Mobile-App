@@ -108,4 +108,27 @@ class ProductUtils {
       }
     }
   }
+
+  static IconData getIconData(String type) {
+    switch (type.toLowerCase()) {
+      case 'television':
+        return Icons.tv;
+      case 'refrigerator':
+        return Icons.kitchen;
+      case 'airconditioner':
+        return Icons.ac_unit;
+      case 'washingmachine':
+        return Icons.local_laundry_service;
+      case 'laptop':
+        return Icons.laptop_mac;
+      case 'speaker':
+        return Icons.speaker;
+      case 'vacuumcleaner':
+        return Icons.cleaning_services;
+      case 'fan':
+        return Icons.toys;
+      default:
+        return Icons.devices_other;
+    }
+  }
 }
