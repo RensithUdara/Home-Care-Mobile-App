@@ -249,7 +249,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       errorBuilder: (context, error, stackTrace) {
                         return Icon(
                           Icons.person,
-                          color: Colors.white,
+                          color: Theme.of(context).colorScheme.onSurface,
                           size: 28,
                         );
                       },
@@ -440,7 +440,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   category,
                   style: TextStyle(
                     color: isSelected 
-                        ? Colors.white
+                        ? Theme.of(context).colorScheme.onSecondary
                         : Theme.of(context).colorScheme.inversePrimary,
                     fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     fontSize: 14,
