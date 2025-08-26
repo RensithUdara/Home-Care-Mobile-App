@@ -214,7 +214,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
-                              color: primaryColor,
+                              color: ProductUtils.getTextColor(
+                                typeName, 
+                                Theme.of(context).brightness == Brightness.dark
+                              ),
                             ),
                           ),
                         ),
