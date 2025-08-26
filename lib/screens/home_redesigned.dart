@@ -513,7 +513,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     },
                     child: Hero(
                       tag: 'product_${product.id}',
-                      child: ItemTile(product: product),
+                      child: EnhancedItemTile(product: product),
                     ),
                   );
                 },
