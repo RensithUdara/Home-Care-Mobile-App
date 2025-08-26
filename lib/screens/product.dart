@@ -495,11 +495,19 @@ class _ProductPageState extends State<ProductPage>
       decoration: BoxDecoration(
         color: isDark
             ? Colors.white.withOpacity(0.05)
-            : Colors.grey.withOpacity(0.05),
+            : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: accentColor.withOpacity(0.2),
+          color: accentColor.withOpacity(isDark ? 0.2 : 0.4),
+          width: isDark ? 1 : 1.5,
         ),
+        boxShadow: isDark ? null : [
+          BoxShadow(
+            color: accentColor.withOpacity(0.1),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -507,7 +515,7 @@ class _ProductPageState extends State<ProductPage>
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: accentColor.withOpacity(0.1),
+              color: accentColor.withOpacity(isDark ? 0.1 : 0.15),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
@@ -521,7 +529,7 @@ class _ProductPageState extends State<ProductPage>
                   title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: theme.colorScheme.onSurface,
+                    color: isDark ? theme.colorScheme.onSurface : accentColor.withOpacity(0.9),
                   ),
                 ),
               ],
@@ -538,6 +546,7 @@ class _ProductPageState extends State<ProductPage>
   }
 
   Widget _buildDetailRow(String label, String value, ThemeData theme) {
+    final isDark = theme.brightness == Brightness.dark;
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
@@ -546,7 +555,8 @@ class _ProductPageState extends State<ProductPage>
           Text(
             label,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withOpacity(0.7),
+              color: theme.colorScheme.onSurface.withOpacity(isDark ? 0.7 : 0.8),
+              fontWeight: FontWeight.w500,
             ),
           ),
           Expanded(
