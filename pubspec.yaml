@@ -18,7 +18,7 @@ dependencies:
   firebase_core: ^3.0.0   # Use a compatible version
   firebase_auth: ^5.0.0    # Downgraded to match compatibility
   cloud_firestore: ^5.0.0   # Downgraded to match compatibility
-  intl: ^0.18.1
+  intl: 0.19.0
   url_launcher: ^6.0.20
   flutter_phone_direct_caller: ^2.1.1
   device_preview: ^1.1.0
