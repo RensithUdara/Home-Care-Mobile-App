@@ -188,7 +188,7 @@ class _ProductPageState extends State<ProductPage>
           slivers: [
             // Hero product section
             SliverToBoxAdapter(
-              child: Container(
+              child: SizedBox(
                 height: MediaQuery.of(context).size.height * 0.65,
                 child: Stack(
                   children: [
@@ -233,7 +233,7 @@ class _ProductPageState extends State<ProductPage>
                           opacity: _fadeAnimation,
                           child: SlideTransition(
                             position: _slideAnimation,
-                            child: Container(
+                            child: SizedBox(
                               width: 160,
                               height: 160,
                               child: Image.asset(
@@ -693,13 +693,13 @@ class _ProductPageState extends State<ProductPage>
               slivers: [
                 // Enhanced App Bar
                 SliverAppBar(
-                  expandedHeight: 350,
-                  floating: false,
-                  pinned: true,
-                  elevation: 0,
-                  backgroundColor: Colors.transparent,
-                  surfaceTintColor: Colors.transparent,
-                  leading: Container(
+                  expandedHeight = 350,
+                  floating = false,
+                  pinned = true,
+                  elevation = 0,
+                  backgroundColor = Colors.transparent,
+                  surfaceTintColor = Colors.transparent,
+                  leading = Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Theme.of(context)
@@ -732,7 +732,7 @@ class _ProductPageState extends State<ProductPage>
                       ),
                     ),
                   ),
-                  actions: [
+                  actions = [
                     Container(
                       margin: const EdgeInsets.all(4),
                       decoration: BoxDecoration(
@@ -811,7 +811,7 @@ class _ProductPageState extends State<ProductPage>
                     ),
                     const SizedBox(width: 8),
                   ],
-                  flexibleSpace: FlexibleSpaceBar(
+                  flexibleSpace = FlexibleSpaceBar(
                     background: Container(
                       padding:
                           const EdgeInsets.only(top: 100, left: 20, right: 20),
@@ -937,7 +937,7 @@ class _ProductPageState extends State<ProductPage>
                 // Warranty Status Banner
                 if (isExpired || isExpiringSoon)
                   SliverToBoxAdapter(
-                    child: SlideTransition(
+                    child = SlideTransition(
                       position: _slideAnimation,
                       child: FadeTransition(
                         opacity: _fadeAnimation,
@@ -994,7 +994,7 @@ class _ProductPageState extends State<ProductPage>
 
                 // Enhanced Main Content
                 SliverToBoxAdapter(
-                  child: Container(
+                  child = Container(
                     margin: const EdgeInsets.only(top: 20),
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
@@ -1251,7 +1251,7 @@ class _ProductPageState extends State<ProductPage>
                   ),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.info,
                   color: Colors.white,
                   size: 20,
