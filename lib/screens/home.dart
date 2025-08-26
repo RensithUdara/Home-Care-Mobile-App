@@ -566,7 +566,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             label: const Text('Add Appliance'),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue.shade600,
-              foregroundColor: Colors.white,
+              foregroundColor: Theme.of(context).colorScheme.onSecondary,
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
