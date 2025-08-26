@@ -15,21 +15,157 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isLoading = false;
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
   void login() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
     final auth = AuthServices();
+    String email = _emailController.text.trim();
+    String password = _passwordController.text;
+
+    // Basic validation
+    if (email.isEmpty) {
+      _showErrorSnackbar("Please enter your email address");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    if (password.isEmpty) {
+      _showErrorSnackbar("Please enter your password");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
+
+    if (!AuthServices.isValidEmail(email)) {
+      _showErrorSnackbar("Please enter a valid email address");
+      setState(() {
+        _isLoading = false;
+      });
+      return;
+    }
 
     try {
-      await auth.signInWithEmailPassword(
-          email: _emailController.text, password: _passwordController.text);
+      await auth.signInWithEmailPassword(email: email, password: password);
+      // Success - navigation handled by auth state listener
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Colors.red,
-        ),
-      );
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      _showErrorSnackbar(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  void _forgotPassword() async {
+    String email = _emailController.text.trim();
+    
+    if (email.isEmpty) {
+      _showErrorSnackbar("Please enter your email address first");
+      return;
+    }
+
+    if (!AuthServices.isValidEmail(email)) {
+      _showErrorSnackbar("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      final auth = AuthServices();
+      await auth.sendPasswordResetEmail(email: email);
+      
+      _showSuccessSnackbar(
+        "Password reset email sent! Please check your inbox and follow the instructions."
+      );
+    } catch (e) {
+      String errorMessage = e.toString();
+      if (errorMessage.startsWith('Exception: ')) {
+        errorMessage = errorMessage.substring(11);
+      }
+      _showErrorSnackbar(errorMessage);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
+
+  void _showErrorSnackbar(String message) {
+    if (!mounted) return;
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.error_outline, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.red.shade600,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 4),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void _showSuccessSnackbar(String message) {
+    if (!mounted) return;
+    final snackBar = SnackBar(
+      content: Row(
+        children: [
+          const Icon(Icons.check_circle_outline, color: Colors.white),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
+      ),
+      backgroundColor: Colors.green.shade600,
+      behavior: SnackBarBehavior.floating,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      margin: const EdgeInsets.all(16),
+      duration: const Duration(seconds: 4),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
