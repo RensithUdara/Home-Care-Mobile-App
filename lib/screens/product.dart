@@ -49,7 +49,18 @@ class _ProductPageState extends State<ProductPage>
       CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
     );
 
-    _animationController.forward();
+    // Start animation only if widget is still mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _animationController.forward();
+      }
+    });
+  }
+
+  @override
+  void deactivate() {
+    _animationController.stop();
+    super.deactivate();
   }
 
   @override
