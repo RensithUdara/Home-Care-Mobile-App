@@ -435,15 +435,17 @@ class _ProductPageState extends State<ProductPage>
                               'Warranty Until',
                               warranty,
                               Icons.security_rounded,
-                              isExpired ? Colors.red.shade600 : Colors.green.shade600,
+                              isExpired
+                                  ? Colors.red.shade600
+                                  : Colors.green.shade600,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 24),
-                    
+
                     // Enhanced Information Cards
                     FadeTransition(
                       opacity: _fadeAnimation,
@@ -453,47 +455,54 @@ class _ProductPageState extends State<ProductPage>
                             context,
                             'Product Details',
                             [
-                              _buildDetailRow(Icons.label_outline, 'Product Name', widget.product.name),
-                              _buildDetailRow(Icons.category_outlined, 'Category', type),
-                              _buildDetailRow(Icons.location_on_outlined, 'Location', widget.product.location),
+                              _buildDetailRow(Icons.label_outline,
+                                  'Product Name', widget.product.name),
+                              _buildDetailRow(
+                                  Icons.category_outlined, 'Category', type),
+                              _buildDetailRow(Icons.location_on_outlined,
+                                  'Location', widget.product.location),
                             ],
                             primaryColor,
                             Icons.info_outline_rounded,
                           ),
-                          
                           const SizedBox(height: 16),
-                          
                           _buildEnhancedInfoCard(
                             context,
                             'Purchase Information',
                             [
-                              _buildDetailRow(Icons.calendar_today_outlined, 'Purchase Date', purchasedDate),
-                              _buildDetailRow(Icons.label_outlined, 'Product Type', type),
-                              _buildDetailRow(Icons.location_on_outlined, 'Location', widget.product.location),
+                              _buildDetailRow(Icons.calendar_today_outlined,
+                                  'Purchase Date', purchasedDate),
+                              _buildDetailRow(
+                                  Icons.label_outlined, 'Product Type', type),
+                              _buildDetailRow(Icons.location_on_outlined,
+                                  'Location', widget.product.location),
                             ],
                             Colors.purple.shade600,
                             Icons.shopping_bag_outlined,
                           ),
-                          
                           const SizedBox(height: 16),
-                          
                           _buildEnhancedInfoCard(
                             context,
                             'Warranty & Support',
                             [
-                              _buildDetailRow(Icons.security_outlined, 'Warranty Until', warranty),
-                              _buildDetailRow(Icons.phone_outlined, 'Support Number', contactNumber),
-                              _buildDetailRow(Icons.category_outlined, 'Product Type', type),
+                              _buildDetailRow(Icons.security_outlined,
+                                  'Warranty Until', warranty),
+                              _buildDetailRow(Icons.phone_outlined,
+                                  'Support Number', contactNumber),
+                              _buildDetailRow(Icons.category_outlined,
+                                  'Product Type', type),
                             ],
-                            isExpired ? Colors.red.shade600 : Colors.green.shade600,
+                            isExpired
+                                ? Colors.red.shade600
+                                : Colors.green.shade600,
                             Icons.support_agent_rounded,
                           ),
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 32),
-                    
+
                     // Action Buttons
                     ScaleTransition(
                       scale: _scaleAnimation,
@@ -527,9 +536,9 @@ class _ProductPageState extends State<ProductPage>
                               ),
                             ),
                           ),
-                          
+
                           const SizedBox(height: 16),
-                          
+
                           // Secondary Actions Row
                           Row(
                             children: [
@@ -541,11 +550,13 @@ class _ProductPageState extends State<ProductPage>
                                       HapticFeedback.lightImpact();
                                       _showEditProductBottomSheet(context);
                                     },
-                                    icon: Icon(Icons.edit_outlined, size: 20),
+                                    icon: const Icon(Icons.edit_outlined,
+                                        size: 20),
                                     label: const Text('Edit'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.blue.shade600,
-                                      side: BorderSide(color: Colors.blue.shade600),
+                                      side: BorderSide(
+                                          color: Colors.blue.shade600),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -553,9 +564,7 @@ class _ProductPageState extends State<ProductPage>
                                   ),
                                 ),
                               ),
-                              
                               const SizedBox(width: 12),
-                              
                               Expanded(
                                 child: SizedBox(
                                   height: 50,
@@ -564,11 +573,13 @@ class _ProductPageState extends State<ProductPage>
                                       HapticFeedback.lightImpact();
                                       _showDeleteConfirmation();
                                     },
-                                    icon: Icon(Icons.delete_outline, size: 20),
+                                    icon: const Icon(Icons.delete_outline,
+                                        size: 20),
                                     label: const Text('Delete'),
                                     style: OutlinedButton.styleFrom(
                                       foregroundColor: Colors.red.shade600,
-                                      side: BorderSide(color: Colors.red.shade600),
+                                      side: BorderSide(
+                                          color: Colors.red.shade600),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -581,7 +592,7 @@ class _ProductPageState extends State<ProductPage>
                         ],
                       ),
                     ),
-                    
+
                     const SizedBox(height: 20),
                   ],
                 ),
@@ -594,7 +605,8 @@ class _ProductPageState extends State<ProductPage>
   }
 
   // Enhanced helper methods for the new design
-  Widget _buildStatCard(BuildContext context, String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(BuildContext context, String title, String value,
+      IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -730,7 +742,7 @@ class _ProductPageState extends State<ProductPage>
               ],
             ),
           ),
-          
+
           // Content
           Padding(
             padding: const EdgeInsets.all(20),
@@ -770,7 +782,10 @@ class _ProductPageState extends State<ProductPage>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
-                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withOpacity(0.6),
                   ),
                 ),
                 const SizedBox(height: 4),
@@ -866,7 +881,7 @@ class _ProductPageState extends State<ProductPage>
     try {
       // Use the flutter_phone_direct_caller plugin
       // FlutterPhoneDirectCaller.callNumber(phoneNumber);
-      
+
       // For now, we'll show a snackbar since we removed the import
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
