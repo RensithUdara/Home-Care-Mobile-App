@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class TextInputField extends StatefulWidget {
   const TextInputField({
     super.key,
@@ -58,7 +57,8 @@ class _TextInputFieldState extends State<TextInputField> {
           fillColor: Theme.of(context).colorScheme.tertiary,
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
-            borderSide: BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            borderSide:
+                BorderSide(color: Theme.of(context).colorScheme.tertiary),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),
