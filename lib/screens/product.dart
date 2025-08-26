@@ -49,11 +49,23 @@ class _ProductPageState extends State<ProductPage>
       CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
     );
 
-    _animationController.forward();
+    // Start animation only if widget is still mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _animationController.forward();
+      }
+    });
+  }
+
+  @override
+  void deactivate() {
+    _animationController.stop();
+    super.deactivate();
   }
 
   @override
   void dispose() {
+    _animationController.stop();
     _animationController.dispose();
     super.dispose();
   }
@@ -398,19 +410,17 @@ class _ProductPageState extends State<ProductPage>
                     ),
                   ),
                 ),
-            ],
-          ),
 
-          // Enhanced Main Content
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.only(top: 20),
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surface,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(30),
-                  topRight: Radius.circular(30),
-                ),
+              // Enhanced Main Content
+              SliverToBoxAdapter(
+                child: Container(
+                  margin: const EdgeInsets.only(top: 20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(30),
+                      topRight: Radius.circular(30),
+                    ),
               ),
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
@@ -600,6 +610,7 @@ class _ProductPageState extends State<ProductPage>
                 ),
               ),
             ),
+            ],
           ),
         ],
       ),
@@ -810,8 +821,10 @@ class _ProductPageState extends State<ProductPage>
   Widget _buildDetailCard(
       String title, String value, IconData icon, Color color) {
     return AnimatedBuilder(
-      animation: _fadeAnimation,
+      animation: Listenable.merge([_fadeAnimation, _slideAnimation]),
       builder: (context, child) {
+        if (!mounted) return const SizedBox.shrink();
+        
         return Transform.translate(
           offset: Offset(0, _slideAnimation.value.dy * 30),
           child: Opacity(
