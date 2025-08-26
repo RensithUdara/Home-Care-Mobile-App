@@ -497,23 +497,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final product = _filteredProducts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductPage(
-                            product: product,
-                            onDelete: deleteProduct,
-                            onProductEdited: refreshProducts,
+                  return Hero(
+                    tag: 'product_${product.id}',
+                    child: EnhancedItemTile(
+                      product: product,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductPage(
+                              product: product,
+                              onDelete: deleteProduct,
+                              onProductEdited: refreshProducts,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Hero(
-                      tag: 'product_${product.id}',
-                      child: EnhancedItemTile(product: product),
+                        );
+                      },
                     ),
                   );
                 },
