@@ -690,14 +690,6 @@ class _ProductPageState extends State<ProductPage>
     );
   }
 }
-              slivers: [
-                // Enhanced App Bar
-                SliverAppBar(
-                  expandedHeight = 350,
-                  floating = false,
-                  pinned = true,
-                  elevation = 0,
-                  backgroundColor = Colors.transparent,
                   surfaceTintColor = Colors.transparent,
                   leading = Container(
                     margin: const EdgeInsets.all(8),
