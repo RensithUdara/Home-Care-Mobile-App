@@ -35,49 +35,84 @@ class _TextInputFieldState extends State<TextInputField> {
       decoration: BoxDecoration(
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.07),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 15,
+            offset: const Offset(0, 5),
+            spreadRadius: 1,
           ),
         ],
-        borderRadius: BorderRadius.circular(8),
+        borderRadius: BorderRadius.circular(12),
       ),
       child: TextField(
         keyboardType: widget.keyboardType,
         obscureText: _obscureText,
         controller: widget.controller,
         decoration: InputDecoration(
-          hintStyle: const TextStyle(fontWeight: FontWeight.w400),
-          hintText: (widget.labelText),
+          hintStyle: TextStyle(
+            fontWeight: FontWeight.w400,
+            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.5),
+          ),
+          hintText: widget.labelText,
           prefixIcon: Icon(
             widget.icon,
-            color: const Color.fromARGB(255, 97, 97, 97),
+            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
+            size: 22,
           ),
           filled: true,
           fillColor: Theme.of(context).colorScheme.tertiary,
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 18,
+          ),
           enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide:
-                BorderSide(color: Theme.of(context).colorScheme.tertiary),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.1),
+              width: 1,
+            ),
           ),
           focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8),
-            borderSide: const BorderSide(color: Colors.green),
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide(
+              color: Colors.blue.shade400,
+              width: 2,
+            ),
           ),
-          // Add eye icon for password fields
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 2,
+            ),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 2,
+            ),
+          ),
+          // Enhanced eye icon for password fields
           suffixIcon: widget.obscureText
               ? IconButton(
                   icon: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
-                    color: Colors.grey,
+                    _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                    color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
+                    size: 22,
                   ),
                   onPressed: () {
                     setState(() {
                       _obscureText = !_obscureText;
                     });
                   },
+                  splashRadius: 20,
                 )
               : null,
+        ),
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.w500,
+          color: Theme.of(context).colorScheme.inversePrimary,
         ),
       ),
     );
