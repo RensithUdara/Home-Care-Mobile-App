@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:home_care/components/edit_product_bottom_sheet.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -74,10 +75,11 @@ class _ProductPageState extends State<ProductPage>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     String type = ProductUtils.getTypeName(widget.product.type.toString());
     String imgPath = ProductUtils.getImagePath(type);
-    String purchasedDate = DateFormat.yMMMd().format(widget.product.purchasedDate);
+    String purchasedDate =
+        DateFormat.yMMMd().format(widget.product.purchasedDate);
     String warranty = DateFormat.yMMMd().format(widget.product.warrantyPeriod);
     String contactNumber = widget.product.contactNumber.toString();
     Color primaryColor = ProductUtils.getColor(type);
@@ -88,7 +90,8 @@ class _ProductPageState extends State<ProductPage>
     }
 
     bool isExpired = checkWarrantyExpiration(widget.product.warrantyPeriod);
-    int daysUntilExpiry = widget.product.warrantyPeriod.difference(DateTime.now()).inDays;
+    int daysUntilExpiry =
+        widget.product.warrantyPeriod.difference(DateTime.now()).inDays;
     bool isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
     return Scaffold(
@@ -125,24 +128,24 @@ class _ProductPageState extends State<ProductPage>
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
-                  colors: isDark 
-                    ? [
-                        primaryColor.withOpacity(0.3),
-                        primaryColor.withOpacity(0.1),
-                        theme.colorScheme.surface,
-                      ]
-                    : [
-                        primaryColor.withOpacity(0.1),
-                        primaryColor.withOpacity(0.05),
-                        theme.colorScheme.surface,
-                      ],
+                  colors: isDark
+                      ? [
+                          primaryColor.withOpacity(0.3),
+                          primaryColor.withOpacity(0.1),
+                          theme.colorScheme.surface,
+                        ]
+                      : [
+                          primaryColor.withOpacity(0.1),
+                          primaryColor.withOpacity(0.05),
+                          theme.colorScheme.surface,
+                        ],
                 ),
                 borderRadius: BorderRadius.circular(24),
                 boxShadow: [
                   BoxShadow(
-                    color: isDark 
-                      ? Colors.black.withOpacity(0.3)
-                      : Colors.grey.withOpacity(0.2),
+                    color: isDark
+                        ? Colors.black.withOpacity(0.3)
+                        : Colors.grey.withOpacity(0.2),
                     blurRadius: 20,
                     offset: const Offset(0, 8),
                   ),
@@ -177,9 +180,9 @@ class _ProductPageState extends State<ProductPage>
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 16),
-                  
+
                   // Product Name
                   SlideTransition(
                     position: _slideAnimation,
@@ -193,12 +196,13 @@ class _ProductPageState extends State<ProductPage>
                       maxLines: 2,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 8),
-                  
+
                   // Product Type Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     decoration: BoxDecoration(
                       color: primaryColor,
                       borderRadius: BorderRadius.circular(20),
@@ -231,7 +235,9 @@ class _ProductPageState extends State<ProductPage>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(
-                      isExpired ? Icons.warning_rounded : Icons.schedule_rounded,
+                      isExpired
+                          ? Icons.warning_rounded
+                          : Icons.schedule_rounded,
                       color: Colors.white,
                       size: 18,
                     ),
@@ -258,9 +264,9 @@ class _ProductPageState extends State<ProductPage>
               delegate: SliverChildListDelegate([
                 // Quick Stats
                 _buildStatsRow(theme, purchasedDate, warranty, isExpired),
-                
+
                 const SizedBox(height: 16),
-                
+
                 // Product Details
                 _buildCompactCard(
                   theme,
@@ -273,9 +279,9 @@ class _ProductPageState extends State<ProductPage>
                     _buildDetailRow('Location', widget.product.location, theme),
                   ],
                 ),
-                
+
                 const SizedBox(height: 12),
-                
+
                 // Support Details
                 _buildCompactCard(
                   theme,
@@ -288,9 +294,9 @@ class _ProductPageState extends State<ProductPage>
                     _buildDetailRow('Support Number', contactNumber, theme),
                   ],
                 ),
-                
+
                 const SizedBox(height: 24),
-                
+
                 // Action Buttons
                 ScaleTransition(
                   scale: _scaleAnimation,
@@ -316,9 +322,9 @@ class _ProductPageState extends State<ProductPage>
                           ),
                         ),
                       ),
-                      
+
                       const SizedBox(height: 12),
-                      
+
                       // Secondary Actions
                       Row(
                         children: [
@@ -361,7 +367,7 @@ class _ProductPageState extends State<ProductPage>
                     ],
                   ),
                 ),
-                
+
                 const SizedBox(height: 20),
               ]),
             ),
@@ -372,14 +378,15 @@ class _ProductPageState extends State<ProductPage>
   }
 
   // Helper methods for compact design
-  Widget _buildIconButton(IconData icon, VoidCallback onTap, ThemeData theme, Color color) {
+  Widget _buildIconButton(
+      IconData icon, VoidCallback onTap, ThemeData theme, Color color) {
     final isDark = theme.brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: isDark 
-          ? Colors.white.withOpacity(0.1)
-          : Colors.black.withOpacity(0.05),
+        color: isDark
+            ? Colors.white.withOpacity(0.1)
+            : Colors.black.withOpacity(0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color.withOpacity(0.3),
@@ -403,7 +410,8 @@ class _ProductPageState extends State<ProductPage>
     );
   }
 
-  Widget _buildStatsRow(ThemeData theme, String purchaseDate, String warranty, bool isExpired) {
+  Widget _buildStatsRow(
+      ThemeData theme, String purchaseDate, String warranty, bool isExpired) {
     return Row(
       children: [
         Expanded(
@@ -429,14 +437,15 @@ class _ProductPageState extends State<ProductPage>
     );
   }
 
-  Widget _buildStatCard(ThemeData theme, String title, String value, IconData icon, Color color) {
+  Widget _buildStatCard(
+      ThemeData theme, String title, String value, IconData icon, Color color) {
     final isDark = theme.brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark 
-          ? Colors.white.withOpacity(0.05)
-          : Colors.grey.withOpacity(0.1),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.grey.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: color.withOpacity(0.3),
@@ -469,13 +478,14 @@ class _ProductPageState extends State<ProductPage>
     );
   }
 
-  Widget _buildCompactCard(ThemeData theme, String title, IconData icon, Color accentColor, List<Widget> children) {
+  Widget _buildCompactCard(ThemeData theme, String title, IconData icon,
+      Color accentColor, List<Widget> children) {
     final isDark = theme.brightness == Brightness.dark;
     return Container(
       decoration: BoxDecoration(
-        color: isDark 
-          ? Colors.white.withOpacity(0.05)
-          : Colors.grey.withOpacity(0.05),
+        color: isDark
+            ? Colors.white.withOpacity(0.05)
+            : Colors.grey.withOpacity(0.05),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: accentColor.withOpacity(0.2),
@@ -547,25 +557,78 @@ class _ProductPageState extends State<ProductPage>
   }
 
   // Method to handle calling support
-  void _callSupport(String phoneNumber) {
+  void _callSupport(String phoneNumber) async {
     try {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Calling $phoneNumber...'),
-          action: SnackBarAction(
-            label: 'Dismiss',
-            onPressed: () {},
-          ),
-        ),
-      );
+      // Remove any formatting from phone number
+      String cleanNumber = phoneNumber.replaceAll(RegExp(r'[^\d+]'), '');
+      
+      // Check if phone call is supported
+      bool? result = await FlutterPhoneDirectCaller.callNumber(cleanNumber);
+      
+      if (result == false) {
+        // Fallback: show dialog with number if direct calling fails
+        _showCallDialog(phoneNumber);
+      }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Failed to call $phoneNumber'),
-          backgroundColor: Colors.red,
-        ),
-      );
+      // Show error or fallback dialog
+      _showCallDialog(phoneNumber);
     }
+  }
+
+  void _showCallDialog(String phoneNumber) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Call Support'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.phone,
+              size: 48,
+              color: Colors.blue,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Call support at:',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              phoneNumber,
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton.icon(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              try {
+                await FlutterPhoneDirectCaller.callNumber(phoneNumber);
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Could not make call: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.phone),
+            label: const Text('Call'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showDeleteConfirmation() async {
@@ -579,8 +642,8 @@ class _ProductPageState extends State<ProductPage>
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(false),
-            child: Text('Cancel', 
-              style: TextStyle(color: Colors.grey.shade600)),
+            child:
+                Text('Cancel', style: TextStyle(color: Colors.grey.shade600)),
           ),
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
@@ -610,4 +673,3 @@ class _ProductPageState extends State<ProductPage>
     );
   }
 }
-
