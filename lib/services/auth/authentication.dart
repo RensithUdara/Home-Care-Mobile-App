@@ -66,10 +66,6 @@ class AuthServices {
       case 'invalid-credential':
         return 'Invalid email or password. Please check your credentials.';
       
-      // Password reset errors
-      case 'user-not-found':
-        return 'No account found with this email address.';
-      
       // Network errors
       case 'network-request-failed':
         return 'Network error. Please check your internet connection.';
