@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:home_care/components/add_product.dart';
 import 'package:home_care/components/enhanced_item_tile.dart';
 import 'package:home_care/models/products.dart';
-import 'package:home_care/screens/product.dart';
+import 'package:home_care/screens/product_details.dart';
 import 'package:home_care/screens/profile.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 
@@ -497,23 +497,23 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               delegate: SliverChildBuilderDelegate(
                 (context, index) {
                   final product = _filteredProducts[index];
-                  return GestureDetector(
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ProductPage(
-                            product: product,
-                            onDelete: deleteProduct,
-                            onProductEdited: refreshProducts,
+                  return Hero(
+                    tag: 'product_${product.id}',
+                    child: EnhancedItemTile(
+                      product: product,
+                      onTap: () {
+                        HapticFeedback.lightImpact();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => ProductPage(
+                              product: product,
+                              onDelete: deleteProduct,
+                              onProductEdited: refreshProducts,
+                            ),
                           ),
-                        ),
-                      );
-                    },
-                    child: Hero(
-                      tag: 'product_${product.id}',
-                      child: EnhancedItemTile(product: product),
+                        );
+                      },
                     ),
                   );
                 },

@@ -4,7 +4,8 @@ import 'package:home_care/utils/product_utils.dart';
 
 class EnhancedItemTile extends StatefulWidget {
   final Products product;
-  const EnhancedItemTile({super.key, required this.product});
+  final VoidCallback? onTap;
+  const EnhancedItemTile({super.key, required this.product, this.onTap});
 
   @override
   State<EnhancedItemTile> createState() => _EnhancedItemTileState();
@@ -65,6 +66,7 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
     Color primaryColor = ProductUtils.getColor(typeName);
     
     return GestureDetector(
+      onTap: widget.onTap,
       onTapDown: _onTapDown,
       onTapUp: _onTapUp,
       onTapCancel: _onTapCancel,
