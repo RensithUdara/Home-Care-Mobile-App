@@ -93,69 +93,37 @@ class _ProductPageState extends State<ProductPage>
     bool isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      body: Stack(
-        children: [
-          // Background Gradient
-          Container(
-            height: MediaQuery.of(context).size.height * 0.4,
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  primaryColor.withOpacity(0.15),
-                  primaryColor.withOpacity(0.05),
-                  Theme.of(context).colorScheme.surface,
-                ],
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: Stack(
+          children: [
+            // Background Gradient
+            Container(
+              height: MediaQuery.of(context).size.height * 0.4,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    primaryColor.withOpacity(0.15),
+                    primaryColor.withOpacity(0.05),
+                    Theme.of(context).colorScheme.surface,
+                  ],
+                ),
               ),
             ),
-          ),
 
-          CustomScrollView(
-            slivers: [
-              // Enhanced App Bar
-              SliverAppBar(
-                expandedHeight: 350,
-                floating: false,
-                pinned: true,
-                elevation: 0,
-                backgroundColor: Colors.transparent,
-                surfaceTintColor: Colors.transparent,
-                leading: Container(
-                  margin: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color:
-                        Theme.of(context).colorScheme.surface.withOpacity(0.9),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 12,
-                        spreadRadius: 0,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Material(
-                    color: Colors.transparent,
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(16),
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        Navigator.pop(context);
-                      },
-                      child: Icon(
-                        Icons.arrow_back_ios_rounded,
-                        color: Theme.of(context).colorScheme.inversePrimary,
-                      ),
-                    ),
-                  ),
-                ),
-                actions: [
-                  Container(
-                    margin: const EdgeInsets.all(4),
+            CustomScrollView(
+              slivers: [
+                // Enhanced App Bar
+                SliverAppBar(
+                  expandedHeight: 350,
+                  floating: false,
+                  pinned: true,
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  surfaceTintColor: Colors.transparent,
+                  leading: Container(
+                    margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
                       color: Theme.of(context)
                           .colorScheme
@@ -178,443 +146,487 @@ class _ProductPageState extends State<ProductPage>
                         borderRadius: BorderRadius.circular(16),
                         onTap: () {
                           HapticFeedback.lightImpact();
-                          _showEditProductBottomSheet(context);
+                          Navigator.pop(context);
                         },
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Icon(
-                            Icons.edit_outlined,
-                            color: Colors.blue.shade600,
-                            size: 20,
-                          ),
+                        child: Icon(
+                          Icons.arrow_back_ios_rounded,
+                          color: Theme.of(context).colorScheme.inversePrimary,
                         ),
                       ),
                     ),
                   ),
-                  Container(
-                    margin: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .surface
-                          .withOpacity(0.9),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 12,
-                          spreadRadius: 0,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Material(
-                      color: Colors.transparent,
-                      child: InkWell(
+                  actions: [
+                    Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withOpacity(0.9),
                         borderRadius: BorderRadius.circular(16),
-                        onTap: () {
-                          HapticFeedback.mediumImpact();
-                          _showDeleteConfirmation();
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Icon(
-                            Icons.delete_outline_rounded,
-                            color: Colors.red.shade600,
-                            size: 20,
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            HapticFeedback.lightImpact();
+                            _showEditProductBottomSheet(context);
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              Icons.edit_outlined,
+                              color: Colors.blue.shade600,
+                              size: 20,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(width: 8),
-                ],
-                flexibleSpace: FlexibleSpaceBar(
-                  background: Container(
-                    padding:
-                        const EdgeInsets.only(top: 100, left: 20, right: 20),
-                    child: Column(
-                      children: [
-                        // Product Image with Glowing Effect
-                        Hero(
-                          tag: 'product_${widget.product.id}',
-                          child: FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Container(
-                              height: 180,
-                              width: 180,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                gradient: RadialGradient(
-                                  colors: [
-                                    primaryColor.withOpacity(0.3),
-                                    primaryColor.withOpacity(0.1),
-                                    Colors.transparent,
+                    Container(
+                      margin: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withOpacity(0.9),
+                        borderRadius: BorderRadius.circular(16),
+                        border:
+                            Border.all(color: Colors.white.withOpacity(0.2)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            blurRadius: 12,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 4),
+                          ),
+                        ],
+                      ),
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          borderRadius: BorderRadius.circular(16),
+                          onTap: () {
+                            HapticFeedback.mediumImpact();
+                            _showDeleteConfirmation();
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              Icons.delete_outline_rounded,
+                              color: Colors.red.shade600,
+                              size: 20,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                  ],
+                  flexibleSpace: FlexibleSpaceBar(
+                    background: Container(
+                      padding:
+                          const EdgeInsets.only(top: 100, left: 20, right: 20),
+                      child: Column(
+                        children: [
+                          // Product Image with Glowing Effect
+                          Hero(
+                            tag: 'product_${widget.product.id}',
+                            child: FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Container(
+                                height: 180,
+                                width: 180,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  gradient: RadialGradient(
+                                    colors: [
+                                      primaryColor.withOpacity(0.3),
+                                      primaryColor.withOpacity(0.1),
+                                      Colors.transparent,
+                                    ],
+                                  ),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: primaryColor.withOpacity(0.3),
+                                      blurRadius: 30,
+                                      spreadRadius: 10,
+                                    ),
                                   ],
                                 ),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryColor.withOpacity(0.3),
-                                    blurRadius: 30,
-                                    spreadRadius: 10,
+                                child: Center(
+                                  child: Image.asset(
+                                    imgPath,
+                                    height: 120,
+                                    fit: BoxFit.contain,
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        padding: const EdgeInsets.all(20),
+                                        decoration: BoxDecoration(
+                                          color: primaryColor.withOpacity(0.1),
+                                          shape: BoxShape.circle,
+                                        ),
+                                        child: Icon(
+                                          ProductUtils.getIconData(type),
+                                          size: 80,
+                                          color: primaryColor,
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ],
-                              ),
-                              child: Center(
-                                child: Image.asset(
-                                  imgPath,
-                                  height: 120,
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return Container(
-                                      padding: const EdgeInsets.all(20),
-                                      decoration: BoxDecoration(
-                                        color: primaryColor.withOpacity(0.1),
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: Icon(
-                                        ProductUtils.getIconData(type),
-                                        size: 80,
-                                        color: primaryColor,
-                                      ),
-                                    );
-                                  },
                                 ),
                               ),
                             ),
                           ),
-                        ),
 
-                        const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                        // Product Name with Animation
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Text(
-                              widget.product.name,
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: Theme.of(context)
-                                    .colorScheme
-                                    .inversePrimary,
-                                letterSpacing: -0.5,
-                              ),
-                              textAlign: TextAlign.center,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        // Product Type Badge
-                        SlideTransition(
-                          position: _slideAnimation,
-                          child: FadeTransition(
-                            opacity: _fadeAnimation,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 8),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  colors: [
-                                    primaryColor,
-                                    primaryColor.withOpacity(0.7)
-                                  ],
-                                ),
-                                borderRadius: BorderRadius.circular(25),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: primaryColor.withOpacity(0.3),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 4),
-                                  ),
-                                ],
-                              ),
+                          // Product Name with Animation
+                          SlideTransition(
+                            position: _slideAnimation,
+                            child: FadeTransition(
+                              opacity: _fadeAnimation,
                               child: Text(
-                                type,
+                                widget.product.name,
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .inversePrimary,
+                                  letterSpacing: -0.5,
+                                ),
+                                textAlign: TextAlign.center,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Product Type Badge
+                          SlideTransition(
+                            position: _slideAnimation,
+                            child: FadeTransition(
+                              opacity: _fadeAnimation,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 20, vertical: 8),
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [
+                                      primaryColor,
+                                      primaryColor.withOpacity(0.7)
+                                    ],
+                                  ),
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: primaryColor.withOpacity(0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Text(
+                                  type,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Warranty Status Banner
+                if (isExpired || isExpiringSoon)
+                  SliverToBoxAdapter(
+                    child: SlideTransition(
+                      position: _slideAnimation,
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 15),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 10),
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              colors: isExpired
+                                  ? [Colors.red.shade600, Colors.red.shade400]
+                                  : [
+                                      Colors.orange.shade600,
+                                      Colors.orange.shade400
+                                    ],
+                            ),
+                            borderRadius: BorderRadius.circular(20),
+                            boxShadow: [
+                              BoxShadow(
+                                color: (isExpired ? Colors.red : Colors.orange)
+                                    .withOpacity(0.3),
+                                blurRadius: 8,
+                                offset: const Offset(0, 4),
+                              ),
+                            ],
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                isExpired
+                                    ? Icons.warning_rounded
+                                    : Icons.schedule_rounded,
+                                color: Colors.white,
+                                size: 18,
+                              ),
+                              const SizedBox(width: 8),
+                              Text(
+                                isExpired
+                                    ? 'Warranty Expired'
+                                    : 'Expires in $daysUntilExpiry days',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 14,
+                                  fontSize: 13,
                                 ),
                               ),
-                            ),
+                            ],
                           ),
                         ),
-                      ],
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-              // Warranty Status Banner
-              if (isExpired || isExpiringSoon)
+                // Enhanced Main Content
                 SliverToBoxAdapter(
-                  child: SlideTransition(
-                    position: _slideAnimation,
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 15),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 10),
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(
-                            colors: isExpired
-                                ? [Colors.red.shade600, Colors.red.shade400]
-                                : [
-                                    Colors.orange.shade600,
-                                    Colors.orange.shade400
-                                  ],
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 20),
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.surface,
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(30),
+                        topRight: Radius.circular(30),
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(24.0),
+                      child: Column(
+                        children: [
+                          // Quick Stats Row
+                          ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildStatCard(
+                                    context,
+                                    'Purchase Date',
+                                    purchasedDate,
+                                    Icons.calendar_today_rounded,
+                                    Colors.blue.shade600,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildStatCard(
+                                    context,
+                                    'Warranty Until',
+                                    warranty,
+                                    Icons.security_rounded,
+                                    isExpired
+                                        ? Colors.red.shade600
+                                        : Colors.green.shade600,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: (isExpired ? Colors.red : Colors.orange)
-                                  .withOpacity(0.3),
-                              blurRadius: 8,
-                              offset: const Offset(0, 4),
+
+                          const SizedBox(height: 24),
+
+                          // Enhanced Information Cards
+                          FadeTransition(
+                            opacity: _fadeAnimation,
+                            child: Column(
+                              children: [
+                                _buildEnhancedInfoCard(
+                                  context,
+                                  'Product Details',
+                                  [
+                                    _buildDetailRow(Icons.label_outline,
+                                        'Product Name', widget.product.name),
+                                    _buildDetailRow(Icons.category_outlined,
+                                        'Category', type),
+                                    _buildDetailRow(Icons.location_on_outlined,
+                                        'Location', widget.product.location),
+                                  ],
+                                  primaryColor,
+                                  Icons.info_outline_rounded,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildEnhancedInfoCard(
+                                  context,
+                                  'Purchase Information',
+                                  [
+                                    _buildDetailRow(
+                                        Icons.calendar_today_outlined,
+                                        'Purchase Date',
+                                        purchasedDate),
+                                    _buildDetailRow(Icons.label_outlined,
+                                        'Product Type', type),
+                                    _buildDetailRow(Icons.location_on_outlined,
+                                        'Location', widget.product.location),
+                                  ],
+                                  Colors.purple.shade600,
+                                  Icons.shopping_bag_outlined,
+                                ),
+                                const SizedBox(height: 16),
+                                _buildEnhancedInfoCard(
+                                  context,
+                                  'Warranty & Support',
+                                  [
+                                    _buildDetailRow(Icons.security_outlined,
+                                        'Warranty Until', warranty),
+                                    _buildDetailRow(Icons.phone_outlined,
+                                        'Support Number', contactNumber),
+                                    _buildDetailRow(Icons.category_outlined,
+                                        'Product Type', type),
+                                  ],
+                                  isExpired
+                                      ? Colors.red.shade600
+                                      : Colors.green.shade600,
+                                  Icons.support_agent_rounded,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              isExpired
-                                  ? Icons.warning_rounded
-                                  : Icons.schedule_rounded,
-                              color: Colors.white,
-                              size: 18,
+                          ),
+
+                          const SizedBox(height: 32),
+
+                          // Action Buttons
+                          ScaleTransition(
+                            scale: _scaleAnimation,
+                            child: Column(
+                              children: [
+                                // Call Support Button
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 56,
+                                  child: ElevatedButton.icon(
+                                    onPressed: () {
+                                      HapticFeedback.mediumImpact();
+                                      _callSupport(contactNumber);
+                                    },
+                                    icon: const Icon(Icons.phone, size: 24),
+                                    label: const Text(
+                                      'Call Support',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: primaryColor,
+                                      foregroundColor: Colors.white,
+                                      elevation: 8,
+                                      shadowColor:
+                                          primaryColor.withOpacity(0.4),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 16),
+
+                                // Secondary Actions Row
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 50,
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            HapticFeedback.lightImpact();
+                                            _showEditProductBottomSheet(
+                                                context);
+                                          },
+                                          icon: const Icon(Icons.edit_outlined,
+                                              size: 20),
+                                          label: const Text('Edit'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor:
+                                                Colors.blue.shade600,
+                                            side: BorderSide(
+                                                color: Colors.blue.shade600),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 50,
+                                        child: OutlinedButton.icon(
+                                          onPressed: () {
+                                            HapticFeedback.lightImpact();
+                                            _showDeleteConfirmation();
+                                          },
+                                          icon: const Icon(Icons.delete_outline,
+                                              size: 20),
+                                          label: const Text('Delete'),
+                                          style: OutlinedButton.styleFrom(
+                                            foregroundColor:
+                                                Colors.red.shade600,
+                                            side: BorderSide(
+                                                color: Colors.red.shade600),
+                                            shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              isExpired
-                                  ? 'Warranty Expired'
-                                  : 'Expires in $daysUntilExpiry days',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+
+                          const SizedBox(height: 20),
+                        ],
                       ),
                     ),
                   ),
-                ),
-
-              // Enhanced Main Content
-              SliverToBoxAdapter(
-                child: Container(
-                  margin: const EdgeInsets.only(top: 20),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(30),
-                      topRight: Radius.circular(30),
-                    ),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(24.0),
-                child: Column(
-                  children: [
-                    // Quick Stats Row
-                    ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              'Purchase Date',
-                              purchasedDate,
-                              Icons.calendar_today_rounded,
-                              Colors.blue.shade600,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _buildStatCard(
-                              context,
-                              'Warranty Until',
-                              warranty,
-                              Icons.security_rounded,
-                              isExpired
-                                  ? Colors.red.shade600
-                                  : Colors.green.shade600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Enhanced Information Cards
-                    FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Column(
-                        children: [
-                          _buildEnhancedInfoCard(
-                            context,
-                            'Product Details',
-                            [
-                              _buildDetailRow(Icons.label_outline,
-                                  'Product Name', widget.product.name),
-                              _buildDetailRow(
-                                  Icons.category_outlined, 'Category', type),
-                              _buildDetailRow(Icons.location_on_outlined,
-                                  'Location', widget.product.location),
-                            ],
-                            primaryColor,
-                            Icons.info_outline_rounded,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildEnhancedInfoCard(
-                            context,
-                            'Purchase Information',
-                            [
-                              _buildDetailRow(Icons.calendar_today_outlined,
-                                  'Purchase Date', purchasedDate),
-                              _buildDetailRow(
-                                  Icons.label_outlined, 'Product Type', type),
-                              _buildDetailRow(Icons.location_on_outlined,
-                                  'Location', widget.product.location),
-                            ],
-                            Colors.purple.shade600,
-                            Icons.shopping_bag_outlined,
-                          ),
-                          const SizedBox(height: 16),
-                          _buildEnhancedInfoCard(
-                            context,
-                            'Warranty & Support',
-                            [
-                              _buildDetailRow(Icons.security_outlined,
-                                  'Warranty Until', warranty),
-                              _buildDetailRow(Icons.phone_outlined,
-                                  'Support Number', contactNumber),
-                              _buildDetailRow(Icons.category_outlined,
-                                  'Product Type', type),
-                            ],
-                            isExpired
-                                ? Colors.red.shade600
-                                : Colors.green.shade600,
-                            Icons.support_agent_rounded,
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Action Buttons
-                    ScaleTransition(
-                      scale: _scaleAnimation,
-                      child: Column(
-                        children: [
-                          // Call Support Button
-                          SizedBox(
-                            width: double.infinity,
-                            height: 56,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                HapticFeedback.mediumImpact();
-                                _callSupport(contactNumber);
-                              },
-                              icon: const Icon(Icons.phone, size: 24),
-                              label: const Text(
-                                'Call Support',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: primaryColor,
-                                foregroundColor: Colors.white,
-                                elevation: 8,
-                                shadowColor: primaryColor.withOpacity(0.4),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(16),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 16),
-
-                          // Secondary Actions Row
-                          Row(
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  height: 50,
-                                  child: OutlinedButton.icon(
-                                    onPressed: () {
-                                      HapticFeedback.lightImpact();
-                                      _showEditProductBottomSheet(context);
-                                    },
-                                    icon: const Icon(Icons.edit_outlined,
-                                        size: 20),
-                                    label: const Text('Edit'),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: Colors.blue.shade600,
-                                      side: BorderSide(
-                                          color: Colors.blue.shade600),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: SizedBox(
-                                  height: 50,
-                                  child: OutlinedButton.icon(
-                                    onPressed: () {
-                                      HapticFeedback.lightImpact();
-                                      _showDeleteConfirmation();
-                                    },
-                                    icon: const Icon(Icons.delete_outline,
-                                        size: 20),
-                                    label: const Text('Delete'),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: Colors.red.shade600,
-                                      side: BorderSide(
-                                          color: Colors.red.shade600),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-
-                    const SizedBox(height: 20),
-                  ],
-                ),
-              ),
+                )
+              ],
             ),
-            ],
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 
   // Enhanced helper methods for the new design
@@ -824,7 +836,7 @@ class _ProductPageState extends State<ProductPage>
       animation: Listenable.merge([_fadeAnimation, _slideAnimation]),
       builder: (context, child) {
         if (!mounted) return const SizedBox.shrink();
-        
+
         return Transform.translate(
           offset: Offset(0, _slideAnimation.value.dy * 30),
           child: Opacity(
