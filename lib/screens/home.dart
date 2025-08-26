@@ -596,16 +596,16 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           label: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
+              Icon(
                 Icons.add_rounded,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onSecondary,
                 size: 24,
               ),
               const SizedBox(width: 8),
               Text(
                 'Add New Appliance',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSecondary,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
