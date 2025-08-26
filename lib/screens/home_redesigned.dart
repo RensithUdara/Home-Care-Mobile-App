@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_care/components/add_product.dart';
-import 'package:home_care/components/item_tile.dart';
+import 'package:home_care/components/enhanced_item_tile.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/screens/product.dart';
 import 'package:home_care/screens/profile.dart';
@@ -83,7 +83,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       _filteredProducts = _allProducts.where((product) {
         bool matchesSearch = _searchController.text.isEmpty ||
             product.name.toLowerCase().contains(_searchController.text.toLowerCase()) ||
-            product.brand.toLowerCase().contains(_searchController.text.toLowerCase());
+            product.location.toLowerCase().contains(_searchController.text.toLowerCase());
         
         bool matchesCategory = _selectedCategory == 'All' ||
             product.type.toString().split('.').last == _selectedCategory;
@@ -513,7 +513,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     },
                     child: Hero(
                       tag: 'product_${product.id}',
-                      child: ItemTile(product: product),
+                      child: EnhancedItemTile(product: product),
                     ),
                   );
                 },
