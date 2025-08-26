@@ -135,18 +135,22 @@ class _ProductPageState extends State<ProductPage>
                           theme.colorScheme.surface,
                         ]
                       : [
-                          primaryColor.withOpacity(0.1),
-                          primaryColor.withOpacity(0.05),
+                          primaryColor.withOpacity(0.15),
+                          primaryColor.withOpacity(0.08),
                           theme.colorScheme.surface,
                         ],
                 ),
                 borderRadius: BorderRadius.circular(24),
+                border: isDark ? null : Border.all(
+                  color: primaryColor.withOpacity(0.3),
+                  width: 1.5,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: isDark
                         ? Colors.black.withOpacity(0.3)
-                        : Colors.grey.withOpacity(0.2),
-                    blurRadius: 20,
+                        : primaryColor.withOpacity(0.2),
+                    blurRadius: isDark ? 20 : 15,
                     offset: const Offset(0, 8),
                   ),
                 ],
@@ -163,8 +167,12 @@ class _ProductPageState extends State<ProductPage>
                         width: 120,
                         height: 120,
                         decoration: BoxDecoration(
-                          color: primaryColor.withOpacity(0.1),
+                          color: primaryColor.withOpacity(isDark ? 0.1 : 0.15),
                           borderRadius: BorderRadius.circular(20),
+                          border: isDark ? null : Border.all(
+                            color: primaryColor.withOpacity(0.3),
+                            width: 2,
+                          ),
                         ),
                         child: Image.asset(
                           imgPath,
@@ -206,6 +214,13 @@ class _ProductPageState extends State<ProductPage>
                     decoration: BoxDecoration(
                       color: primaryColor,
                       borderRadius: BorderRadius.circular(20),
+                      boxShadow: isDark ? null : [
+                        BoxShadow(
+                          color: primaryColor.withOpacity(0.3),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
                     ),
                     child: Text(
                       type,
