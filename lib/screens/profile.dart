@@ -51,6 +51,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     _loadStatistics();
   }
 
+  // Add this method to refresh statistics when needed
+  Future<void> _refreshStatistics() async {
+    await _loadStatistics();
+  }
+
   @override
   void dispose() {
     _animationController.dispose();
@@ -93,16 +98,30 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
             .where('uid', isEqualTo: user.uid)
             .get();
         
-        // Count expiring warranties (within 30 days)
+        // Count expiring warranties (within 30 days or already expired)
         final now = DateTime.now();
-        final thirtyDaysFromNow = now.add(const Duration(days: 30));
         
         int expiringCount = 0;
         for (var doc in appliancesSnapshot.docs) {
           final data = doc.data();
           if (data['warrantyPeriod'] != null) {
-            final warrantyDate = (data['warrantyPeriod'] as Timestamp).toDate();
-            if (warrantyDate.isAfter(now) && warrantyDate.isBefore(thirtyDaysFromNow)) {
+            DateTime warrantyDate;
+            
+            // Handle different data types for warrantyPeriod
+            if (data['warrantyPeriod'] is Timestamp) {
+              warrantyDate = (data['warrantyPeriod'] as Timestamp).toDate();
+            } else if (data['warrantyPeriod'] is String) {
+              warrantyDate = DateTime.parse(data['warrantyPeriod']);
+            } else {
+              continue; // Skip if we can't parse the date
+            }
+            
+            // Count warranties that are expiring within 30 days (including today)
+            // or already expired (for comprehensive tracking)
+            final daysUntilExpiry = warrantyDate.difference(now).inDays;
+            
+            // Include: expired warranties OR warranties expiring within 30 days
+            if (daysUntilExpiry <= 30) {
               expiringCount++;
             }
           }
@@ -115,6 +134,11 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
       }
     } catch (e) {
       print('Error loading statistics: $e');
+      // Set default values in case of error
+      setState(() {
+        _totalAppliances = 0;
+        _expiringWarranties = 0;
+      });
     }
   }
 
@@ -1366,8 +1390,13 @@ By using Home Care App, you acknowledge that you have read and understood this P
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: CustomScrollView(
-        slivers: [
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await _loadUserData();
+          await _refreshStatistics();
+        },
+        child: CustomScrollView(
+          slivers: [
           // Custom App Bar with Hero Animation
           SliverAppBar(
             expandedHeight: 280,
@@ -1665,6 +1694,7 @@ By using Home Care App, you acknowledge that you have read and understood this P
             ),
           ),
         ],
+        ),
       ),
     );
   }
