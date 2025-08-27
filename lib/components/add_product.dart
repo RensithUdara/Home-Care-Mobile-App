@@ -47,94 +47,396 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-        top: 20,
-        left: 20,
-        right: 20,
-      ),
-      child: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+  Widget _buildStyledTextField({
+    required TextEditingController controller,
+    required String label,
+    required IconData icon,
+    required String hint,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.8),
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          keyboardType: keyboardType,
+          onChanged: (_) => _clearError(),
+          decoration: InputDecoration(
+            hintText: hint,
+            prefixIcon: Icon(icon, color: Colors.grey.shade600),
+            filled: true,
+            fillColor: Theme.of(context).colorScheme.surface,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDateSelector({
+    required String title,
+    required IconData icon,
+    required DateTime? selectedDate,
+    required VoidCallback onTap,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.8),
+          ),
+        ),
+        const SizedBox(height: 8),
+        InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            decoration: BoxDecoration(
+              color: Theme.of(context).colorScheme.surface,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(color: Colors.grey.shade300),
+            ),
+            child: Row(
               children: [
-                const Text(
-                  "Add Product",
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                Icon(icon, color: Colors.grey.shade600),
+                const SizedBox(width: 12),
+                Text(
+                  selectedDate == null
+                      ? 'Select $title'
+                      : DateFormat('MMM dd, yyyy').format(selectedDate),
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: selectedDate == null 
+                        ? Colors.grey.shade600
+                        : Theme.of(context).colorScheme.inversePrimary,
+                  ),
                 ),
-                const SizedBox(
-                  width: 10,
-                ),
-                Container(
-                    decoration: const BoxDecoration(
-                        color: Colors.green, shape: BoxShape.circle),
-                    child: const Icon(
-                      Icons.add,
-                      color: Colors.white,
-                    ))
+                const Spacer(),
+                Icon(Icons.calendar_today, color: Colors.grey.shade400, size: 20),
               ],
             ),
-            const SizedBox(
-              height: 30,
-            ),
-            DropdownButton<Category>(
-              focusColor: Theme.of(context).colorScheme.tertiary,
-              padding: const EdgeInsets.all(5),
-              hint: const Text(
-                'Select Category',
-                style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom + 20,
+          top: 20,
+          left: 24,
+          right: 24,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Drag Handle
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
               ),
-              value: _selectedCategory,
-              onChanged: (Category? newValue) {
-                setState(() {
-                  _selectedCategory = newValue!;
-                });
-              },
-              items: Category.values.map((Category category) {
-                return DropdownMenuItem<Category>(
-                  value: category,
-                  child: Text(category.toString().split('.').last),
-                );
-              }).toList(),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextInputField(
-              icon: Icons.abc,
-              controller: _nameController,
-              labelText: 'Product Name',
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextInputField(
-              icon: Icons.location_city,
-              controller: _locationController,
-              labelText: 'Location ',
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            TextInputField(
-              icon: Icons.call,
-              controller: _contactNumberController,
-              labelText: 'Service Center Contact Number',
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            ListTile(
-              title: Text(_selectedPurchaseDate == null
-                  ? 'Select Purchase Date'
-                  : DateFormat('yyyy-MM-dd').format(_selectedPurchaseDate!)),
-              trailing: const Icon(Icons.calendar_today),
-              onTap: () async {
-                DateTime? pickedDate = await showDatePicker(
+              const SizedBox(height: 24),
+              
+              // Header Section
+              Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.blue.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      Icons.add_box,
+                      color: Colors.blue.shade700,
+                      size: 24,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Add New Appliance",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold, 
+                          fontSize: 22,
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
+                      ),
+                      Text(
+                        "Fill in the details below",
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 32),
+
+              // Category Selection
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Product Category",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    DropdownButtonFormField<Category>(
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Theme.of(context).colorScheme.surface,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey.shade300),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.blue.shade600, width: 2),
+                        ),
+                        prefixIcon: Icon(Icons.category_outlined, color: Colors.grey.shade600),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                      ),
+                      hint: Text(
+                        'Select appliance type',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                      value: _selectedCategory,
+                      onChanged: (Category? newValue) {
+                        _clearError();
+                        setState(() {
+                          _selectedCategory = newValue!;
+                        });
+                      },
+                      items: Category.values.map((Category category) {
+                        return DropdownMenuItem<Category>(
+                          value: category,
+                          child: Text(
+                            category.toString().split('.').last.replaceAllMapped(
+                              RegExp(r'([A-Z])'), 
+                              (match) => ' ${match.group(0)}',
+                            ).trim(),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Product Details Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Product Details",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStyledTextField(
+                      controller: _nameController,
+                      label: 'Product Name',
+                      icon: Icons.devices,
+                      hint: 'e.g., Samsung Smart TV',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStyledTextField(
+                      controller: _locationController,
+                      label: 'Location',
+                      icon: Icons.location_on_outlined,
+                      hint: 'e.g., Living Room',
+                    ),
+                    const SizedBox(height: 16),
+                    _buildStyledTextField(
+                      controller: _contactNumberController,
+                      label: 'Service Contact',
+                      icon: Icons.phone_outlined,
+                      hint: 'Support phone number',
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Date Selection Section
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: Theme.of(context).colorScheme.outline.withOpacity(0.2),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Important Dates",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Theme.of(context).colorScheme.inversePrimary,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    
+                    // Purchase Date
+                    _buildDateSelector(
+                      title: 'Purchase Date',
+                      icon: Icons.shopping_cart_outlined,
+                      selectedDate: _selectedPurchaseDate,
+                      onTap: () async {
+                        _clearError();
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedPurchaseDate ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime.now(),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData.light().copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: Colors.blue.shade600,
+                                  onPrimary: Colors.white,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedPurchaseDate = DateTime(
+                              pickedDate.year, 
+                              pickedDate.month, 
+                              pickedDate.day
+                            );
+                          });
+                        }
+                      },
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Warranty Period
+                    _buildDateSelector(
+                      title: 'Warranty End Date',
+                      icon: Icons.shield_outlined,
+                      selectedDate: _selectedWarrantyPeriod,
+                      onTap: () async {
+                        _clearError();
+                        DateTime? pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: _selectedWarrantyPeriod ?? DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                          builder: (BuildContext context, Widget? child) {
+                            return Theme(
+                              data: ThemeData.light().copyWith(
+                                colorScheme: ColorScheme.light(
+                                  primary: Colors.green.shade600,
+                                  onPrimary: Colors.white,
+                                ),
+                              ),
+                              child: child!,
+                            );
+                          },
+                        );
+                        if (pickedDate != null) {
+                          setState(() {
+                            _selectedWarrantyPeriod = DateTime(
+                              pickedDate.year, 
+                              pickedDate.month, 
+                              pickedDate.day
+                            );
+                          });
+                        }
+                      },
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 20),
                   builder: (BuildContext context, Widget? child) {
                     return Theme(
                       data: ThemeData.light().copyWith(
