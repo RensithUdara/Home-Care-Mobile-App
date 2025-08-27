@@ -95,64 +95,159 @@ class _ProductPageState extends State<ProductPage>
     bool isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
 
     return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
+      backgroundColor: isDark ? const Color(0xFF0A0A0B) : const Color(0xFFF8FAFC),
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: isDark ? Colors.transparent : theme.scaffoldBackgroundColor.withOpacity(0.95),
+        backgroundColor: isDark 
+          ? Colors.black.withOpacity(0.7) 
+          : Colors.white.withOpacity(0.95),
         surfaceTintColor: Colors.transparent,
-        foregroundColor: theme.colorScheme.onSurface,
-        leading: _buildIconButton(Icons.arrow_back_ios_new, () {
-          HapticFeedback.lightImpact();
-          Navigator.pop(context);
-        }, theme, primaryColor),
+        systemOverlayStyle: isDark 
+          ? SystemUiOverlayStyle.light 
+          : SystemUiOverlayStyle.dark,
+        leading: Container(
+          margin: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: isDark 
+              ? Colors.white.withOpacity(0.1) 
+              : Colors.black.withOpacity(0.05),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark 
+                ? Colors.white.withOpacity(0.15) 
+                : Colors.black.withOpacity(0.1),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: isDark 
+                  ? Colors.black.withOpacity(0.3) 
+                  : Colors.black.withOpacity(0.08),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back_ios_new,
+              color: isDark ? Colors.white : Colors.black87,
+              size: 20,
+            ),
+          ),
+        ),
         actions: [
-          _buildIconButton(Icons.edit_outlined, () {
-            HapticFeedback.lightImpact();
-            _showEditProductBottomSheet(context);
-          }, theme, primaryColor),
-          _buildIconButton(Icons.delete_outline, () {
-            HapticFeedback.mediumImpact();
-            _showDeleteConfirmation();
-          }, theme, Colors.red),
-          const SizedBox(width: 8),
+          Container(
+            margin: const EdgeInsets.only(right: 8),
+            decoration: BoxDecoration(
+              color: isDark 
+                ? Colors.white.withOpacity(0.1) 
+                : Colors.black.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: isDark 
+                  ? Colors.white.withOpacity(0.15) 
+                  : Colors.black.withOpacity(0.1),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark 
+                    ? Colors.black.withOpacity(0.3) 
+                    : Colors.black.withOpacity(0.08),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () {
+                HapticFeedback.lightImpact();
+                _showEditProductBottomSheet(context);
+              },
+              icon: Icon(
+                Icons.edit_outlined,
+                color: isDark ? Colors.white : Colors.black87,
+                size: 20,
+              ),
+            ),
+          ),
+          Container(
+            margin: const EdgeInsets.only(right: 16),
+            decoration: BoxDecoration(
+              color: isDark 
+                ? Colors.red.withOpacity(0.15) 
+                : Colors.red.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: Colors.red.withOpacity(0.3),
+                width: 1,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: isDark 
+                    ? Colors.black.withOpacity(0.3) 
+                    : Colors.red.withOpacity(0.1),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: IconButton(
+              onPressed: () {
+                HapticFeedback.mediumImpact();
+                _showDeleteConfirmation();
+              },
+              icon: const Icon(
+                Icons.delete_outline,
+                color: Colors.red,
+                size: 20,
+              ),
+            ),
+          ),
         ],
       ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Compact Hero Section
+          // Modern Hero Section with better theme support
           SliverToBoxAdapter(
             child: Container(
-              height: 280,
-              margin: const EdgeInsets.all(20),
+              height: 320,
+              margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: isDark
-                      ? [
-                          primaryColor.withOpacity(0.3),
-                          primaryColor.withOpacity(0.1),
-                          theme.colorScheme.surface,
-                        ]
-                      : [
-                          primaryColor.withOpacity(0.15),
-                          primaryColor.withOpacity(0.08),
-                          theme.colorScheme.surface,
-                        ],
-                ),
-                borderRadius: BorderRadius.circular(24),
-                border: isDark ? null : Border.all(
-                  color: primaryColor.withOpacity(0.3),
-                  width: 1.5,
+                color: isDark 
+                  ? const Color(0xFF1A1A1B) 
+                  : Colors.white,
+                borderRadius: BorderRadius.circular(28),
+                border: Border.all(
+                  color: isDark 
+                    ? primaryColor.withOpacity(0.3) 
+                    : primaryColor.withOpacity(0.15),
+                  width: isDark ? 1 : 1.5,
                 ),
                 boxShadow: [
                   BoxShadow(
                     color: isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : primaryColor.withOpacity(0.2),
-                    blurRadius: isDark ? 20 : 15,
-                    offset: const Offset(0, 8),
+                        ? Colors.black.withOpacity(0.4)
+                        : primaryColor.withOpacity(0.12),
+                    blurRadius: isDark ? 25 : 20,
+                    offset: const Offset(0, 10),
+                    spreadRadius: isDark ? 0 : 2,
+                  ),
+                  if (!isDark)
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                ],
+              ),
                   ),
                 ],
               ),
