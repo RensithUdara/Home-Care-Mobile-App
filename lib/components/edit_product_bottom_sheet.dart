@@ -24,6 +24,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   DateTime? _selectedPurchaseDate;
   DateTime? _selectedWarrantyPeriod;
   Category? _selectedCategory;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -45,6 +46,20 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     _locationController.dispose();
     _contactNumberController.dispose();
     super.dispose();
+  }
+
+  void _clearError() {
+    if (_errorMessage.isNotEmpty) {
+      setState(() {
+        _errorMessage = '';
+      });
+    }
+  }
+
+  void _showError(String message) {
+    setState(() {
+      _errorMessage = message;
+    });
   }
 
   @override
@@ -196,35 +211,75 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                 }
               },
             ),
+            
+            // Error Message Display
+            if (_errorMessage.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _errorMessage,
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            
             GestureDetector(
               onTap: () async {
+                _clearError();
+                
                 if (_nameController.text.isEmpty ||
                     _locationController.text.isEmpty ||
                     _contactNumberController.text.isEmpty ||
                     _selectedPurchaseDate == null ||
                     _selectedWarrantyPeriod == null ||
                     _selectedCategory == null) {
-                  showErrorDialog(context);
+                  _showError('Please complete all required fields');
                   return;
                 }
 
-                // Create updated product object
-                Products updatedProduct = Products(
-                  id: widget.product.id, // Use the existing ID
-                  uid: widget.product.uid, // Use the existing UID
-                  name: _nameController.text,
-                  location: _locationController.text,
-                  purchasedDate: _selectedPurchaseDate!,
-                  warrantyPeriod: _selectedWarrantyPeriod!,
-                  contactNumber: int.parse(_contactNumberController.text),
-                  type: _selectedCategory!,
-                );
+                try {
+                  // Create updated product object
+                  Products updatedProduct = Products(
+                    id: widget.product.id, // Use the existing ID
+                    uid: widget.product.uid, // Use the existing UID
+                    name: _nameController.text,
+                    location: _locationController.text,
+                    purchasedDate: _selectedPurchaseDate!,
+                    warrantyPeriod: _selectedWarrantyPeriod!,
+                    contactNumber: int.parse(_contactNumberController.text),
+                    type: _selectedCategory!,
+                  );
 
-                // Call the FirestoreService to update the product
-                await FirestoreService.editProduct(updatedProduct);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                widget.onProductEdited();
+                  // Call the FirestoreService to update the product
+                  await FirestoreService.editProduct(updatedProduct);
+                  Navigator.of(context).pop();
+                  Navigator.of(context).pop();
+                  widget.onProductEdited();
+                } catch (e) {
+                  _showError('Failed to update product: ${e.toString()}');
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(15),
@@ -248,33 +303,6 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           ],
         ),
       ),
-    );
-  }
-
-  Future<dynamic> showErrorDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: const Text(
-            'Please complete all required fields',
-            style: TextStyle(fontSize: 18),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'OK',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.inversePrimary),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }
