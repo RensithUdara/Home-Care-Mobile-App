@@ -15,6 +15,24 @@ class AddProductBottomSheet extends StatefulWidget {
 
   @override
   AddProductBottomSheetState createState() => AddProductBottomSheetState();
+
+  static void show(BuildContext context, {required Function onProductAdded, required String uid}) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => AddProductBottomSheet(
+          onProductAdded: onProductAdded,
+          uid: uid,
+        ),
+      ),
+    );
+  }
 }
 
 class AddProductBottomSheetState extends State<AddProductBottomSheet> {
