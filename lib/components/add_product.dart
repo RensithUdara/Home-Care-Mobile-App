@@ -94,40 +94,40 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
         children: [
           // Compact Header
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Column(
               children: [
                 // Drag Handle
                 Container(
-                  width: 40,
-                  height: 4,
+                  width: 32,
+                  height: 3,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 
                 // Compact Header
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.blue.shade600,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.add_box_rounded,
                         color: Colors.white,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     const Text(
                       'Add New Product',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -141,30 +141,30 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
           // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Category Selection
-                  _buildCompactSection('Category', _buildCategoryDropdown()),
+                  _buildUltraCompactSection('Category', _buildCategoryDropdown()),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Product Information
-                  _buildCompactSection('Product Details', Column(
+                  _buildUltraCompactSection('Product Details', Column(
                     children: [
                       _buildCompactTextField(
                         controller: _nameController,
                         label: 'Product Name',
                         icon: Icons.inventory_2_rounded,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactTextField(
                         controller: _locationController,
                         label: 'Location',
                         icon: Icons.location_on_rounded,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactTextField(
                         controller: _contactNumberController,
                         label: 'Service Contact',
@@ -174,10 +174,10 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                     ],
                   )),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Dates
-                  _buildCompactSection('Important Dates', Column(
+                  _buildUltraCompactSection('Dates', Column(
                     children: [
                       _buildCompactDateField(
                         label: 'Purchase Date',
@@ -185,7 +185,7 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                         selectedDate: _selectedPurchaseDate,
                         onTap: () => _selectDate(context, true),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactDateField(
                         label: 'Warranty End Date',
                         icon: Icons.verified_user_rounded,
@@ -195,27 +195,27 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                     ],
                   )),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Error Display
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.red.shade200),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 20),
-                          const SizedBox(width: 8),
+                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 16),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
                                 color: Colors.red.shade600,
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -223,14 +223,14 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 10),
                   ],
                   
                   // Add Button
                   _buildActionButton(),
                   
                   // Bottom spacing
-                  SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 4),
                 ],
               ),
             ),
@@ -240,19 +240,19 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     );
   }
 
-  Widget _buildCompactSection(String title, Widget child) {
+  Widget _buildUltraCompactSection(String title, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           title,
           style: TextStyle(
-            fontSize: 16,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
-            color: Colors.grey.shade800,
+            color: Colors.grey.shade700,
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 6),
         child,
       ],
     );
@@ -265,23 +265,23 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
-        style: const TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: 13),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.blue.shade600, size: 20),
+          prefixIcon: Icon(icon, color: Colors.blue.shade600, size: 18),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13),
         ),
       ),
     );
@@ -294,31 +294,31 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     required VoidCallback onTap,
   }) {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
-              Icon(icon, color: Colors.blue.shade600, size: 20),
-              const SizedBox(width: 12),
+              Icon(icon, color: Colors.blue.shade600, size: 18),
+              const SizedBox(width: 10),
               Text(
                 selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
                   fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
                 ),
               ),
               const Spacer(),
-              Icon(Icons.calendar_today, color: Colors.blue.shade600, size: 16),
+              Icon(Icons.calendar_today, color: Colors.blue.shade600, size: 14),
             ],
           ),
         ),
@@ -328,23 +328,23 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
 
   Widget _buildCategoryDropdown() {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category_rounded, color: Colors.blue.shade600, size: 20),
-              const SizedBox(width: 8),
+              Icon(Icons.category_rounded, color: Colors.blue.shade600, size: 18),
+              const SizedBox(width: 6),
               Text(
                 'Select category',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -358,11 +358,11 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Icon(_getCategoryIcon(category), color: Colors.blue.shade600, size: 18),
-                  const SizedBox(width: 8),
+                  Icon(_getCategoryIcon(category), color: Colors.blue.shade600, size: 16),
+                  const SizedBox(width: 6),
                   Text(
                     _getCategoryName(category),
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -376,21 +376,21 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
   Widget _buildActionButton() {
     return Container(
       width: double.infinity,
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.blue.shade600,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(10),
           onTap: _isLoading ? null : _addProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 18,
+                    height: 18,
                     child: CircularProgressIndicator(
                       color: Colors.white,
                       strokeWidth: 2,
@@ -399,13 +399,13 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_rounded, color: Colors.white, size: 20),
-                      SizedBox(width: 6),
+                      Icon(Icons.add_rounded, color: Colors.white, size: 18),
+                      SizedBox(width: 4),
                       Text(
                         'Add Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
