@@ -910,76 +910,186 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
   }
 
   void _showTermsOfService() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.8,
-          maxChildSize: 0.95,
-          minChildSize: 0.5,
-          builder: (context, scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: AppBar(
+            title: const Text('Terms of Service'),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Terms of Service',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: const Text(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.blue.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.description_outlined,
+                              color: Colors.blue.shade700,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Terms of Service',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.inversePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Last updated: August 2024',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
                         '''By using Home Care App, you agree to these terms and conditions.
 
 1. ACCEPTANCE OF TERMS
 By accessing and using this app, you accept and agree to be bound by the terms and provision of this agreement.
 
 2. USE LICENSE
-Permission is granted to temporarily use Home Care App for personal, non-commercial transitory viewing only.
+Permission is granted to temporarily use Home Care App for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title, and under this license you may not:
+• Modify or copy the materials
+• Use the materials for any commercial purpose or for any public display
+• Attempt to reverse engineer any software contained on the app
+• Remove any copyright or other proprietary notations from the materials
 
 3. DISCLAIMER
 The materials on Home Care App are provided on an 'as is' basis. Home Care App makes no warranties, expressed or implied, and hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.
 
+Further, Home Care App does not warrant or make any representations concerning the accuracy, likely results, or reliability of the use of the materials on its app or otherwise relating to such materials or on any sites linked to this app.
+
 4. LIMITATIONS
-In no event shall Home Care App or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Home Care App, even if Home Care App or an authorized representative has been notified orally or in writing of the possibility of such damage.
+In no event shall Home Care App or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on Home Care App, even if Home Care App or an authorized representative has been notified orally or in writing of the possibility of such damage. Because some jurisdictions do not allow limitations on implied warranties, or limitations of liability for consequential or incidental damages, these limitations may not apply to you.
 
 5. ACCURACY OF MATERIALS
-The materials appearing on Home Care App could include technical, typographical, or photographic errors. Home Care App does not warrant that any of the materials on its app are accurate, complete, or current.
+The materials appearing on Home Care App could include technical, typographical, or photographic errors. Home Care App does not warrant that any of the materials on its app are accurate, complete, or current. Home Care App may make changes to the materials contained on its app at any time without notice. However, Home Care App does not make any commitment to update the materials.
 
-6. MODIFICATIONS
+6. LINKS
+Home Care App has not reviewed all of the sites linked to our app and is not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by Home Care App of the site. Use of any such linked app is at the user's own risk.
+
+7. MODIFICATIONS
 Home Care App may revise these terms of service for its app at any time without notice. By using this app, you are agreeing to be bound by the then current version of these terms of service.
 
-Last updated: August 2024''',
-                        style: TextStyle(fontSize: 14, height: 1.5),
+8. GOVERNING LAW
+These terms and conditions are governed by and construed in accordance with the laws of the jurisdiction in which Home Care App operates and you irrevocably submit to the exclusive jurisdiction of the courts in that state or location.
+
+9. USER ACCOUNTS
+When you create an account with us, you must provide information that is accurate, complete, and current at all times. You are responsible for safeguarding the password and for all activities that occur under your account.
+
+10. PROHIBITED USES
+You may not use our service:
+• For any unlawful purpose or to solicit others to perform or participate in any unlawful acts
+• To violate any international, federal, provincial, or state regulations, rules, laws, or local ordinances
+• To infringe upon or violate our intellectual property rights or the intellectual property rights of others
+• To harass, abuse, insult, harm, defame, slander, disparage, intimidate, or discriminate
+• To submit false or misleading information
+• To upload or transmit viruses or any other type of malicious code
+
+By continuing to use Home Care App, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.''',
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.6,
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.blue.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.blue.withOpacity(0.3),
+                      width: 1,
                     ),
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        color: Colors.blue.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'If you have any questions about these Terms, please contact us at support@homecare.com',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.blue.shade800,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 
