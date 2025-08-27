@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/mate      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.35,
+        minChildSize: 0.25,
+        maxChildSize: 0.4,
+        builder: (context, scrollController) => EditProductBottomSheet(dart';
 import 'package:intl/intl.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
@@ -29,7 +33,7 @@ class EditProductBottomSheet extends StatefulWidget {
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.6,
         minChildSize: 0.4,
-        maxChildSize: 0.85,
+        maxChildSize: 0.6,
         builder: (context, scrollController) => EditProductBottomSheet(
           product: product,
           onProductEdited: onProductEdited,
@@ -113,15 +117,15 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                   const Color(0xFFFF8E53).withOpacity(0.05),
                 ],
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
               child: Column(
                 children: [
-                  // Elegant Drag Handle
+                  // Compact Drag Handle
                   Container(
-                    width: 36,
+                    width: 32,
                     height: 3,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -133,13 +137,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   
-                  // Beautiful Header with Icon and Title
+                  // Compact Header with Icon and Title
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
@@ -149,43 +153,30 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                               const Color(0xFFFF8E53),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFF6B6B).withOpacity(0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
+                              color: const Color(0xFFFF6B6B).withOpacity(0.2),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: const Icon(
                           Icons.edit_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Edit Product',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A1A1A),
-                              ),
-                            ),
-                            Text(
-                              'Update your appliance information',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Edit Product',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A1A1A),
+                          ),
                         ),
                       ),
                     ],
@@ -195,47 +186,37 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
             ),
           ),
           
-          // Modern Scrollable Content with Cards
+          // Ultra Compressed Scrollable Content
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category Selection Card
-                  _buildModernCard(
-                    title: 'Product Category',
-                    icon: Icons.category_rounded,
-                    child: _buildModernCategoryDropdown(),
-                  ),
-                  
-                  const SizedBox(height: 16),
-                  
-                  // Product Information Card
-                  _buildModernCard(
-                    title: 'Product Information',
-                    icon: Icons.info_rounded,
+                  // Combined Category & Product Info Card
+                  _buildUltraCompactCard(
                     child: Column(
                       children: [
-                        _buildModernTextField(
+                        _buildInlineCategoryDropdown(),
+                        const SizedBox(height: 10),
+                        const Divider(height: 1),
+                        const SizedBox(height: 10),
+                        _buildCompactTextField(
                           controller: _nameController,
                           label: 'Product Name',
-                          hint: 'e.g., Samsung Smart TV',
                           icon: Icons.inventory_2_rounded,
                         ),
-                        const SizedBox(height: 12),
-                        _buildModernTextField(
+                        const SizedBox(height: 8),
+                        _buildCompactTextField(
                           controller: _locationController,
                           label: 'Location',
-                          hint: 'e.g., Living Room',
                           icon: Icons.location_on_rounded,
                         ),
-                        const SizedBox(height: 12),
-                        _buildModernTextField(
+                        const SizedBox(height: 8),
+                        _buildCompactTextField(
                           controller: _contactNumberController,
                           label: 'Service Contact',
-                          hint: 'Customer service number',
                           icon: Icons.phone_rounded,
                           keyboardType: TextInputType.phone,
                         ),
@@ -243,25 +224,21 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ),
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   
                   // Dates Card
-                  _buildModernCard(
-                    title: 'Important Dates',
-                    icon: Icons.schedule_rounded,
+                  _buildUltraCompactCard(
                     child: Column(
                       children: [
-                        _buildModernDateField(
+                        _buildCompactDateField(
                           label: 'Purchase Date',
-                          hint: 'When did you buy this?',
                           icon: Icons.shopping_cart_rounded,
                           selectedDate: _selectedPurchaseDate,
                           onTap: () => _selectDate(context, true),
                         ),
-                        const SizedBox(height: 12),
-                        _buildModernDateField(
+                        const SizedBox(height: 8),
+                        _buildCompactDateField(
                           label: 'Warranty End Date',
-                          hint: 'When does warranty expire?',
                           icon: Icons.verified_user_rounded,
                           selectedDate: _selectedWarrantyPeriod,
                           onTap: () => _selectDate(context, false),
@@ -270,46 +247,32 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ),
                   ),
                   
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 12),
                   
-                  // Error Display with improved design
+                  // Error Display
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.red.shade200, width: 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.red.withOpacity(0.08),
-                            blurRadius: 6,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
                       ),
                       child: Row(
                         children: [
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.red.shade100,
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.error_outline_rounded,
-                              color: Colors.red.shade600,
-                              size: 16,
-                            ),
+                          Icon(
+                            Icons.error_outline_rounded,
+                            color: Colors.red.shade600,
+                            size: 16,
                           ),
-                          const SizedBox(width: 10),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
                                 color: Colors.red.shade700,
-                                fontSize: 13,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -317,14 +280,14 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                   ],
                   
-                  // Modern Action Button
-                  _buildModernActionButton(),
+                  // Compact Action Button
+                  _buildCompactActionButton(),
                   
                   // Bottom safe area
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                 ],
               ),
             ),
@@ -334,21 +297,19 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  Widget _buildModernCard({
-    required String title,
-    required IconData icon,
+  Widget _buildUltraCompactCard({
     required Widget child,
   }) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.06),
-            blurRadius: 15,
-            offset: const Offset(0, 3),
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
         ],
         border: Border.all(
@@ -357,54 +318,23 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: const Color(0xFFFF6B6B),
-                    size: 18,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF1A1A1A),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 12),
-            child,
-          ],
-        ),
+        padding: const EdgeInsets.all(12),
+        child: child,
       ),
     );
   }
 
-  Widget _buildModernTextField({
+  Widget _buildCompactTextField({
     required TextEditingController controller,
     required String label,
-    required String hint,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
+      height: 36,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
@@ -412,107 +342,73 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
         style: const TextStyle(
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: FontWeight.w500,
           color: Color(0xFF1A1A1A),
         ),
         decoration: InputDecoration(
           labelText: label,
-          hintText: hint,
-          prefixIcon: Container(
-            margin: const EdgeInsets.all(10),
-            padding: const EdgeInsets.all(6),
-            decoration: BoxDecoration(
-              color: const Color(0xFFFF6B6B).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              color: const Color(0xFFFF6B6B),
-              size: 18,
-            ),
+          prefixIcon: Icon(
+            icon,
+            color: const Color(0xFFFF6B6B),
+            size: 16,
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           labelStyle: TextStyle(
             color: Colors.grey.shade600,
-            fontSize: 13,
+            fontSize: 12,
             fontWeight: FontWeight.w500,
-          ),
-          hintStyle: TextStyle(
-            color: Colors.grey.shade400,
-            fontSize: 13,
           ),
         ),
       ),
     );
   }
 
-  Widget _buildModernDateField({
+  Widget _buildCompactDateField({
     required String label,
-    required String hint,
     required IconData icon,
     required DateTime? selectedDate,
     required VoidCallback onTap,
   }) {
     return Container(
+      height: 36,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(12),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  color: const Color(0xFFFF6B6B),
-                  size: 18,
-                ),
+              Icon(
+                icon,
+                color: const Color(0xFFFF6B6B),
+                size: 16,
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 8),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      label,
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.grey.shade600,
-                      ),
-                    ),
-                    const SizedBox(height: 1),
-                    Text(
-                      selectedDate == null 
-                          ? hint
-                          : DateFormat('EEEE, MMM dd, yyyy').format(selectedDate),
-                      style: TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: selectedDate == null 
-                            ? Colors.grey.shade400
-                            : const Color(0xFF1A1A1A),
-                      ),
-                    ),
-                  ],
+                child: Text(
+                  selectedDate == null 
+                      ? label
+                      : DateFormat('MMM dd, yyyy').format(selectedDate),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                    color: selectedDate == null 
+                        ? Colors.grey.shade600
+                        : const Color(0xFF1A1A1A),
+                  ),
                 ),
               ),
               Icon(
                 Icons.calendar_today_rounded,
                 color: const Color(0xFFFF6B6B),
-                size: 18,
+                size: 14,
               ),
             ],
           ),
@@ -521,53 +417,33 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  Widget _buildModernCategoryDropdown() {
+  Widget _buildInlineCategoryDropdown() {
     return Container(
+      height: 36,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  Icons.category_rounded,
-                  color: const Color(0xFFFF6B6B),
-                  size: 18,
-                ),
+              Icon(
+                Icons.category_rounded,
+                color: const Color(0xFFFF6B6B),
+                size: 16,
               ),
-              const SizedBox(width: 12),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Product Category',
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
-                  const SizedBox(height: 1),
-                  Text(
-                    'Select the appliance type',
-                    style: TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey.shade400,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: 8),
+              Text(
+                'Select Category',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey.shade600,
+                ),
               ),
             ],
           ),
@@ -577,7 +453,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
             _clearError();
           },
           style: const TextStyle(
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w600,
             color: Color(0xFF1A1A1A),
           ),
@@ -586,23 +462,16 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Icon(
-                      _getCategoryIcon(category),
-                      color: const Color(0xFFFF6B6B),
-                      size: 16,
-                    ),
+                  Icon(
+                    _getCategoryIcon(category),
+                    color: const Color(0xFFFF6B6B),
+                    size: 14,
                   ),
-                  const SizedBox(width: 10),
+                  const SizedBox(width: 8),
                   Text(
                     _getCategoryName(category),
                     style: const TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -615,10 +484,10 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  Widget _buildModernActionButton() {
+  Widget _buildCompactActionButton() {
     return Container(
       width: double.infinity,
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -628,51 +497,44 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
             const Color(0xFFFF8E53),
           ],
         ),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF6B6B).withOpacity(0.3),
-            blurRadius: 15,
-            offset: const Offset(0, 6),
+            color: const Color(0xFFFF6B6B).withOpacity(0.25),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           onTap: _isLoading ? null : _updateProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 20,
-                    height: 20,
+                    width: 16,
+                    height: 16,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2.5,
+                      strokeWidth: 2,
                     ),
                   )
-                : Row(
+                : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.all(3),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(
-                          Icons.save_rounded,
-                          color: Colors.white,
-                          size: 18,
-                        ),
+                      Icon(
+                        Icons.save_rounded,
+                        color: Colors.white,
+                        size: 16,
                       ),
-                      const SizedBox(width: 10),
-                      const Text(
+                      SizedBox(width: 6),
+                      Text(
                         'Update Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
