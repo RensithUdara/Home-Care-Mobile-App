@@ -39,72 +39,71 @@ class ProductUtils {
   static Color getColor(String type) {
     switch (type) {
       case 'Television':
-        return Colors.yellow.shade100.withOpacity(0.3);
+        return const Color(0xFFFF6B35); // Vibrant orange instead of light yellow
       case 'Refrigerator':
-        return Colors.greenAccent.shade100.withOpacity(0.3);
+        return const Color(0xFF10B981); // Emerald green
       case 'AirConditioner':
-        return Colors.cyanAccent.shade100.withOpacity(0.3);
+        return const Color(0xFF3B82F6); // Blue
       case 'WashingMachine':
-        return Colors.purpleAccent.shade100.withOpacity(0.3);
+        return const Color(0xFF8B5CF6); // Purple
       case 'Laptop':
-        return Colors.orangeAccent.shade100.withOpacity(0.3);
+        return const Color(0xFFF59E0B); // Amber/Orange
       case 'Speaker':
-        return Colors.redAccent.shade100.withOpacity(0.3);
+        return const Color(0xFFEF4444); // Red
       case 'VacuumCleaner':
-        return Colors.pinkAccent.shade100.withOpacity(0.3);
+        return const Color(0xFFEC4899); // Pink
       case 'Fan':
-        return Colors.yellowAccent.shade100.withOpacity(0.3);
+        return const Color(0xFF84CC16); // Lime green instead of yellow
       default:
-        return Colors.grey.shade100
-            .withOpacity(0.3); // Default color if type is not recognized
+        return const Color(0xFF6B7280); // Gray
     }
   }
 
   // New method for text colors that are visible in both light and dark modes
   static Color getTextColor(String type, bool isDarkMode) {
     if (isDarkMode) {
-      // Light colors for dark mode
+      // Bright colors for dark mode
       switch (type) {
         case 'Television':
-          return Colors.yellow.shade300;
+          return const Color(0xFFFF8A65); // Light orange
         case 'Refrigerator':
-          return Colors.green.shade300;
+          return const Color(0xFF4ADE80); // Light green
         case 'AirConditioner':
-          return Colors.cyan.shade300;
+          return const Color(0xFF60A5FA); // Light blue
         case 'WashingMachine':
-          return Colors.purple.shade300;
+          return const Color(0xFFA78BFA); // Light purple
         case 'Laptop':
-          return Colors.orange.shade300;
+          return const Color(0xFFFBBF24); // Light amber
         case 'Speaker':
-          return Colors.red.shade300;
+          return const Color(0xFFF87171); // Light red
         case 'VacuumCleaner':
-          return Colors.pink.shade300;
+          return const Color(0xFFF472B6); // Light pink
         case 'Fan':
-          return Colors.lime.shade300;
+          return const Color(0xFFA3E635); // Light lime
         default:
-          return Colors.grey.shade300;
+          return const Color(0xFF9CA3AF); // Light gray
       }
     } else {
-      // Dark colors for light mode
+      // Dark colors for light mode - using the same vibrant colors but darker shades
       switch (type) {
         case 'Television':
-          return Colors.yellow.shade800;
+          return const Color(0xFFEA580C); // Dark orange
         case 'Refrigerator':
-          return Colors.green.shade800;
+          return const Color(0xFF059669); // Dark green
         case 'AirConditioner':
-          return Colors.cyan.shade800;
+          return const Color(0xFF2563EB); // Dark blue
         case 'WashingMachine':
-          return Colors.purple.shade800;
+          return const Color(0xFF7C3AED); // Dark purple
         case 'Laptop':
-          return Colors.orange.shade800;
+          return const Color(0xFFD97706); // Dark amber
         case 'Speaker':
-          return Colors.red.shade800;
+          return const Color(0xFFDC2626); // Dark red
         case 'VacuumCleaner':
-          return Colors.pink.shade800;
+          return const Color(0xFFDB2777); // Dark pink
         case 'Fan':
-          return Colors.lime.shade800;
+          return const Color(0xFF65A30D); // Dark lime
         default:
-          return Colors.grey.shade800;
+          return const Color(0xFF4B5563); // Dark gray
       }
     }
   }
