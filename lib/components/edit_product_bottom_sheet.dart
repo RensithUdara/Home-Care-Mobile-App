@@ -199,7 +199,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           Expanded(
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -210,7 +210,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     child: _buildModernCategoryDropdown(),
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   
                   // Product Information Card
                   _buildModernCard(
@@ -224,14 +224,14 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                           hint: 'e.g., Samsung Smart TV',
                           icon: Icons.inventory_2_rounded,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildModernTextField(
                           controller: _locationController,
                           label: 'Location',
                           hint: 'e.g., Living Room',
                           icon: Icons.location_on_rounded,
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildModernTextField(
                           controller: _contactNumberController,
                           label: 'Service Contact',
@@ -243,7 +243,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ),
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   
                   // Dates Card
                   _buildModernCard(
@@ -258,7 +258,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                           selectedDate: _selectedPurchaseDate,
                           onTap: () => _selectDate(context, true),
                         ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: 12),
                         _buildModernDateField(
                           label: 'Warranty End Date',
                           hint: 'When does warranty expire?',
@@ -270,21 +270,21 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ),
                   ),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 16),
                   
                   // Error Display with improved design
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
                       width: double.infinity,
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.red.shade200, width: 1),
                         boxShadow: [
                           BoxShadow(
-                            color: Colors.red.withOpacity(0.1),
-                            blurRadius: 8,
+                            color: Colors.red.withOpacity(0.08),
+                            blurRadius: 6,
                             offset: const Offset(0, 2),
                           ),
                         ],
@@ -292,7 +292,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                       child: Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(6),
                             decoration: BoxDecoration(
                               color: Colors.red.shade100,
                               shape: BoxShape.circle,
@@ -300,16 +300,16 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                             child: Icon(
                               Icons.error_outline_rounded,
                               color: Colors.red.shade600,
-                              size: 20,
+                              size: 16,
                             ),
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
                                 color: Colors.red.shade700,
-                                fontSize: 14,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -317,14 +317,14 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 16),
                   ],
                   
                   // Modern Action Button
                   _buildModernActionButton(),
                   
                   // Bottom safe area
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                 ],
               ),
             ),
@@ -343,12 +343,12 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 20,
-            offset: const Offset(0, 4),
+            color: Colors.black.withOpacity(0.06),
+            blurRadius: 15,
+            offset: const Offset(0, 3),
           ),
         ],
         border: Border.all(
@@ -357,36 +357,36 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     icon,
                     color: const Color(0xFFFF6B6B),
-                    size: 20,
+                    size: 18,
                   ),
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: 10),
                 Text(
                   title,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF1A1A1A),
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 12),
             child,
           ],
         ),
@@ -404,7 +404,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
@@ -412,7 +412,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
         style: const TextStyle(
-          fontSize: 15,
+          fontSize: 14,
           fontWeight: FontWeight.w500,
           color: Color(0xFF1A1A1A),
         ),
@@ -420,28 +420,28 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           labelText: label,
           hintText: hint,
           prefixIcon: Container(
-            margin: const EdgeInsets.all(12),
-            padding: const EdgeInsets.all(8),
+            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(6),
             decoration: BoxDecoration(
               color: const Color(0xFFFF6B6B).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(
               icon,
               color: const Color(0xFFFF6B6B),
-              size: 20,
+              size: 18,
             ),
           ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           labelStyle: TextStyle(
             color: Colors.grey.shade600,
-            fontSize: 14,
+            fontSize: 13,
             fontWeight: FontWeight.w500,
           ),
           hintStyle: TextStyle(
             color: Colors.grey.shade400,
-            fontSize: 14,
+            fontSize: 13,
           ),
         ),
       ),
@@ -458,29 +458,29 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   icon,
                   color: const Color(0xFFFF6B6B),
-                  size: 20,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -488,18 +488,18 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     Text(
                       label,
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w500,
                         color: Colors.grey.shade600,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    const SizedBox(height: 1),
                     Text(
                       selectedDate == null 
                           ? hint
                           : DateFormat('EEEE, MMM dd, yyyy').format(selectedDate),
                       style: TextStyle(
-                        fontSize: 15,
+                        fontSize: 14,
                         fontWeight: FontWeight.w600,
                         color: selectedDate == null 
                             ? Colors.grey.shade400
@@ -512,7 +512,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               Icon(
                 Icons.calendar_today_rounded,
                 color: const Color(0xFFFF6B6B),
-                size: 20,
+                size: 18,
               ),
             ],
           ),
@@ -525,44 +525,44 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(8),
+                padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 child: Icon(
                   Icons.category_rounded,
                   color: const Color(0xFFFF6B6B),
-                  size: 20,
+                  size: 18,
                 ),
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 12),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     'Product Category',
                     style: TextStyle(
-                      fontSize: 14,
+                      fontSize: 13,
                       fontWeight: FontWeight.w500,
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  const SizedBox(height: 2),
+                  const SizedBox(height: 1),
                   Text(
                     'Select the appliance type',
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                       color: Colors.grey.shade400,
                     ),
@@ -577,7 +577,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
             _clearError();
           },
           style: const TextStyle(
-            fontSize: 15,
+            fontSize: 14,
             fontWeight: FontWeight.w600,
             color: Color(0xFF1A1A1A),
           ),
@@ -587,22 +587,22 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               child: Row(
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(6),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: const Color(0xFFFF6B6B).withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(6),
                     ),
                     child: Icon(
                       _getCategoryIcon(category),
                       color: const Color(0xFFFF6B6B),
-                      size: 18,
+                      size: 16,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: 10),
                   Text(
                     _getCategoryName(category),
                     style: const TextStyle(
-                      fontSize: 15,
+                      fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -618,7 +618,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   Widget _buildModernActionButton() {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 48,
       decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -628,51 +628,51 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
             const Color(0xFFFF8E53),
           ],
         ),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFFFF6B6B).withOpacity(0.4),
-            blurRadius: 20,
-            offset: const Offset(0, 8),
+            color: const Color(0xFFFF6B6B).withOpacity(0.3),
+            blurRadius: 15,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: _isLoading ? null : _updateProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 3,
+                      strokeWidth: 2.5,
                     ),
                   )
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(4),
+                        padding: const EdgeInsets.all(3),
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(6),
                         ),
                         child: const Icon(
                           Icons.save_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: 10),
                       const Text(
                         'Update Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 15,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
