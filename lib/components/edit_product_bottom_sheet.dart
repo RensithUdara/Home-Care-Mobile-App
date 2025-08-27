@@ -256,6 +256,25 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
+  Widget _buildUltraCompactSection(String title, Widget child) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Colors.orange.shade700,
+            letterSpacing: 0.3,
+          ),
+        ),
+        const SizedBox(height: 6),
+        child,
+      ],
+    );
+  }
+
   Widget _buildCompactSection(String title, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -281,23 +300,24 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
-        style: const TextStyle(fontSize: 14),
+        style: const TextStyle(fontSize: 13),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.orange.shade600, size: 20),
+          prefixIcon: Icon(icon, color: Colors.orange.shade600, size: 16),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+        ),
         ),
       ),
     );
