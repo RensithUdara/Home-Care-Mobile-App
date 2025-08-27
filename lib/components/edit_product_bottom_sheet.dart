@@ -363,23 +363,23 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
 
   Widget _buildCategoryDropdown() {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category_rounded, color: Colors.orange.shade600, size: 20),
-              const SizedBox(width: 8),
+              Icon(Icons.category_rounded, color: Colors.orange.shade600, size: 16),
+              const SizedBox(width: 6),
               Text(
                 'Select category',
-                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
+                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -393,11 +393,11 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Icon(_getCategoryIcon(category), color: Colors.orange.shade600, size: 18),
-                  const SizedBox(width: 8),
+                  Icon(_getCategoryIcon(category), color: Colors.orange.shade600, size: 16),
+                  const SizedBox(width: 6),
                   Text(
                     _getCategoryName(category),
-                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -411,10 +411,10 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   Widget _buildActionButton() {
     return Container(
       width: double.infinity,
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.orange.shade600,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
       ),
       child: Material(
         color: Colors.transparent,
@@ -434,13 +434,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.save_rounded, color: Colors.white, size: 20),
-                      SizedBox(width: 6),
+                      Icon(Icons.save_rounded, color: Colors.white, size: 16),
+                      SizedBox(width: 4),
                       Text(
                         'Update Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 16,
+                          fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
