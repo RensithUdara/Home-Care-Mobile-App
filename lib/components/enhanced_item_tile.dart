@@ -118,7 +118,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatusBadge(),
+                        Flexible(
+                          child: _buildStatusBadge(),
+                        ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -263,10 +266,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
   Widget _buildStatusBadge() {
     if (_isWarrantyExpired) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.red.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.red.withOpacity(0.3),
             width: 1,
@@ -277,14 +280,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.warning_outlined,
-              size: 12,
+              size: 10,
               color: Colors.red.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Expired',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.red.shade700,
               ),
@@ -294,10 +297,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
       );
     } else if (_isWarrantyExpiring) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.orange.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.orange.withOpacity(0.3),
             width: 1,
@@ -308,14 +311,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.schedule_outlined,
-              size: 12,
+              size: 10,
               color: Colors.orange.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Expiring',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.orange.shade700,
               ),
@@ -325,10 +328,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
       );
     } else {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.green.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.green.withOpacity(0.3),
             width: 1,
@@ -339,14 +342,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.check_circle_outline,
-              size: 12,
+              size: 10,
               color: Colors.green.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Active',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.green.shade700,
               ),
