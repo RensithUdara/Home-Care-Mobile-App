@@ -27,8 +27,8 @@ class EditProductBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       useSafeArea: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
+        initialChildSize: 0.8,
+        minChildSize: 0.6,
         maxChildSize: 0.95,
         builder: (context, scrollController) => EditProductBottomSheet(
           product: product,
@@ -102,66 +102,45 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
       ),
       child: Column(
         children: [
-          // Drag Handle and Header
+          // Compact Header
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
             child: Column(
               children: [
                 // Drag Handle
                 Container(
-                  width: 48,
-                  height: 5,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 
-                // Header
+                // Compact Header
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.orange.shade500, Colors.orange.shade600],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.orange.shade200,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: Colors.orange.shade600,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.edit_rounded,
                         color: Colors.white,
-                        size: 28,
+                        size: 20,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Edit Product',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Text(
-                          'Update your appliance details',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Edit Product',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
