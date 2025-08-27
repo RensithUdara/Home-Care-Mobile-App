@@ -73,164 +73,242 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Colors.blue.shade50,
-            Colors.white,
-          ],
-        ),
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 30,
+            offset: const Offset(0, -10),
           ),
         ],
       ),
       child: Column(
         children: [
-          // Compact Header
+          // Modern Header with glassmorphism effect
           Container(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-            child: Column(
-              children: [
-                // Drag Handle
-                Container(
-                  width: 32,
-                  height: 3,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(2),
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  const Color(0xFF667EEA).withOpacity(0.1),
+                  const Color(0xFF764BA2).withOpacity(0.05),
+                ],
+              ),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+            ),
+            child: Container(
+              padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+              child: Column(
+                children: [
+                  // Elegant Drag Handle
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          const Color(0xFF667EEA),
+                          const Color(0xFF764BA2),
+                        ],
+                      ),
+                      borderRadius: BorderRadius.circular(2),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 12),
-                
-                // Compact Header
-                Row(
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade600,
-                        borderRadius: BorderRadius.circular(8),
+                  const SizedBox(height: 20),
+                  
+                  // Beautiful Header with Icon and Title
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              const Color(0xFF667EEA),
+                              const Color(0xFF764BA2),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.circular(16),
+                          boxShadow: [
+                            BoxShadow(
+                              color: const Color(0xFF667EEA).withOpacity(0.3),
+                              blurRadius: 12,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.add_business_rounded,
+                          color: Colors.white,
+                          size: 24,
+                        ),
                       ),
-                      child: const Icon(
-                        Icons.add_box_rounded,
-                        color: Colors.white,
-                        size: 18,
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Add New Product',
+                              style: TextStyle(
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFF1A1A1A),
+                              ),
+                            ),
+                            Text(
+                              'Register your appliance for warranty tracking',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    const Text(
-                      'Add New Product',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
           
-          // Scrollable Content
+          // Modern Scrollable Content with Cards
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category Selection
-                  _buildUltraCompactSection('Category', _buildCategoryDropdown()),
+                  // Category Selection Card
+                  _buildModernCard(
+                    title: 'Product Category',
+                    icon: Icons.category_rounded,
+                    child: _buildModernCategoryDropdown(),
+                  ),
                   
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
                   
-                  // Product Information
-                  _buildUltraCompactSection('Product Details', Column(
-                    children: [
-                      _buildCompactTextField(
-                        controller: _nameController,
-                        label: 'Product Name',
-                        icon: Icons.inventory_2_rounded,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildCompactTextField(
-                        controller: _locationController,
-                        label: 'Location',
-                        icon: Icons.location_on_rounded,
-                      ),
-                      const SizedBox(height: 8),
-                      _buildCompactTextField(
-                        controller: _contactNumberController,
-                        label: 'Service Contact',
-                        icon: Icons.phone_rounded,
-                        keyboardType: TextInputType.phone,
-                      ),
-                    ],
-                  )),
+                  // Product Information Card
+                  _buildModernCard(
+                    title: 'Product Information',
+                    icon: Icons.info_rounded,
+                    child: Column(
+                      children: [
+                        _buildModernTextField(
+                          controller: _nameController,
+                          label: 'Product Name',
+                          hint: 'e.g., Samsung Smart TV',
+                          icon: Icons.inventory_2_rounded,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          controller: _locationController,
+                          label: 'Location',
+                          hint: 'e.g., Living Room',
+                          icon: Icons.location_on_rounded,
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernTextField(
+                          controller: _contactNumberController,
+                          label: 'Service Contact',
+                          hint: 'Customer service number',
+                          icon: Icons.phone_rounded,
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ],
+                    ),
+                  ),
                   
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
                   
-                  // Dates
-                  _buildUltraCompactSection('Dates', Column(
-                    children: [
-                      _buildCompactDateField(
-                        label: 'Purchase Date',
-                        icon: Icons.shopping_bag_rounded,
-                        selectedDate: _selectedPurchaseDate,
-                        onTap: () => _selectDate(context, true),
-                      ),
-                      const SizedBox(height: 8),
-                      _buildCompactDateField(
-                        label: 'Warranty End Date',
-                        icon: Icons.verified_user_rounded,
-                        selectedDate: _selectedWarrantyPeriod,
-                        onTap: () => _selectDate(context, false),
-                      ),
-                    ],
-                  )),
+                  // Dates Card
+                  _buildModernCard(
+                    title: 'Important Dates',
+                    icon: Icons.schedule_rounded,
+                    child: Column(
+                      children: [
+                        _buildModernDateField(
+                          label: 'Purchase Date',
+                          hint: 'When did you buy this?',
+                          icon: Icons.shopping_cart_rounded,
+                          selectedDate: _selectedPurchaseDate,
+                          onTap: () => _selectDate(context, true),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildModernDateField(
+                          label: 'Warranty End Date',
+                          hint: 'When does warranty expire?',
+                          icon: Icons.verified_user_rounded,
+                          selectedDate: _selectedWarrantyPeriod,
+                          onTap: () => _selectDate(context, false),
+                        ),
+                      ],
+                    ),
+                  ),
                   
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 20),
                   
-                  // Error Display
+                  // Error Display with improved design
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.red.shade200),
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.red.shade200, width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.red.withOpacity(0.1),
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 16),
-                          const SizedBox(width: 6),
+                          Container(
+                            padding: const EdgeInsets.all(8),
+                            decoration: BoxDecoration(
+                              color: Colors.red.shade100,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Icon(
+                              Icons.error_outline_rounded,
+                              color: Colors.red.shade600,
+                              size: 20,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
-                                color: Colors.red.shade600,
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
+                                color: Colors.red.shade700,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
                               ),
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                   ],
                   
-                  // Add Button
-                  _buildActionButton(),
+                  // Modern Action Button
+                  _buildModernActionButton(),
                   
-                  // Bottom spacing
-                  SizedBox(height: MediaQuery.of(context).padding.bottom + 4),
+                  // Bottom safe area
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
                 ],
               ),
             ),
@@ -240,85 +318,186 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     );
   }
 
-  Widget _buildUltraCompactSection(String title, Widget child) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: Colors.grey.shade700,
+  Widget _buildModernCard({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
+        ],
+        border: Border.all(
+          color: Colors.grey.shade100,
+          width: 1,
         ),
-        const SizedBox(height: 6),
-        child,
-      ],
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF667EEA).withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: const Color(0xFF667EEA),
+                    size: 20,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF1A1A1A),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            child,
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildCompactTextField({
+  Widget _buildModernTextField({
     required TextEditingController controller,
     required String label,
+    required String hint,
     required IconData icon,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
-      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
-        style: const TextStyle(fontSize: 13),
+        style: const TextStyle(
+          fontSize: 15,
+          fontWeight: FontWeight.w500,
+          color: Color(0xFF1A1A1A),
+        ),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.blue.shade600, size: 18),
+          hintText: hint,
+          prefixIcon: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color(0xFF667EEA).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Icon(
+              icon,
+              color: const Color(0xFF667EEA),
+              size: 20,
+            ),
+          ),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          labelStyle: TextStyle(
+            color: Colors.grey.shade600,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          hintStyle: TextStyle(
+            color: Colors.grey.shade400,
+            fontSize: 14,
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCompactDateField({
+  Widget _buildModernDateField({
     required String label,
+    required String hint,
     required IconData icon,
     required DateTime? selectedDate,
     required VoidCallback onTap,
   }) {
     return Container(
-      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
+          padding: const EdgeInsets.all(16),
           child: Row(
             children: [
-              Icon(icon, color: Colors.blue.shade600, size: 18),
-              const SizedBox(width: 10),
-              Text(
-                selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
-                style: TextStyle(
-                  fontSize: 13,
-                  color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
-                  fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF667EEA).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  icon,
+                  color: const Color(0xFF667EEA),
+                  size: 20,
                 ),
               ),
-              const Spacer(),
-              Icon(Icons.calendar_today, color: Colors.blue.shade600, size: 14),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      selectedDate == null 
+                          ? hint
+                          : DateFormat('EEEE, MMM dd, yyyy').format(selectedDate),
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: selectedDate == null 
+                            ? Colors.grey.shade400
+                            : const Color(0xFF1A1A1A),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.calendar_today_rounded,
+                color: const Color(0xFF667EEA),
+                size: 20,
+              ),
             ],
           ),
         ),
@@ -326,25 +505,53 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     );
   }
 
-  Widget _buildCategoryDropdown() {
+  Widget _buildModernCategoryDropdown() {
     return Container(
-      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category_rounded, color: Colors.blue.shade600, size: 18),
-              const SizedBox(width: 6),
-              Text(
-                'Select category',
-                style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: const Color(0xFF667EEA).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(
+                  Icons.category_rounded,
+                  color: const Color(0xFF667EEA),
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Product Category',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    'Select the appliance type',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade400,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -353,16 +560,35 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
             setState(() => _selectedCategory = newValue);
             _clearError();
           },
+          style: const TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: Color(0xFF1A1A1A),
+          ),
           items: Category.values.map((Category category) {
             return DropdownMenuItem<Category>(
               value: category,
               child: Row(
                 children: [
-                  Icon(_getCategoryIcon(category), color: Colors.blue.shade600, size: 16),
-                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.all(6),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF667EEA).withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      _getCategoryIcon(category),
+                      color: const Color(0xFF667EEA),
+                      size: 18,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
                   Text(
                     _getCategoryName(category),
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -373,40 +599,65 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     );
   }
 
-  Widget _buildActionButton() {
+  Widget _buildModernActionButton() {
     return Container(
       width: double.infinity,
-      height: 40,
+      height: 56,
       decoration: BoxDecoration(
-        color: Colors.blue.shade600,
-        borderRadius: BorderRadius.circular(10),
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF667EEA),
+            const Color(0xFF764BA2),
+          ],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: const Color(0xFF667EEA).withOpacity(0.4),
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           onTap: _isLoading ? null : _addProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 18,
-                    height: 18,
+                    width: 24,
+                    height: 24,
                     child: CircularProgressIndicator(
                       color: Colors.white,
-                      strokeWidth: 2,
+                      strokeWidth: 3,
                     ),
                   )
-                : const Row(
+                : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_rounded, color: Colors.white, size: 18),
-                      SizedBox(width: 4),
-                      Text(
+                      Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(
+                          Icons.add_rounded,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      const Text(
                         'Add Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ],
@@ -477,7 +728,7 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
         return Theme(
           data: Theme.of(context).copyWith(
             colorScheme: ColorScheme.light(
-              primary: Colors.blue.shade600,
+              primary: const Color(0xFF667EEA),
               onPrimary: Colors.white,
               surface: Colors.white,
               onSurface: Colors.grey.shade800,
