@@ -1,4 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/mate      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.35,
+        minChildSize: 0.25,
+        maxChildSize: 0.4,
+        builder: (context, scrollController) => EditProductBottomSheet(dart';
 import 'package:intl/intl.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
