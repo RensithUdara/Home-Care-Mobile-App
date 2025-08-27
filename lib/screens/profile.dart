@@ -1094,93 +1094,271 @@ By continuing to use Home Care App, you acknowledge that you have read, understo
   }
 
   void _showPrivacyPolicy() {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-      ),
-      builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          initialChildSize: 0.8,
-          maxChildSize: 0.95,
-          minChildSize: 0.5,
-          builder: (context, scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(2),
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          appBar: AppBar(
+            title: const Text('Privacy Policy'),
+            backgroundColor: Theme.of(context).colorScheme.surface,
+            elevation: 0,
+            leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.tertiary,
+                  borderRadius: BorderRadius.circular(12),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.1),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.arrow_back_ios_rounded,
+                  color: Theme.of(context).colorScheme.inversePrimary,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
+          body: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.tertiary,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    'Privacy Policy',
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Expanded(
-                    child: SingleChildScrollView(
-                      controller: scrollController,
-                      child: const Text(
-                        '''Your privacy is important to us. This privacy policy explains how we collect, use, and protect your information.
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.green.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.privacy_tip_outlined,
+                              color: Colors.green.shade700,
+                              size: 24,
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Theme.of(context).colorScheme.inversePrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Last updated: August 2024',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        '''Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use Home Care App.
 
 INFORMATION WE COLLECT
-We collect information you provide directly to us, such as:
-• Account information (name, email, phone number)
-• Product information (appliance details, warranties)
-• Usage data (how you interact with the app)
+
+1. Personal Information
+We may collect personal information that you provide directly to us, such as:
+• Name and email address when you create an account
+• Profile information and preferences
+• Communication preferences
+• Contact information for service requests
+
+2. Usage Information
+We automatically collect certain information when you use our app:
+• Device information (device type, operating system, app version)
+• Usage patterns and app interactions
+• Log files and crash reports
+• Location data (if you grant permission)
+
+3. Service Data
+When you use our home care services:
+• Service requests and scheduling information
+• Communication with care providers
+• Service feedback and ratings
+• Payment and billing information
 
 HOW WE USE YOUR INFORMATION
+
 We use the information we collect to:
-• Provide and maintain our service
-• Send you warranty expiration notifications
-• Improve our app functionality
-• Respond to your requests and support needs
+• Provide and maintain our services
+• Process and fulfill service requests
+• Communicate with you about your account and services
+• Send notifications about appointments and updates
+• Improve our app and services
+• Ensure safety and security
+• Comply with legal obligations
 
 INFORMATION SHARING
-We do not sell, trade, or otherwise transfer your personal information to third parties without your consent, except as described in this policy.
+
+We do not sell, trade, or rent your personal information to third parties. We may share your information only in the following circumstances:
+
+• With service providers who help us operate our app
+• With care providers to fulfill your service requests
+• When required by law or to protect our rights
+• In case of business transfer or merger
+• With your explicit consent
 
 DATA SECURITY
-We implement appropriate security measures to protect your personal information against unauthorized access, alteration, disclosure, or destruction.
 
-DATA RETENTION
-We retain your information for as long as your account is active or as needed to provide you services.
+We implement appropriate technical and organizational measures to protect your personal information:
+• Encryption of data in transit and at rest
+• Regular security assessments and updates
+• Access controls and authentication
+• Secure payment processing
+• Employee training on data protection
 
 YOUR RIGHTS
-You have the right to:
-• Access your personal data
-• Correct inaccurate data
-• Delete your account and data
-• Opt-out of certain communications
+
+You have the following rights regarding your personal information:
+• Access: Request access to your personal data
+• Correction: Update or correct inaccurate information
+• Deletion: Request deletion of your personal data
+• Portability: Request a copy of your data in a portable format
+• Opt-out: Unsubscribe from marketing communications
+
+DATA RETENTION
+
+We retain your personal information only as long as necessary to:
+• Provide our services to you
+• Comply with legal obligations
+• Resolve disputes and enforce agreements
+• Maintain business records
+
+Typically, we retain:
+• Account information: Until account deletion
+• Service records: 3 years after service completion
+• Communication logs: 1 year
+• Usage analytics: 2 years (anonymized)
+
+CHILDREN'S PRIVACY
+
+Our app is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If we discover that we have collected information from a child under 13, we will delete it immediately.
+
+INTERNATIONAL TRANSFERS
+
+If you are located outside our primary jurisdiction, please note that we may transfer your information to countries that may have different data protection laws. We ensure appropriate safeguards are in place for such transfers.
+
+COOKIES AND TRACKING
+
+Our app may use cookies and similar tracking technologies to:
+• Remember your preferences
+• Analyze app usage
+• Provide personalized content
+• Ensure app security
+
+You can control cookie preferences through your device settings.
+
+THIRD-PARTY SERVICES
+
+Our app may integrate with third-party services (such as payment processors, analytics providers). These third parties have their own privacy policies, and we encourage you to review them.
 
 CHANGES TO THIS POLICY
-We may update this privacy policy from time to time. We will notify you of any changes by posting the new policy on this page.
+
+We may update this Privacy Policy from time to time. We will notify you of any material changes by:
+• Posting the updated policy in the app
+• Sending an email notification
+• Displaying a prominent notice
+
+Your continued use of the app after changes constitutes acceptance of the updated policy.
 
 CONTACT US
-If you have questions about this privacy policy, please contact us at privacy@homecare.com
 
-Last updated: August 2024''',
-                        style: TextStyle(fontSize: 14, height: 1.5),
+If you have questions or concerns about this Privacy Policy or our data practices, please contact us:
+
+Email: privacy@homecare.com
+Phone: +1-800-HOMECARE
+Address: Home Care App Privacy Team
+123 Care Street, Suite 100
+Privacy City, PC 12345
+
+You can also reach out through the app's contact support feature.
+
+COMPLIANCE
+
+This Privacy Policy complies with applicable data protection laws, including:
+• General Data Protection Regulation (GDPR)
+• California Consumer Privacy Act (CCPA)
+• Children's Online Privacy Protection Act (COPPA)
+• Health Insurance Portability and Accountability Act (HIPAA) where applicable
+
+By using Home Care App, you acknowledge that you have read and understood this Privacy Policy and agree to our collection and use of your information as described herein.''',
+                        style: TextStyle(
+                          fontSize: 14,
+                          height: 1.6,
+                          color: Theme.of(context).colorScheme.inversePrimary,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.green.withOpacity(0.3),
+                      width: 1,
                     ),
                   ),
-                ],
-              ),
-            );
-          },
-        );
-      },
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.shield_outlined,
+                        color: Colors.green.shade700,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          'Your privacy matters to us. For privacy-related inquiries, contact us at privacy@homecare.com',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.green.shade800,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 40),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
   
