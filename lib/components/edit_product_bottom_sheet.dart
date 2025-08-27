@@ -15,6 +15,28 @@ class EditProductBottomSheet extends StatefulWidget {
 
   @override
   State<EditProductBottomSheet> createState() => _EditProductBottomSheetState();
+
+  static void show(
+    BuildContext context, {
+    required Products product,
+    required Function onProductEdited,
+  }) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      useSafeArea: true,
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.7,
+        minChildSize: 0.5,
+        maxChildSize: 0.95,
+        builder: (context, scrollController) => EditProductBottomSheet(
+          product: product,
+          onProductEdited: onProductEdited,
+        ),
+      ),
+    );
+  }
 }
 
 class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
@@ -60,34 +82,202 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   void _showError(String message) {
     setState(() {
       _errorMessage = message;
+      _isLoading = false;
     });
   }
 
-  // Helper method to build section headers
-  Widget _buildSectionHeader(String title, IconData icon) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surface,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.15),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: Column(
         children: [
+          // Drag Handle and Header
           Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.blue.shade50,
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(
-              icon,
-              size: 20,
-              color: Colors.blue.shade600,
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+            child: Column(
+              children: [
+                // Drag Handle
+                Container(
+                  width: 48,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                
+                // Header
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.orange.shade500, Colors.orange.shade600],
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.orange.shade200,
+                            blurRadius: 8,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: const Icon(
+                        Icons.edit_rounded,
+                        color: Colors.white,
+                        size: 28,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    const Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Edit Product',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
+                        Text(
+                          'Update your appliance details',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          const SizedBox(width: 12),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey.shade800,
+          
+          // Scrollable Content
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Category Selection
+                  _buildSection(
+                    title: 'Category',
+                    icon: Icons.category_rounded,
+                    child: _buildCategoryDropdown(),
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Product Information
+                  _buildSection(
+                    title: 'Product Information',
+                    icon: Icons.info_rounded,
+                    child: Column(
+                      children: [
+                        _buildTextField(
+                          controller: _nameController,
+                          label: 'Product Name',
+                          icon: Icons.inventory_2_rounded,
+                          hint: 'Enter product name',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _locationController,
+                          label: 'Location',
+                          icon: Icons.location_on_rounded,
+                          hint: 'Where is it located?',
+                        ),
+                        const SizedBox(height: 16),
+                        _buildTextField(
+                          controller: _contactNumberController,
+                          label: 'Service Contact',
+                          icon: Icons.phone_rounded,
+                          hint: 'Service center number',
+                          keyboardType: TextInputType.phone,
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Dates
+                  _buildSection(
+                    title: 'Important Dates',
+                    icon: Icons.event_rounded,
+                    child: Column(
+                      children: [
+                        _buildDateField(
+                          label: 'Purchase Date',
+                          icon: Icons.shopping_bag_rounded,
+                          selectedDate: _selectedPurchaseDate,
+                          onTap: () => _selectDate(context, true),
+                        ),
+                        const SizedBox(height: 16),
+                        _buildDateField(
+                          label: 'Warranty End Date',
+                          icon: Icons.verified_user_rounded,
+                          selectedDate: _selectedWarrantyPeriod,
+                          onTap: () => _selectDate(context, false),
+                        ),
+                      ],
+                    ),
+                  ),
+                  
+                  const SizedBox(height: 32),
+                  
+                  // Error Display
+                  if (_errorMessage.isNotEmpty) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(16),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 24),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Text(
+                              _errorMessage,
+                              style: TextStyle(
+                                color: Colors.red.shade600,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                  ],
+                  
+                  // Update Button
+                  _buildActionButton(),
+                  
+                  // Bottom spacing for safe area
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+                ],
+              ),
             ),
           ),
         ],
@@ -95,118 +285,114 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  // Helper method to build styled text field
-  Widget _buildStyledTextField({
+  Widget _buildSection({required String title, required IconData icon, required Widget child}) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: Colors.orange.shade600, size: 20),
+            const SizedBox(width: 8),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey.shade800,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
+        child,
+      ],
+    );
+  }
+
+  Widget _buildTextField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
+    required String hint,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
+        style: const TextStyle(fontSize: 16),
         decoration: InputDecoration(
           labelText: label,
-          prefixIcon: Icon(icon, color: Colors.blue.shade600),
+          hintText: hint,
+          prefixIcon: Icon(icon, color: Colors.orange.shade600),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
           labelStyle: TextStyle(color: Colors.grey.shade600),
+          hintStyle: TextStyle(color: Colors.grey.shade400),
         ),
       ),
     );
   }
 
-  // Helper method to build date selector
-  Widget _buildDateSelector({
+  Widget _buildDateField({
     required String label,
-    required DateTime? selectedDate,
-    required Function(DateTime) onDateSelected,
     required IconData icon,
+    required DateTime? selectedDate,
+    required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: ListTile(
-        leading: Icon(icon, color: Colors.blue.shade600),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        leading: Icon(icon, color: Colors.orange.shade600),
         title: Text(
-          selectedDate == null
-              ? label
-              : DateFormat('MMM dd, yyyy').format(selectedDate),
+          selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
           style: TextStyle(
+            fontSize: 16,
             color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
             fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
           ),
         ),
-        trailing: Icon(Icons.calendar_today, color: Colors.blue.shade600),
-        onTap: () async {
-          DateTime? pickedDate = await showDatePicker(
-            context: context,
-            initialDate: selectedDate ?? DateTime.now(),
-            firstDate: DateTime(2000),
-            lastDate: DateTime(2100),
-            builder: (BuildContext context, Widget? child) {
-              return Theme(
-                data: ThemeData.light().copyWith(
-                  colorScheme: ColorScheme.light(
-                    primary: Colors.blue.shade600,
-                    onPrimary: Colors.white,
-                    surface: Colors.white,
-                    onSurface: Colors.grey.shade800,
-                  ),
-                ),
-                child: child!,
-              );
-            },
-          );
-          if (pickedDate != null) {
-            onDateSelected(DateTime(
-              pickedDate.year,
-              pickedDate.month,
-              pickedDate.day,
-            ));
-          }
-        },
+        trailing: Icon(Icons.calendar_month_rounded, color: Colors.orange.shade600),
+        onTap: onTap,
       ),
     );
   }
 
-  // Helper method to build category dropdown
   Widget _buildCategoryDropdown() {
     return Container(
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category, color: Colors.blue.shade600),
+              Icon(Icons.category_rounded, color: Colors.orange.shade600),
               const SizedBox(width: 12),
               Text(
-                'Select Category',
-                style: TextStyle(color: Colors.grey.shade600),
+                'Select a category',
+                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
               ),
             ],
           ),
           value: _selectedCategory,
           onChanged: (Category? newValue) {
-            setState(() {
-              _selectedCategory = newValue;
-            });
+            setState(() => _selectedCategory = newValue);
             _clearError();
           },
           items: Category.values.map((Category category) {
@@ -214,14 +400,11 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Icon(Icons.category, color: Colors.blue.shade600),
+                  Icon(_getCategoryIcon(category), color: Colors.orange.shade600, size: 20),
                   const SizedBox(width: 12),
                   Text(
-                    category.toString().split('.').last,
-                    style: TextStyle(
-                      color: Colors.grey.shade800,
-                      fontWeight: FontWeight.w500,
-                    ),
+                    _getCategoryName(category),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -232,236 +415,140 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildActionButton() {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Drag handle
-          Container(
-            margin: const EdgeInsets.only(top: 12, bottom: 8),
-            height: 4,
-            width: 40,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          
-          Flexible(
-            child: Padding(
-              padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom + 20,
-                top: 12,
-                left: 24,
-                right: 24,
-              ),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Header
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.shade100,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            Icons.edit,
-                            color: Colors.blue.shade600,
-                            size: 24,
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        const Text(
-                          "Edit Product",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 24,
-                          ),
-                        ),
-                      ],
-                    ),
-                    
-                    const SizedBox(height: 32),
-
-                    // Category Selection Section
-                    _buildSectionHeader('Category Selection', Icons.category),
-                    _buildCategoryDropdown(),
-
-                    const SizedBox(height: 32),
-
-                    // Product Details Section
-                    _buildSectionHeader('Product Details', Icons.inventory),
-                    const SizedBox(height: 16),
-                    
-                    _buildStyledTextField(
-                      controller: _nameController,
-                      label: 'Product Name',
-                      icon: Icons.inventory_2,
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    _buildStyledTextField(
-                      controller: _locationController,
-                      label: 'Location',
-                      icon: Icons.location_on,
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    _buildStyledTextField(
-                      controller: _contactNumberController,
-                      label: 'Service Center Contact',
-                      icon: Icons.phone,
-                      keyboardType: TextInputType.phone,
-                    ),
-
-                    const SizedBox(height: 32),
-
-                    // Important Dates Section
-                    _buildSectionHeader('Important Dates', Icons.calendar_today),
-                    const SizedBox(height: 16),
-                    
-                    _buildDateSelector(
-                      label: 'Select Purchase Date',
-                      selectedDate: _selectedPurchaseDate,
-                      onDateSelected: (date) {
-                        setState(() {
-                          _selectedPurchaseDate = date;
-                        });
-                        _clearError();
-                      },
-                      icon: Icons.shopping_cart,
-                    ),
-                    
-                    const SizedBox(height: 16),
-                    
-                    _buildDateSelector(
-                      label: 'Select Warranty End Date',
-                      selectedDate: _selectedWarrantyPeriod,
-                      onDateSelected: (date) {
-                        setState(() {
-                          _selectedWarrantyPeriod = date;
-                        });
-                        _clearError();
-                      },
-                      icon: Icons.verified_user,
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    // Error Message Display
-                    if (_errorMessage.isNotEmpty) ...[
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.red.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.red.shade200),
-                        ),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.error_outline,
-                              color: Colors.red.shade600,
-                              size: 20,
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Text(
-                                _errorMessage,
-                                style: TextStyle(
-                                  color: Colors.red.shade600,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                    ],
-
-                    // Update Button
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade600, Colors.blue.shade700],
-                          begin: Alignment.topLeft,
-                          end: Alignment.bottomRight,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.shade200,
-                            offset: const Offset(0, 4),
-                            blurRadius: 12,
-                          ),
-                        ],
-                      ),
-                      child: Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(16),
-                          onTap: _isLoading ? null : _updateProduct,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 18),
-                            child: _isLoading
-                                ? const Center(
-                                    child: SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                                      ),
-                                    ),
-                                  )
-                                : const Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(
-                                        Icons.save,
-                                        color: Colors.white,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 8),
-                                      Text(
-                                        'Update Product',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(height: 8),
-                  ],
-                ),
-              ),
-            ),
+      width: double.infinity,
+      height: 56,
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Colors.orange.shade500, Colors.orange.shade600],
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.orange.shade200,
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: _isLoading ? null : _updateProduct,
+          child: Center(
+            child: _isLoading
+                ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2,
+                    ),
+                  )
+                : const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.save_rounded, color: Colors.white, size: 24),
+                      SizedBox(width: 8),
+                      Text(
+                        'Update Product',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
     );
+  }
+
+  IconData _getCategoryIcon(Category category) {
+    switch (category) {
+      case Category.AirConditioner:
+        return Icons.ac_unit_rounded;
+      case Category.Refrigerator:
+        return Icons.kitchen_rounded;
+      case Category.WashingMachine:
+        return Icons.local_laundry_service_rounded;
+      case Category.Television:
+        return Icons.tv_rounded;
+      case Category.Fan:
+        return Icons.toys_rounded;
+      case Category.Laptop:
+        return Icons.laptop_rounded;
+      case Category.Speaker:
+        return Icons.speaker_rounded;
+      case Category.VacuumCleaner:
+        return Icons.cleaning_services_rounded;
+      case Category.Other:
+        return Icons.more_horiz_rounded;
+      default:
+        return Icons.category_rounded;
+    }
+  }
+
+  String _getCategoryName(Category category) {
+    switch (category) {
+      case Category.AirConditioner:
+        return 'Air Conditioner';
+      case Category.Refrigerator:
+        return 'Refrigerator';
+      case Category.WashingMachine:
+        return 'Washing Machine';
+      case Category.Television:
+        return 'Television';
+      case Category.Fan:
+        return 'Fan';
+      case Category.Laptop:
+        return 'Laptop';
+      case Category.Speaker:
+        return 'Speaker';
+      case Category.VacuumCleaner:
+        return 'Vacuum Cleaner';
+      case Category.Other:
+        return 'Other';
+      default:
+        return category.toString().split('.').last;
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isPurchaseDate) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: (isPurchaseDate ? _selectedPurchaseDate : _selectedWarrantyPeriod) ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: ColorScheme.light(
+              primary: Colors.orange.shade600,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: Colors.grey.shade800,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (picked != null) {
+      setState(() {
+        if (isPurchaseDate) {
+          _selectedPurchaseDate = picked;
+        } else {
+          _selectedWarrantyPeriod = picked;
+        }
+      });
+      _clearError();
+    }
   }
 
   Future<void> _updateProduct() async {
