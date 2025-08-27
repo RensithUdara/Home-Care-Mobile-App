@@ -110,15 +110,19 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
               
               // Content
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Status badge
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatusBadge(),
+                        Flexible(
+                          child: _buildStatusBadge(),
+                        ),
+                        const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
@@ -134,7 +138,7 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                       ],
                     ),
                     
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     
                     // Product image
                     Expanded(
@@ -143,12 +147,12 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                           padding: const EdgeInsets.all(8),
                           child: Image.asset(
                             ProductUtils.getImagePath(typeName),
-                            height: 60,
+                            height: 50,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 _getProductIcon(typeName),
-                                size: 60,
+                                size: 50,
                                 color: primaryColor.withOpacity(0.5),
                               );
                             },
@@ -157,39 +161,40 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                       ),
                     ),
                     
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     
                     // Product details
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           ProductUtils.getDisplayName(widget.product.name),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                             color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Row(
                           children: [
                             Icon(
                               Icons.location_on_outlined,
-                              size: 14,
+                              size: 12,
                               color: Theme.of(context)
                                   .colorScheme
                                   .inversePrimary
                                   .withOpacity(0.6),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 3),
                             Expanded(
                               child: Text(
                                 widget.product.location,
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: Theme.of(context)
                                       .colorScheme
                                       .inversePrimary
@@ -201,20 +206,20 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                            horizontal: 6,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             typeName,
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                               color: ProductUtils.getTextColor(
                                 typeName, 
@@ -263,10 +268,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
   Widget _buildStatusBadge() {
     if (_isWarrantyExpired) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.red.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.red.withOpacity(0.3),
             width: 1,
@@ -277,14 +282,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.warning_outlined,
-              size: 12,
+              size: 10,
               color: Colors.red.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Expired',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.red.shade700,
               ),
@@ -294,10 +299,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
       );
     } else if (_isWarrantyExpiring) {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.orange.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.orange.withOpacity(0.3),
             width: 1,
@@ -308,14 +313,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.schedule_outlined,
-              size: 12,
+              size: 10,
               color: Colors.orange.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Expiring',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.orange.shade700,
               ),
@@ -325,10 +330,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
       );
     } else {
       return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
         decoration: BoxDecoration(
           color: Colors.green.withOpacity(0.1),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
           border: Border.all(
             color: Colors.green.withOpacity(0.3),
             width: 1,
@@ -339,14 +344,14 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
           children: [
             Icon(
               Icons.check_circle_outline,
-              size: 12,
+              size: 10,
               color: Colors.green.shade700,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: 3),
             Text(
               'Active',
               style: TextStyle(
-                fontSize: 10,
+                fontSize: 9,
                 fontWeight: FontWeight.w600,
                 color: Colors.green.shade700,
               ),
