@@ -502,7 +502,7 @@ class _ProductPageState extends State<ProductPage>
           ),
         ],
       ),
-    );
+    )
   }
 
   // Helper methods for compact design
