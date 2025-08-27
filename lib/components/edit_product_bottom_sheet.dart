@@ -151,53 +151,61 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Category Selection
-                  _buildSection(
-                    title: 'Category',
-                    icon: Icons.category_rounded,
-                    child: _buildCategoryDropdown(),
-                  ),
+                  _buildCompactSection('Category', _buildCategoryDropdown()),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Product Information
-                  _buildSection(
-                    title: 'Product Information',
-                    icon: Icons.info_rounded,
-                    child: Column(
-                      children: [
-                        _buildTextField(
-                          controller: _nameController,
-                          label: 'Product Name',
-                          icon: Icons.inventory_2_rounded,
-                          hint: 'Enter product name',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _locationController,
-                          label: 'Location',
-                          icon: Icons.location_on_rounded,
-                          hint: 'Where is it located?',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _contactNumberController,
-                          label: 'Service Contact',
-                          icon: Icons.phone_rounded,
-                          hint: 'Service center number',
-                          keyboardType: TextInputType.phone,
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildCompactSection('Product Details', Column(
+                    children: [
+                      _buildCompactTextField(
+                        controller: _nameController,
+                        label: 'Product Name',
+                        icon: Icons.inventory_2_rounded,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactTextField(
+                        controller: _locationController,
+                        label: 'Location',
+                        icon: Icons.location_on_rounded,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactTextField(
+                        controller: _contactNumberController,
+                        label: 'Service Contact',
+                        icon: Icons.phone_rounded,
+                        keyboardType: TextInputType.phone,
+                      ),
+                    ],
+                  )),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Dates
+                  _buildCompactSection('Important Dates', Column(
+                    children: [
+                      _buildCompactDateField(
+                        label: 'Purchase Date',
+                        icon: Icons.shopping_bag_rounded,
+                        selectedDate: _selectedPurchaseDate,
+                        onTap: () => _selectDate(context, true),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactDateField(
+                        label: 'Warranty End Date',
+                        icon: Icons.verified_user_rounded,
+                        selectedDate: _selectedWarrantyPeriod,
+                        onTap: () => _selectDate(context, false),
+                      ),
+                    ],
+                  )),
+                  
+                  const SizedBox(height: 20),
                   _buildSection(
                     title: 'Important Dates',
                     icon: Icons.event_rounded,
