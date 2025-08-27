@@ -25,7 +25,6 @@ class _ProductPageState extends State<ProductPage>
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-  late Animation<double> _scaleAnimation;
 
   @override
   void initState() {
@@ -44,10 +43,6 @@ class _ProductPageState extends State<ProductPage>
       end: Offset.zero,
     ).animate(
       CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
-
-    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.elasticOut),
     );
 
     // Start animation only if widget is still mounted
@@ -502,7 +497,7 @@ class _ProductPageState extends State<ProductPage>
           ),
         ],
       ),
-    );
+    )
   }
 
   // Helper methods for compact design
