@@ -23,8 +23,8 @@ class AddProductBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       useSafeArea: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
-        minChildSize: 0.5,
+        initialChildSize: 0.8,
+        minChildSize: 0.6,
         maxChildSize: 0.95,
         builder: (context, scrollController) => AddProductBottomSheet(
           onProductAdded: onProductAdded,
@@ -85,66 +85,45 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
       ),
       child: Column(
         children: [
-          // Drag Handle and Header
+          // Compact Header
           Container(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
             child: Column(
               children: [
                 // Drag Handle
                 Container(
-                  width: 48,
-                  height: 5,
+                  width: 40,
+                  height: 4,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 
-                // Header
+                // Compact Header
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [Colors.blue.shade600, Colors.blue.shade700],
-                        ),
-                        borderRadius: BorderRadius.circular(16),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.blue.shade200,
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
+                        color: Colors.blue.shade600,
+                        borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
                         Icons.add_box_rounded,
                         color: Colors.white,
-                        size: 28,
+                        size: 20,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Add New Product',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                        Text(
-                          'Add your appliance details',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(width: 12),
+                    const Text(
+                      'Add New Product',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
                     ),
                   ],
                 ),
@@ -155,95 +134,81 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
           // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 32, 24, 24),
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Category Selection
-                  _buildSection(
-                    title: 'Category',
-                    icon: Icons.category_rounded,
-                    child: _buildCategoryDropdown(),
-                  ),
+                  _buildCompactSection('Category', _buildCategoryDropdown()),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Product Information
-                  _buildSection(
-                    title: 'Product Information',
-                    icon: Icons.info_rounded,
-                    child: Column(
-                      children: [
-                        _buildTextField(
-                          controller: _nameController,
-                          label: 'Product Name',
-                          icon: Icons.inventory_2_rounded,
-                          hint: 'Enter product name',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _locationController,
-                          label: 'Location',
-                          icon: Icons.location_on_rounded,
-                          hint: 'Where is it located?',
-                        ),
-                        const SizedBox(height: 16),
-                        _buildTextField(
-                          controller: _contactNumberController,
-                          label: 'Service Contact',
-                          icon: Icons.phone_rounded,
-                          hint: 'Service center number',
-                          keyboardType: TextInputType.phone,
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildCompactSection('Product Details', Column(
+                    children: [
+                      _buildCompactTextField(
+                        controller: _nameController,
+                        label: 'Product Name',
+                        icon: Icons.inventory_2_rounded,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactTextField(
+                        controller: _locationController,
+                        label: 'Location',
+                        icon: Icons.location_on_rounded,
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactTextField(
+                        controller: _contactNumberController,
+                        label: 'Service Contact',
+                        icon: Icons.phone_rounded,
+                        keyboardType: TextInputType.phone,
+                      ),
+                    ],
+                  )),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Dates
-                  _buildSection(
-                    title: 'Important Dates',
-                    icon: Icons.event_rounded,
-                    child: Column(
-                      children: [
-                        _buildDateField(
-                          label: 'Purchase Date',
-                          icon: Icons.shopping_bag_rounded,
-                          selectedDate: _selectedPurchaseDate,
-                          onTap: () => _selectDate(context, true),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildDateField(
-                          label: 'Warranty End Date',
-                          icon: Icons.verified_user_rounded,
-                          selectedDate: _selectedWarrantyPeriod,
-                          onTap: () => _selectDate(context, false),
-                        ),
-                      ],
-                    ),
-                  ),
+                  _buildCompactSection('Important Dates', Column(
+                    children: [
+                      _buildCompactDateField(
+                        label: 'Purchase Date',
+                        icon: Icons.shopping_bag_rounded,
+                        selectedDate: _selectedPurchaseDate,
+                        onTap: () => _selectDate(context, true),
+                      ),
+                      const SizedBox(height: 12),
+                      _buildCompactDateField(
+                        label: 'Warranty End Date',
+                        icon: Icons.verified_user_rounded,
+                        selectedDate: _selectedWarrantyPeriod,
+                        onTap: () => _selectDate(context, false),
+                      ),
+                    ],
+                  )),
                   
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 20),
                   
                   // Error Display
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.red.shade200),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 24),
-                          const SizedBox(width: 12),
+                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 20),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
                                 color: Colors.red.shade600,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -251,14 +216,14 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ],
                   
                   // Add Button
                   _buildActionButton(),
                   
-                  // Bottom spacing for safe area
-                  SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+                  // Bottom spacing
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
                 ],
               ),
             ),
@@ -268,108 +233,111 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     );
   }
 
-  Widget _buildSection({required String title, required IconData icon, required Widget child}) {
+  Widget _buildCompactSection(String title, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, color: Colors.blue.shade600, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade800,
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         child,
       ],
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildCompactTextField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    required String hint,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
-        style: const TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
-          hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.blue.shade600),
+          prefixIcon: Icon(icon, color: Colors.blue.shade600, size: 20),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          labelStyle: TextStyle(color: Colors.grey.shade600),
-          hintStyle: TextStyle(color: Colors.grey.shade400),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
         ),
       ),
     );
   }
 
-  Widget _buildDateField({
+  Widget _buildCompactDateField({
     required String label,
     required IconData icon,
     required DateTime? selectedDate,
     required VoidCallback onTap,
   }) {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Icon(icon, color: Colors.blue.shade600),
-        title: Text(
-          selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
-          style: TextStyle(
-            fontSize: 16,
-            color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
-            fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.blue.shade600, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
+                  fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.calendar_today, color: Colors.blue.shade600, size: 16),
+            ],
           ),
         ),
-        trailing: Icon(Icons.calendar_month_rounded, color: Colors.blue.shade600),
-        onTap: onTap,
       ),
     );
   }
 
   Widget _buildCategoryDropdown() {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category_rounded, color: Colors.blue.shade600),
-              const SizedBox(width: 12),
+              Icon(Icons.category_rounded, color: Colors.blue.shade600, size: 20),
+              const SizedBox(width: 8),
               Text(
-                'Select a category',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                'Select category',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -383,11 +351,11 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Icon(_getCategoryIcon(category), color: Colors.blue.shade600, size: 20),
-                  const SizedBox(width: 12),
+                  Icon(_getCategoryIcon(category), color: Colors.blue.shade600, size: 18),
+                  const SizedBox(width: 8),
                   Text(
                     _getCategoryName(category),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -401,30 +369,21 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
   Widget _buildActionButton() {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 48,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue.shade600, Colors.blue.shade700],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.blue.shade200,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: Colors.blue.shade600,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: _isLoading ? null : _addProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(
                       color: Colors.white,
                       strokeWidth: 2,
@@ -433,13 +392,13 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add_rounded, color: Colors.white, size: 24),
-                      SizedBox(width: 8),
+                      Icon(Icons.add_rounded, color: Colors.white, size: 20),
+                      SizedBox(width: 6),
                       Text(
                         'Add Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
