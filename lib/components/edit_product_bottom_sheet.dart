@@ -53,7 +53,6 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   @override
   void initState() {
     super.initState();
-    // Initialize controllers with product's current values
     _nameController = TextEditingController(text: widget.product.name);
     _locationController = TextEditingController(text: widget.product.location);
     _contactNumberController =
@@ -91,14 +90,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     return Container(
       decoration: BoxDecoration(
         color: Theme.of(context).colorScheme.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
-          ),
-        ],
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
       ),
       child: Column(
         children: [
@@ -206,48 +198,26 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                   )),
                   
                   const SizedBox(height: 20),
-                  _buildSection(
-                    title: 'Important Dates',
-                    icon: Icons.event_rounded,
-                    child: Column(
-                      children: [
-                        _buildDateField(
-                          label: 'Purchase Date',
-                          icon: Icons.shopping_bag_rounded,
-                          selectedDate: _selectedPurchaseDate,
-                          onTap: () => _selectDate(context, true),
-                        ),
-                        const SizedBox(height: 16),
-                        _buildDateField(
-                          label: 'Warranty End Date',
-                          icon: Icons.verified_user_rounded,
-                          selectedDate: _selectedWarrantyPeriod,
-                          onTap: () => _selectDate(context, false),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                  const SizedBox(height: 32),
                   
                   // Error Display
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(16),
+                        borderRadius: BorderRadius.circular(12),
                         border: Border.all(color: Colors.red.shade200),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 24),
-                          const SizedBox(width: 12),
+                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 20),
+                          const SizedBox(width: 8),
                           Expanded(
                             child: Text(
                               _errorMessage,
                               style: TextStyle(
                                 color: Colors.red.shade600,
+                                fontSize: 13,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -255,14 +225,14 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 16),
                   ],
                   
                   // Update Button
                   _buildActionButton(),
                   
-                  // Bottom spacing for safe area
-                  SizedBox(height: MediaQuery.of(context).padding.bottom + 16),
+                  // Bottom spacing
+                  SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
                 ],
               ),
             ),
@@ -357,32 +327,26 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
       ),
     );
   }
-          ),
-        ),
-        trailing: Icon(Icons.calendar_month_rounded, color: Colors.orange.shade600),
-        onTap: onTap,
-      ),
-    );
-  }
 
   Widget _buildCategoryDropdown() {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<Category>(
           isExpanded: true,
           hint: Row(
             children: [
-              Icon(Icons.category_rounded, color: Colors.orange.shade600),
-              const SizedBox(width: 12),
+              Icon(Icons.category_rounded, color: Colors.orange.shade600, size: 20),
+              const SizedBox(width: 8),
               Text(
-                'Select a category',
-                style: TextStyle(fontSize: 16, color: Colors.grey.shade600),
+                'Select category',
+                style: TextStyle(fontSize: 14, color: Colors.grey.shade600),
               ),
             ],
           ),
@@ -396,11 +360,11 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               value: category,
               child: Row(
                 children: [
-                  Icon(_getCategoryIcon(category), color: Colors.orange.shade600, size: 20),
-                  const SizedBox(width: 12),
+                  Icon(_getCategoryIcon(category), color: Colors.orange.shade600, size: 18),
+                  const SizedBox(width: 8),
                   Text(
                     _getCategoryName(category),
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                   ),
                 ],
               ),
@@ -414,30 +378,21 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
   Widget _buildActionButton() {
     return Container(
       width: double.infinity,
-      height: 56,
+      height: 48,
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.orange.shade500, Colors.orange.shade600],
-        ),
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.orange.shade200,
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        color: Colors.orange.shade600,
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(12),
           onTap: _isLoading ? null : _updateProduct,
           child: Center(
             child: _isLoading
                 ? const SizedBox(
-                    width: 24,
-                    height: 24,
+                    width: 20,
+                    height: 20,
                     child: CircularProgressIndicator(
                       color: Colors.white,
                       strokeWidth: 2,
@@ -446,13 +401,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                 : const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.save_rounded, color: Colors.white, size: 24),
-                      SizedBox(width: 8),
+                      Icon(Icons.save_rounded, color: Colors.white, size: 20),
+                      SizedBox(width: 6),
                       Text(
                         'Update Product',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
@@ -595,8 +550,8 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     try {
       // Create updated product object
       Products updatedProduct = Products(
-        id: widget.product.id, // Use the existing ID
-        uid: widget.product.uid, // Use the existing UID
+        id: widget.product.id,
+        uid: widget.product.uid,
         name: _nameController.text.trim(),
         location: _locationController.text.trim(),
         purchasedDate: _selectedPurchaseDate!,
