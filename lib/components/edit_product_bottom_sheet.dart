@@ -272,82 +272,91 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     );
   }
 
-  Widget _buildSection({required String title, required IconData icon, required Widget child}) {
+  Widget _buildCompactSection(String title, Widget child) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(icon, color: Colors.orange.shade600, size: 20),
-            const SizedBox(width: 8),
-            Text(
-              title,
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.grey.shade800,
-              ),
-            ),
-          ],
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade800,
+          ),
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 8),
         child,
       ],
     );
   }
 
-  Widget _buildTextField({
+  Widget _buildCompactTextField({
     required TextEditingController controller,
     required String label,
     required IconData icon,
-    required String hint,
     TextInputType keyboardType = TextInputType.text,
   }) {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: TextField(
         controller: controller,
         keyboardType: keyboardType,
         onChanged: (_) => _clearError(),
-        style: const TextStyle(fontSize: 16),
+        style: const TextStyle(fontSize: 14),
         decoration: InputDecoration(
           labelText: label,
-          hintText: hint,
-          prefixIcon: Icon(icon, color: Colors.orange.shade600),
+          prefixIcon: Icon(icon, color: Colors.orange.shade600, size: 20),
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-          labelStyle: TextStyle(color: Colors.grey.shade600),
-          hintStyle: TextStyle(color: Colors.grey.shade400),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
         ),
       ),
     );
   }
 
-  Widget _buildDateField({
+  Widget _buildCompactDateField({
     required String label,
     required IconData icon,
     required DateTime? selectedDate,
     required VoidCallback onTap,
   }) {
     return Container(
+      height: 48,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         border: Border.all(color: Colors.grey.shade200),
       ),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-        leading: Icon(icon, color: Colors.orange.shade600),
-        title: Text(
-          selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
-          style: TextStyle(
-            fontSize: 16,
-            color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
-            fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              Icon(icon, color: Colors.orange.shade600, size: 20),
+              const SizedBox(width: 12),
+              Text(
+                selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
+                style: TextStyle(
+                  fontSize: 14,
+                  color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
+                  fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
+                ),
+              ),
+              const Spacer(),
+              Icon(Icons.calendar_today, color: Colors.orange.shade600, size: 16),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
           ),
         ),
         trailing: Icon(Icons.calendar_month_rounded, color: Colors.orange.shade600),
