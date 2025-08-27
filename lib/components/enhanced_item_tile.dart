@@ -236,24 +236,24 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
               
               // Action button
               Positioned(
-                bottom: 12,
-                right: 12,
+                bottom: 8,
+                right: 8,
                 child: Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
                     color: primaryColor,
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                     boxShadow: [
                       BoxShadow(
                         color: primaryColor.withOpacity(0.3),
-                        blurRadius: 8,
+                        blurRadius: 6,
                         offset: const Offset(0, 2),
                       ),
                     ],
                   ),
                   child: Icon(
                     Icons.arrow_forward_ios_rounded,
-                    size: 14,
+                    size: 12,
                     color: Theme.of(context).colorScheme.onSecondary,
                   ),
                 ),
