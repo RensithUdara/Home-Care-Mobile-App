@@ -110,40 +110,40 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
         children: [
           // Compact Header
           Container(
-            padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
             child: Column(
               children: [
                 // Drag Handle
                 Container(
-                  width: 40,
-                  height: 4,
+                  width: 32,
+                  height: 3,
                   decoration: BoxDecoration(
                     color: Colors.grey.shade300,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 
                 // Compact Header
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.all(8),
+                      padding: const EdgeInsets.all(6),
                       decoration: BoxDecoration(
                         color: Colors.orange.shade600,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.edit_rounded,
                         color: Colors.white,
-                        size: 20,
+                        size: 18,
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: 10),
                     const Text(
                       'Edit Product',
                       style: TextStyle(
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.black87,
                       ),
@@ -157,30 +157,30 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           // Scrollable Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Category Selection
-                  _buildCompactSection('Category', _buildCategoryDropdown()),
+                  _buildUltraCompactSection('Category', _buildCategoryDropdown()),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Product Information
-                  _buildCompactSection('Product Details', Column(
+                  _buildUltraCompactSection('Product Details', Column(
                     children: [
                       _buildCompactTextField(
                         controller: _nameController,
                         label: 'Product Name',
                         icon: Icons.inventory_2_rounded,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactTextField(
                         controller: _locationController,
                         label: 'Location',
                         icon: Icons.location_on_rounded,
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactTextField(
                         controller: _contactNumberController,
                         label: 'Service Contact',
@@ -190,10 +190,10 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ],
                   )),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Dates
-                  _buildCompactSection('Important Dates', Column(
+                  _buildUltraCompactSection('Dates', Column(
                     children: [
                       _buildCompactDateField(
                         label: 'Purchase Date',
@@ -201,7 +201,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                         selectedDate: _selectedPurchaseDate,
                         onTap: () => _selectDate(context, true),
                       ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 8),
                       _buildCompactDateField(
                         label: 'Warranty End Date',
                         icon: Icons.verified_user_rounded,
@@ -211,21 +211,21 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                     ],
                   )),
                   
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 12),
                   
                   // Error Display
                   if (_errorMessage.isNotEmpty) ...[
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: Colors.red.shade50,
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.red.shade200),
                       ),
                       child: Row(
                         children: [
-                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 20),
-                          const SizedBox(width: 8),
+                          Icon(Icons.error_rounded, color: Colors.red.shade600, size: 16),
+                          const SizedBox(width: 6),
                           Expanded(
                             child: Text(
                               _errorMessage,
@@ -239,14 +239,14 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 12),
                   ],
                   
                   // Update Button
                   _buildActionButton(),
                   
                   // Bottom spacing
-                  SizedBox(height: MediaQuery.of(context).padding.bottom + 8),
+                  const SizedBox(height: 6),
                 ],
               ),
             ),
