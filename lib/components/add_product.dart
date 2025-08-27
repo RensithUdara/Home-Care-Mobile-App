@@ -23,9 +23,9 @@ class AddProductBottomSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       useSafeArea: true,
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.6,
-        minChildSize: 0.4,
-        maxChildSize: 0.6,
+        initialChildSize: 0.35,
+        minChildSize: 0.25,
+        maxChildSize: 0.4,
         builder: (context, scrollController) => AddProductBottomSheet(
           onProductAdded: onProductAdded,
           uid: uid,
