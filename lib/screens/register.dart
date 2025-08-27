@@ -18,6 +18,7 @@ class _RegisterState extends State<Register> {
   final TextEditingController _confirmPasswordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void initState() {
@@ -35,7 +36,24 @@ class _RegisterState extends State<Register> {
     super.dispose();
   }
 
+  void _clearError() {
+    if (_errorMessage.isNotEmpty) {
+      setState(() {
+        _errorMessage = '';
+      });
+    }
+  }
+
+  void _showError(String message) {
+    setState(() {
+      _errorMessage = message;
+      _isLoading = false;
+    });
+  }
+
   void register() async {
+    _clearError();
+    
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -50,44 +68,37 @@ class _RegisterState extends State<Register> {
 
     // Enhanced validation
     if (email.isEmpty) {
-      _showErrorSnackbar("Please enter your email address");
-      setState(() { _isLoading = false; });
+      _showError("Please enter your email address");
       return;
     }
 
     if (!AuthServices.isValidEmail(email)) {
-      _showErrorSnackbar("Please enter a valid email address");
-      setState(() { _isLoading = false; });
+      _showError("Please enter a valid email address");
       return;
     }
 
     if (password.isEmpty) {
-      _showErrorSnackbar("Please enter a password");
-      setState(() { _isLoading = false; });
+      _showError("Please enter a password");
       return;
     }
 
     if (password.length < 8) {
-      _showErrorSnackbar("Password must be at least 8 characters long");
-      setState(() { _isLoading = false; });
+      _showError("Password must be at least 8 characters long");
       return;
     }
 
     if (AuthServices.getPasswordStrength(password) < 3) {
-      _showErrorSnackbar("Please create a stronger password with uppercase, lowercase, and numbers");
-      setState(() { _isLoading = false; });
+      _showError("Please create a stronger password with uppercase, lowercase, and numbers");
       return;
     }
 
     if (confirmPassword.isEmpty) {
-      _showErrorSnackbar("Please confirm your password");
-      setState(() { _isLoading = false; });
+      _showError("Please confirm your password");
       return;
     }
 
     if (password != confirmPassword) {
-      _showErrorSnackbar("Passwords do not match");
-      setState(() { _isLoading = false; });
+      _showError("Passwords do not match");
       return;
     }
 
@@ -101,38 +112,14 @@ class _RegisterState extends State<Register> {
       if (errorMessage.startsWith('Exception: ')) {
         errorMessage = errorMessage.substring(11);
       }
-      _showErrorSnackbar(errorMessage);
+      _showError(errorMessage);
     } finally {
-      if (mounted) {
+      if (mounted && _errorMessage.isEmpty) {
         setState(() {
           _isLoading = false;
         });
       }
     }
-  }
-
-  void _showErrorSnackbar(String message) {
-    if (!mounted) return;
-    final snackBar = SnackBar(
-      content: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.red.shade600,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _showSuccessSnackbar(String message) {
@@ -242,6 +229,40 @@ class _RegisterState extends State<Register> {
                           _buildPasswordStrengthIndicator(),
                           const SizedBox(height: 8),
                           _buildPasswordRequirements(),
+                          
+                          // Error Message Display
+                          if (_errorMessage.isNotEmpty) ...[
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.red.shade50,
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.red.shade200),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.error_outline,
+                                    color: Colors.red.shade700,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      _errorMessage,
+                                      style: TextStyle(
+                                        color: Colors.red.shade700,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          
                           const SizedBox(height: 32),
                           SizedBox(
                             width: double.infinity,

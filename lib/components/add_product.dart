@@ -23,6 +23,7 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
   DateTime? _selectedPurchaseDate;
   DateTime? _selectedWarrantyPeriod;
   Category? _selectedCategory;
+  String _errorMessage = '';
 
   @override
   void dispose() {
@@ -30,6 +31,20 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
     _locationController.dispose();
     _contactNumberController.dispose();
     super.dispose();
+  }
+
+  void _clearError() {
+    if (_errorMessage.isNotEmpty) {
+      setState(() {
+        _errorMessage = '';
+      });
+    }
+  }
+
+  void _showError(String message) {
+    setState(() {
+      _errorMessage = message;
+    });
   }
 
   @override
@@ -179,32 +194,72 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
                 }
               },
             ),
+            
+            // Error Message Display
+            if (_errorMessage.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: Colors.red.shade50,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.red.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.error_outline,
+                      color: Colors.red.shade700,
+                      size: 20,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        _errorMessage,
+                        style: TextStyle(
+                          color: Colors.red.shade700,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+            
             GestureDetector(
               onTap: () async {
+                _clearError();
+                
                 if (_nameController.text.isEmpty ||
                     _locationController.text.isEmpty ||
                     _contactNumberController.text.isEmpty ||
                     _selectedPurchaseDate == null ||
                     _selectedWarrantyPeriod == null ||
                     _selectedCategory == null) {
-                  showErrorDialog(context);
+                  _showError('Please complete all required fields');
                   return;
                 }
 
-                Products newProduct = Products(
-                  id: '',
-                  uid: widget.uid,
-                  name: _nameController.text,
-                  location: _locationController.text,
-                  purchasedDate: _selectedPurchaseDate!,
-                  warrantyPeriod: _selectedWarrantyPeriod!,
-                  contactNumber: int.parse(_contactNumberController.text),
-                  type: _selectedCategory!,
-                );
+                try {
+                  Products newProduct = Products(
+                    id: '',
+                    uid: widget.uid,
+                    name: _nameController.text,
+                    location: _locationController.text,
+                    purchasedDate: _selectedPurchaseDate!,
+                    warrantyPeriod: _selectedWarrantyPeriod!,
+                    contactNumber: int.parse(_contactNumberController.text),
+                    type: _selectedCategory!,
+                  );
 
-                await FirestoreService.addProduct(newProduct);
-                widget.onProductAdded();
-                Navigator.of(context).pop();
+                  await FirestoreService.addProduct(newProduct);
+                  widget.onProductAdded();
+                  Navigator.of(context).pop();
+                } catch (e) {
+                  _showError('Failed to add product: ${e.toString()}');
+                }
               },
               child: Container(
                 padding: const EdgeInsets.all(15),
@@ -228,33 +283,6 @@ class AddProductBottomSheetState extends State<AddProductBottomSheet> {
           ],
         ),
       ),
-    );
-  }
-
-  Future<dynamic> showErrorDialog(BuildContext context) {
-    return showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Theme.of(context).colorScheme.surface,
-          title: const Text(
-            'Please complete all required fields',
-            style: TextStyle(fontSize: 18),
-          ),
-          actions: <Widget>[
-            TextButton(
-              child: Text(
-                'OK',
-                style: TextStyle(
-                    color: Theme.of(context).colorScheme.inversePrimary),
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
     );
   }
 }

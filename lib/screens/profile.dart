@@ -255,93 +255,153 @@ class _ProfilePageState extends State<ProfilePage> with SingleTickerProviderStat
     final TextEditingController currentPasswordController = TextEditingController();
     final TextEditingController newPasswordController = TextEditingController();
     final TextEditingController confirmPasswordController = TextEditingController();
+    String dialogErrorMessage = '';
     
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Change Password'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: currentPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Current Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock_outline),
-                ),
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Text('Change Password'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(
+                    controller: currentPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Current Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: newPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'New Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  TextField(
+                    controller: confirmPasswordController,
+                    obscureText: true,
+                    decoration: const InputDecoration(
+                      labelText: 'Confirm New Password',
+                      border: OutlineInputBorder(),
+                      prefixIcon: Icon(Icons.lock_outline),
+                    ),
+                  ),
+                  
+                  // Error Message Display
+                  if (dialogErrorMessage.isNotEmpty) ...[
+                    const SizedBox(height: 16),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.red.shade50,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.red.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            color: Colors.red.shade700,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              dialogErrorMessage,
+                              style: TextStyle(
+                                color: Colors.red.shade700,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ],
               ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: newPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'New Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
                 ),
-              ),
-              const SizedBox(height: 12),
-              TextField(
-                controller: confirmPasswordController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Confirm New Password',
-                  border: OutlineInputBorder(),
-                  prefixIcon: Icon(Icons.lock),
+                ElevatedButton(
+                  onPressed: () async {
+                    setState(() {
+                      dialogErrorMessage = '';
+                    });
+                    
+                    final currentPassword = currentPasswordController.text;
+                    final newPassword = newPasswordController.text;
+                    final confirmPassword = confirmPasswordController.text;
+                    
+                    if (currentPassword.isEmpty || newPassword.isEmpty || confirmPassword.isEmpty) {
+                      setState(() {
+                        dialogErrorMessage = 'Please fill all fields';
+                      });
+                      return;
+                    }
+                    
+                    if (newPassword != confirmPassword) {
+                      setState(() {
+                        dialogErrorMessage = 'Passwords do not match';
+                      });
+                      return;
+                    }
+                    
+                    if (newPassword.length < 6) {
+                      setState(() {
+                        dialogErrorMessage = 'Password must be at least 6 characters';
+                      });
+                      return;
+                    }
+                    
+                    try {
+                      final user = FirebaseAuth.instance.currentUser;
+                      if (user != null) {
+                        // Re-authenticate user
+                        final credential = EmailAuthProvider.credential(
+                          email: user.email!,
+                          password: currentPassword,
+                        );
+                        await user.reauthenticateWithCredential(credential);
+                        
+                        // Update password
+                        await user.updatePassword(newPassword);
+                        
+                        Navigator.of(context).pop();
+                        _showSuccessSnackbar('Password changed successfully');
+                      }
+                    } catch (e) {
+                      setState(() {
+                        dialogErrorMessage = 'Failed to change password: ${e.toString()}';
+                      });
+                    }
+                  },
+                  child: const Text('Change Password'),
                 ),
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // Implement password change logic here
-                _changePassword(currentPasswordController.text, newPasswordController.text, confirmPasswordController.text);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Change Password'),
-            ),
-          ],
+              ],
+            );
+          },
         );
       },
     );
   }
 
   Future<void> _changePassword(String currentPassword, String newPassword, String confirmPassword) async {
-    if (newPassword != confirmPassword) {
-      _showErrorSnackbar('Passwords do not match');
-      return;
-    }
-    if (newPassword.length < 6) {
-      _showErrorSnackbar('Password must be at least 6 characters');
-      return;
-    }
-    
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user != null) {
-        // Re-authenticate user
-        final credential = EmailAuthProvider.credential(
-          email: user.email!,
-          password: currentPassword,
-        );
-        await user.reauthenticateWithCredential(credential);
-        
-        // Change password
-        await user.updatePassword(newPassword);
-        _showSuccessSnackbar('Password changed successfully');
-      }
-    } catch (e) {
-      _showErrorSnackbar('Failed to change password: ${e.toString()}');
-    }
+    // This method is now handled inline in the dialog above
   }
 
   void _showNotificationSettings() {

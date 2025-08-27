@@ -17,6 +17,7 @@ class _LoginState extends State<Login> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
+  String _errorMessage = '';
 
   @override
   void dispose() {
@@ -25,7 +26,24 @@ class _LoginState extends State<Login> {
     super.dispose();
   }
 
+  void _clearError() {
+    if (_errorMessage.isNotEmpty) {
+      setState(() {
+        _errorMessage = '';
+      });
+    }
+  }
+
+  void _showError(String message) {
+    setState(() {
+      _errorMessage = message;
+      _isLoading = false;
+    });
+  }
+
   void login() async {
+    _clearError();
+    
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -40,26 +58,17 @@ class _LoginState extends State<Login> {
 
     // Basic validation
     if (email.isEmpty) {
-      _showErrorSnackbar("Please enter your email address");
-      setState(() {
-        _isLoading = false;
-      });
+      _showError("Please enter your email address");
       return;
     }
 
     if (password.isEmpty) {
-      _showErrorSnackbar("Please enter your password");
-      setState(() {
-        _isLoading = false;
-      });
+      _showError("Please enter your password");
       return;
     }
 
     if (!AuthServices.isValidEmail(email)) {
-      _showErrorSnackbar("Please enter a valid email address");
-      setState(() {
-        _isLoading = false;
-      });
+      _showError("Please enter a valid email address");
       return;
     }
 
@@ -71,9 +80,9 @@ class _LoginState extends State<Login> {
       if (errorMessage.startsWith('Exception: ')) {
         errorMessage = errorMessage.substring(11);
       }
-      _showErrorSnackbar(errorMessage);
+      _showError(errorMessage);
     } finally {
-      if (mounted) {
+      if (mounted && _errorMessage.isEmpty) {
         setState(() {
           _isLoading = false;
         });
@@ -85,12 +94,12 @@ class _LoginState extends State<Login> {
     String email = _emailController.text.trim();
     
     if (email.isEmpty) {
-      _showErrorSnackbar("Please enter your email address first");
+      _showError("Please enter your email address first");
       return;
     }
 
     if (!AuthServices.isValidEmail(email)) {
-      _showErrorSnackbar("Please enter a valid email address");
+      _showError("Please enter a valid email address");
       return;
     }
 
@@ -110,7 +119,7 @@ class _LoginState extends State<Login> {
       if (errorMessage.startsWith('Exception: ')) {
         errorMessage = errorMessage.substring(11);
       }
-      _showErrorSnackbar(errorMessage);
+      _showError(errorMessage);
     } finally {
       if (mounted) {
         setState(() {
@@ -118,30 +127,6 @@ class _LoginState extends State<Login> {
         });
       }
     }
-  }
-
-  void _showErrorSnackbar(String message) {
-    if (!mounted) return;
-    final snackBar = SnackBar(
-      content: Row(
-        children: [
-          const Icon(Icons.error_outline, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.red.shade600,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   void _showSuccessSnackbar(String message) {
@@ -226,6 +211,40 @@ class _LoginState extends State<Login> {
                         icon: Icons.lock_outline,
                         obscureText: true,
                       ),
+                      
+                      // Error Message Display
+                      if (_errorMessage.isNotEmpty) ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: Colors.red.shade50,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.red.shade200),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.error_outline,
+                                color: Colors.red.shade700,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  _errorMessage,
+                                  style: TextStyle(
+                                    color: Colors.red.shade700,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                      
                       const SizedBox(height: 8),
                       Align(
                         alignment: Alignment.centerRight,
