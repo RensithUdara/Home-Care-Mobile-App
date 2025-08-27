@@ -29,7 +29,7 @@ class EditProductBottomSheet extends StatefulWidget {
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.6,
         minChildSize: 0.4,
-        maxChildSize: 0.85,
+        maxChildSize: 0.6,
         builder: (context, scrollController) => EditProductBottomSheet(
           product: product,
           onProductEdited: onProductEdited,
@@ -113,15 +113,15 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                   const Color(0xFFFF8E53).withOpacity(0.05),
                 ],
               ),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 12),
               child: Column(
                 children: [
-                  // Elegant Drag Handle
+                  // Compact Drag Handle
                   Container(
-                    width: 36,
+                    width: 32,
                     height: 3,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -133,13 +133,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 14),
+                  const SizedBox(height: 10),
                   
-                  // Beautiful Header with Icon and Title
+                  // Compact Header with Icon and Title
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(10),
+                        padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
@@ -149,43 +149,30 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                               const Color(0xFFFF8E53),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(14),
+                          borderRadius: BorderRadius.circular(10),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFF6B6B).withOpacity(0.25),
-                              blurRadius: 8,
-                              offset: const Offset(0, 3),
+                              color: const Color(0xFFFF6B6B).withOpacity(0.2),
+                              blurRadius: 6,
+                              offset: const Offset(0, 2),
                             ),
                           ],
                         ),
                         child: const Icon(
                           Icons.edit_rounded,
                           color: Colors.white,
-                          size: 20,
+                          size: 18,
                         ),
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Edit Product',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF1A1A1A),
-                              ),
-                            ),
-                            Text(
-                              'Update your appliance information',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Text(
+                          'Edit Product',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFF1A1A1A),
+                          ),
                         ),
                       ),
                     ],
