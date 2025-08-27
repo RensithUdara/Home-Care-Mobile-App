@@ -110,9 +110,10 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
               
               // Content
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     // Status badge
                     Row(
@@ -137,7 +138,7 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                       ],
                     ),
                     
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     
                     // Product image
                     Expanded(
@@ -146,12 +147,12 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                           padding: const EdgeInsets.all(8),
                           child: Image.asset(
                             ProductUtils.getImagePath(typeName),
-                            height: 60,
+                            height: 50,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
                               return Icon(
                                 _getProductIcon(typeName),
-                                size: 60,
+                                size: 50,
                                 color: primaryColor.withOpacity(0.5),
                               );
                             },
@@ -160,39 +161,40 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                       ),
                     ),
                     
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 8),
                     
                     // Product details
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
                           ProductUtils.getDisplayName(widget.product.name),
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                            fontSize: 14,
                             color: Theme.of(context).colorScheme.inversePrimary,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Row(
                           children: [
                             Icon(
                               Icons.location_on_outlined,
-                              size: 14,
+                              size: 12,
                               color: Theme.of(context)
                                   .colorScheme
                                   .inversePrimary
                                   .withOpacity(0.6),
                             ),
-                            const SizedBox(width: 4),
+                            const SizedBox(width: 3),
                             Expanded(
                               child: Text(
                                 widget.product.location,
                                 style: TextStyle(
-                                  fontSize: 12,
+                                  fontSize: 11,
                                   color: Theme.of(context)
                                       .colorScheme
                                       .inversePrimary
@@ -204,20 +206,20 @@ class _EnhancedItemTileState extends State<EnhancedItemTile>
                             ),
                           ],
                         ),
-                        const SizedBox(height: 4),
+                        const SizedBox(height: 3),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
+                            horizontal: 6,
+                            vertical: 2,
                           ),
                           decoration: BoxDecoration(
                             color: primaryColor.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            borderRadius: BorderRadius.circular(6),
                           ),
                           child: Text(
                             typeName,
                             style: TextStyle(
-                              fontSize: 10,
+                              fontSize: 9,
                               fontWeight: FontWeight.w600,
                               color: ProductUtils.getTextColor(
                                 typeName, 
