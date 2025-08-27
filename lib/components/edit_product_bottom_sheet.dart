@@ -116,13 +116,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
               borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
             ),
             child: Container(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 20),
+              padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
               child: Column(
                 children: [
                   // Elegant Drag Handle
                   Container(
-                    width: 40,
-                    height: 4,
+                    width: 36,
+                    height: 3,
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
@@ -133,13 +133,13 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                       borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: 14),
                   
                   // Beautiful Header with Icon and Title
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.all(12),
+                        padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
@@ -149,22 +149,22 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                               const Color(0xFFFF8E53),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(16),
+                          borderRadius: BorderRadius.circular(14),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFFFF6B6B).withOpacity(0.3),
-                              blurRadius: 12,
-                              offset: const Offset(0, 4),
+                              color: const Color(0xFFFF6B6B).withOpacity(0.25),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
                             ),
                           ],
                         ),
                         child: const Icon(
                           Icons.edit_rounded,
                           color: Colors.white,
-                          size: 24,
+                          size: 20,
                         ),
                       ),
-                      const SizedBox(width: 16),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,7 +172,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                             const Text(
                               'Edit Product',
                               style: TextStyle(
-                                fontSize: 24,
+                                fontSize: 20,
                                 fontWeight: FontWeight.bold,
                                 color: Color(0xFF1A1A1A),
                               ),
@@ -180,7 +180,7 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
                             Text(
                               'Update your appliance information',
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 color: Colors.grey.shade600,
                                 fontWeight: FontWeight.w500,
                               ),
