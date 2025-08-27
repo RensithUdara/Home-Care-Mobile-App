@@ -354,6 +354,15 @@ class _ProductPageState extends State<ProductPage>
                               label: const Text('Edit'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: theme.colorScheme.primary,
+                                backgroundColor: isDark 
+                                  ? Colors.transparent 
+                                  : Colors.white.withOpacity(0.8),
+                                side: BorderSide(
+                                  color: theme.colorScheme.primary,
+                                  width: isDark ? 1 : 1.5,
+                                ),
+                                elevation: isDark ? 0 : 1,
+                                shadowColor: Colors.black.withOpacity(0.1),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
@@ -371,7 +380,15 @@ class _ProductPageState extends State<ProductPage>
                               label: const Text('Delete'),
                               style: OutlinedButton.styleFrom(
                                 foregroundColor: Colors.red,
-                                side: const BorderSide(color: Colors.red),
+                                backgroundColor: isDark 
+                                  ? Colors.transparent 
+                                  : Colors.white.withOpacity(0.8),
+                                side: BorderSide(
+                                  color: Colors.red,
+                                  width: isDark ? 1 : 1.5,
+                                ),
+                                elevation: isDark ? 0 : 1,
+                                shadowColor: Colors.red.withOpacity(0.1),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),
