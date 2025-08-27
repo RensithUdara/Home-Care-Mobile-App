@@ -329,31 +329,31 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
     required VoidCallback onTap,
   }) {
     return Container(
-      height: 48,
+      height: 40,
       decoration: BoxDecoration(
         color: Colors.grey.shade50,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.grey.shade200),
       ),
       child: InkWell(
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(10),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
           child: Row(
             children: [
-              Icon(icon, color: Colors.orange.shade600, size: 20),
-              const SizedBox(width: 12),
+              Icon(icon, color: Colors.orange.shade600, size: 16),
+              const SizedBox(width: 8),
               Text(
                 selectedDate == null ? label : DateFormat('MMM dd, yyyy').format(selectedDate),
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   color: selectedDate == null ? Colors.grey.shade600 : Colors.grey.shade800,
                   fontWeight: selectedDate == null ? FontWeight.normal : FontWeight.w500,
                 ),
               ),
               const Spacer(),
-              Icon(Icons.calendar_today, color: Colors.orange.shade600, size: 16),
+              Icon(Icons.calendar_today, color: Colors.orange.shade600, size: 14),
             ],
           ),
         ),
