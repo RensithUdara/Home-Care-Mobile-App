@@ -318,7 +318,6 @@ class _EditProductBottomSheetState extends State<EditProductBottomSheet> {
           contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           labelStyle: TextStyle(color: Colors.grey.shade600, fontSize: 13),
         ),
-        ),
       ),
     );
   }
