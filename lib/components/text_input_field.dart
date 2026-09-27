@@ -55,8 +55,9 @@ class _TextInputFieldState extends State<TextInputField> {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        boxShadow:
-            focused ? AppShadows.glow(AppColors.primary, strength: 0.55) : null,
+        boxShadow: focused
+            ? AppShadows.glow(AppColors.primary, strength: 0.55)
+            : const [],
       ),
       child: TextField(
         focusNode: _focus,

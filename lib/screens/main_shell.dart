@@ -153,7 +153,7 @@ class _NavBar extends StatelessWidget {
                   children: [
                     AnimatedContainer(
                       duration: const Duration(milliseconds: 240),
-                      curve: Curves.easeOutBack,
+                      curve: Curves.easeOutCubic,
                       padding: EdgeInsets.symmetric(
                           horizontal: horizontalPadding, vertical: 6),
                       decoration: BoxDecoration(
@@ -161,7 +161,7 @@ class _NavBar extends StatelessWidget {
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: selected
                             ? AppShadows.glow(AppColors.primary, strength: 0.8)
-                            : null,
+                            : const [],
                       ),
                       child: Icon(icon,
                           size: iconSize,

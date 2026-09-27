@@ -255,7 +255,8 @@ class _GlassButton extends StatelessWidget {
                 gradient: active ? AppColors.sunsetGradient : null,
                 color: active ? null : Colors.white.withValues(alpha: 0.16),
                 border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
-                boxShadow: active ? AppShadows.glow(AppColors.warning) : null,
+                boxShadow:
+                    active ? AppShadows.glow(AppColors.warning) : const [],
               ),
               child: Icon(icon, color: Colors.white),
             ),
