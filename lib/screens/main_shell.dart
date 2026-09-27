@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_care/components/product_form_sheet.dart';
@@ -102,15 +104,20 @@ class _NavBar extends StatelessWidget {
                 ),
                 boxShadow: AppShadows.raised(context, depth: 1.2),
               ),
-              child: Row(
-                children: [
-                  _item(context, 0, Icons.home_rounded, 'Home'),
-                  _item(context, 1, Icons.insights_rounded, 'Insights'),
-                  const SizedBox(width: 72),
-                  _item(context, 2, Icons.verified_user_rounded, 'Warranty',
-                      badge: warrantyBadge),
-                  _item(context, 3, Icons.person_rounded, 'Profile'),
-                ],
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final centerGap = constraints.maxWidth < 320 ? 56.0 : 72.0;
+                  return Row(
+                    children: [
+                      _item(context, 0, Icons.home_rounded, 'Home'),
+                      _item(context, 1, Icons.insights_rounded, 'Insights'),
+                      SizedBox(width: centerGap),
+                      _item(context, 2, Icons.verified_user_rounded, 'Warranty',
+                          badge: warrantyBadge),
+                      _item(context, 3, Icons.person_rounded, 'Profile'),
+                    ],
+                  );
+                },
               ),
             ),
             Positioned(top: 0, child: _AddButton(onTap: onAdd)),
@@ -127,54 +134,70 @@ class _NavBar extends StatelessWidget {
       child: GestureDetector(
         behavior: HitTestBehavior.opaque,
         onTap: () => onTap(i),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final itemWidth = constraints.maxWidth;
+            final iconSize = itemWidth < 34 ? 18.0 : 22.0;
+            final horizontalPadding =
+                math.max(0.0, math.min(14.0, (itemWidth - iconSize) / 2));
+            final showLabel = itemWidth >= 48;
+
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 240),
-                  curve: Curves.easeOutBack,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
-                  decoration: BoxDecoration(
-                    gradient: selected ? AppColors.brandGradient : null,
-                    borderRadius: BorderRadius.circular(14),
-                    boxShadow: selected
-                        ? AppShadows.glow(AppColors.primary, strength: 0.8)
-                        : null,
-                  ),
-                  child: Icon(icon,
-                      size: 22,
-                      color: selected ? Colors.white : context.textMuted),
-                ),
-                if (badge > 0)
-                  Positioned(
-                    right: 4,
-                    top: -2,
-                    child: Container(
-                      width: 10,
-                      height: 10,
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    AnimatedContainer(
+                      duration: const Duration(milliseconds: 240),
+                      curve: Curves.easeOutBack,
+                      padding: EdgeInsets.symmetric(
+                          horizontal: horizontalPadding, vertical: 6),
                       decoration: BoxDecoration(
-                        color: AppColors.warning,
-                        shape: BoxShape.circle,
-                        border: Border.all(color: context.surface, width: 2),
+                        gradient: selected ? AppColors.brandGradient : null,
+                        borderRadius: BorderRadius.circular(14),
+                        boxShadow: selected
+                            ? AppShadows.glow(AppColors.primary, strength: 0.8)
+                            : null,
                       ),
+                      child: Icon(icon,
+                          size: iconSize,
+                          color: selected ? Colors.white : context.textMuted),
+                    ),
+                    if (badge > 0)
+                      Positioned(
+                        right: math.min(4.0, horizontalPadding),
+                        top: -2,
+                        child: Container(
+                          width: 10,
+                          height: 10,
+                          decoration: BoxDecoration(
+                            color: AppColors.warning,
+                            shape: BoxShape.circle,
+                            border:
+                                Border.all(color: context.surface, width: 2),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+                if (showLabel) ...[
+                  const SizedBox(height: 3),
+                  Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
+                      color: selected ? AppColors.primary : context.textMuted,
                     ),
                   ),
+                ],
               ],
-            ),
-            const SizedBox(height: 3),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 10.5,
-                fontWeight: selected ? FontWeight.w800 : FontWeight.w600,
-                color: selected ? AppColors.primary : context.textMuted,
-              ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );

@@ -1319,20 +1319,52 @@ class _SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: () {
-        HapticFeedback.selectionClick();
-        onTap();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final orbSize = constraints.maxWidth < 240 ? 34.0 : 40.0;
+        return InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+            HapticFeedback.selectionClick();
+            onTap();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 9),
+            child: Row(
+              children: [
+                IconOrb(icon: icon, color: color, size: orbSize),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        title,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        style: const TextStyle(fontWeight: FontWeight.w700),
+                      ),
+                      if (subtitle != null) ...[
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle!,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                              color: context.textMuted, fontSize: 12.5),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: context.textMuted),
+              ],
+            ),
+          ),
+        );
       },
-      contentPadding: const EdgeInsets.symmetric(horizontal: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      leading: IconOrb(icon: icon, color: color, size: 40),
-      title: Text(title, style: const TextStyle(fontWeight: FontWeight.w700)),
-      subtitle: subtitle == null
-          ? null
-          : Text(subtitle!,
-              style: TextStyle(color: context.textMuted, fontSize: 12.5)),
-      trailing: Icon(Icons.chevron_right_rounded, color: context.textMuted),
     );
   }
 }

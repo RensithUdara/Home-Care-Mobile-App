@@ -433,8 +433,8 @@ class _FloatingOrbsState extends State<FloatingOrbs>
           gradient: RadialGradient(
             center: const Alignment(-0.35, -0.35),
             colors: [
-              widget.color.withValues(alpha: alpha * 1.8),
-              widget.color.withValues(alpha: alpha * 0.3),
+              widget.color.withValues(alpha: (alpha * 1.8).clamp(0.0, 1.0)),
+              widget.color.withValues(alpha: (alpha * 0.3).clamp(0.0, 1.0)),
             ],
           ),
         ),

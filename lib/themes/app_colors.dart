@@ -108,7 +108,7 @@ class AppShadows {
 
   static List<BoxShadow> glow(Color color, {double strength = 1.0}) => [
         BoxShadow(
-          color: color.withValues(alpha: 0.40 * strength),
+          color: color.withValues(alpha: (0.40 * strength).clamp(0.0, 1.0)),
           blurRadius: 22,
           offset: const Offset(0, 10),
           spreadRadius: -6,

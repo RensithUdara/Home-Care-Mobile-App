@@ -188,14 +188,35 @@ class _HomeTabState extends State<HomeTab> {
 
   Widget _actionTile(BuildContext sheetContext, IconData icon, String label,
       Color color, VoidCallback onTap) {
-    return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 4),
-      leading: IconOrb(icon: icon, color: color, size: 40),
-      title: Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
-      trailing: Icon(Icons.chevron_right_rounded, color: context.textMuted),
-      onTap: () {
-        Navigator.pop(sheetContext);
-        onTap();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final orbSize = constraints.maxWidth < 220 ? 34.0 : 40.0;
+        return InkWell(
+          borderRadius: BorderRadius.circular(14),
+          onTap: () {
+            Navigator.pop(sheetContext);
+            onTap();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+            child: Row(
+              children: [
+                IconOrb(icon: icon, color: color, size: orbSize),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    softWrap: false,
+                    style: const TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+                Icon(Icons.chevron_right_rounded, color: context.textMuted),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
