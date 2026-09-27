@@ -560,7 +560,17 @@ class _Facts extends StatelessWidget {
         products.length /
         30.4;
 
+    final withReceipt = products.where((p) => p.hasReceipt).length;
     final facts = [
+      (
+        Icons.receipt_long_rounded,
+        'Receipts saved',
+        '$withReceipt of ${products.length} appliances',
+        withReceipt == products.length
+            ? 'Every appliance has proof of purchase'
+            : 'Add the rest to make warranty claims easier',
+        withReceipt == products.length ? AppColors.success : AppColors.warning
+      ),
       (
         Icons.history_rounded,
         'Oldest appliance',

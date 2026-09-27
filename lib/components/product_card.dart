@@ -263,7 +263,9 @@ class _Badges extends StatelessWidget {
     final service = product.serviceStatus;
     final serviceAlert =
         service == ServiceStatus.dueSoon || service == ServiceStatus.overdue;
-    if (!product.isFavorite && !serviceAlert) return const SizedBox.shrink();
+    if (!product.isFavorite && !serviceAlert && !product.hasReceipt) {
+      return const SizedBox.shrink();
+    }
     return Padding(
       padding: const EdgeInsets.only(right: 6),
       child: Row(
@@ -274,6 +276,12 @@ class _Badges extends StatelessWidget {
               message: 'Favorite',
               child:
                   Icon(Icons.star_rounded, size: 17, color: Color(0xFFFBBF24)),
+            ),
+          if (product.hasReceipt)
+            Tooltip(
+              message: 'Receipt saved',
+              child: Icon(Icons.receipt_long_rounded,
+                  size: 16, color: context.textMuted),
             ),
           if (serviceAlert)
             Tooltip(

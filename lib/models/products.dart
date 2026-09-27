@@ -18,6 +18,7 @@ class Products {
   bool isFavorite;
   DateTime? nextServiceDate;
   List<ServiceRecord> serviceHistory;
+  List<ProductDocument> documents;
 
   Products({
     required this.uid,
@@ -35,7 +36,12 @@ class Products {
     this.isFavorite = false,
     this.nextServiceDate,
     List<ServiceRecord>? serviceHistory,
-  }) : serviceHistory = serviceHistory ?? [];
+    List<ProductDocument>? documents,
+  })  : serviceHistory = serviceHistory ?? [],
+        documents = documents ?? [];
+
+  bool get hasReceipt => documents.any(
+      (d) => d.type == DocumentType.receipt || d.type == DocumentType.invoice);
 
   /// Total spent on recorded repairs and servicing.
   double get maintenanceCost =>
@@ -60,6 +66,7 @@ class Products {
       'nextServiceDate':
           nextServiceDate == null ? null : _toDateOnly(nextServiceDate!),
       'serviceHistory': serviceHistory.map((r) => r.toJSON()).toList(),
+      'documents': documents.map((d) => d.toJSON()).toList(),
     };
   }
 
@@ -90,6 +97,12 @@ class Products {
           .map((m) => ServiceRecord.fromMap(Map<String, dynamic>.from(m)))
           .toList()
         ..sort((a, b) => b.date.compareTo(a.date)),
+      documents: (map['documents'] as List? ?? const [])
+          .whereType<Map>()
+          .map((m) => ProductDocument.fromMap(Map<String, dynamic>.from(m)))
+          .where((d) => d.url.isNotEmpty)
+          .toList()
+        ..sort((a, b) => b.addedAt.compareTo(a.addedAt)),
     );
   }
 
@@ -119,6 +132,54 @@ class Products {
     if (value is String && value.trim().isNotEmpty) return value.trim();
     return null;
   }
+}
+
+enum DocumentType { receipt, warrantyCard, invoice, manual, photo, other }
+
+extension DocumentTypeX on DocumentType {
+  String get label => switch (this) {
+        DocumentType.receipt => 'Receipt',
+        DocumentType.warrantyCard => 'Warranty card',
+        DocumentType.invoice => 'Invoice',
+        DocumentType.manual => 'Manual',
+        DocumentType.photo => 'Photo',
+        DocumentType.other => 'Other',
+      };
+}
+
+/// A photo of a receipt, warranty card, manual, etc. stored in Firebase
+/// Storage at [path] and viewable at [url].
+class ProductDocument {
+  final String id;
+  final DocumentType type;
+  final String url;
+  final String path;
+  final DateTime addedAt;
+
+  const ProductDocument({
+    required this.id,
+    required this.type,
+    required this.url,
+    required this.path,
+    required this.addedAt,
+  });
+
+  Map<String, dynamic> toJSON() => {
+        'id': id,
+        'type': type.name,
+        'url': url,
+        'path': path,
+        'addedAt': addedAt.toIso8601String(),
+      };
+
+  factory ProductDocument.fromMap(Map<String, dynamic> map) => ProductDocument(
+        id: map['id'] as String? ?? '',
+        type: DocumentType.values.firstWhere((t) => t.name == map['type'],
+            orElse: () => DocumentType.other),
+        url: map['url'] as String? ?? '',
+        path: map['path'] as String? ?? '',
+        addedAt: Products.parseDate(map['addedAt']),
+      );
 }
 
 /// One repair, service visit or maintenance task done on an appliance.

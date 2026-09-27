@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>Take photos of receipts and warranty cards for your appliances.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Attach receipts and warranty cards from your photo library.</string>
 </dict>
 </plist>

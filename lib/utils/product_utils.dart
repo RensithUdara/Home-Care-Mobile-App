@@ -126,6 +126,8 @@ class ProductUtils {
       if (p.serviceHistory.isNotEmpty)
         'Service records: ${p.serviceHistory.length}'
             '${p.maintenanceCost > 0 ? ' (${formatMoney(p.maintenanceCost)} spent)' : ''}',
+      if (p.documents.isNotEmpty)
+        'Documents: ${p.documents.map((d) => d.type.label).join(', ')}',
       if (p.notes != null) 'Notes: ${p.notes}',
     ];
     return lines.join('\n');

@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
+import 'package:home_care/components/documents_section.dart';
 import 'package:home_care/components/product_form_sheet.dart';
 import 'package:home_care/components/service_section.dart';
 import 'package:home_care/components/ui/common.dart';
@@ -64,6 +65,7 @@ class _ProductPageState extends State<ProductPage> {
     setState(() => _deleting = true);
     try {
       await store.delete(product);
+      store.purgeFiles(product);
       navigator.pop();
     } catch (_) {
       if (mounted) {
@@ -178,6 +180,8 @@ class _ProductPageState extends State<ProductPage> {
                     const SizedBox(height: 16),
                     Entrance(index: 2, child: _buildNotes(product.notes!)),
                   ],
+                  const SizedBox(height: 16),
+                  Entrance(index: 3, child: DocumentsSection(product: product)),
                   const SizedBox(height: 16),
                   Entrance(index: 3, child: ServiceSection(product: product)),
                   const SizedBox(height: 20),

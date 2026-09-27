@@ -6,7 +6,9 @@ import 'package:home_care/components/ui/common.dart';
 import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/data/legal_text.dart';
 import 'package:home_care/screens/legal_page.dart';
+import 'package:home_care/models/products.dart';
 import 'package:home_care/services/auth/authentication.dart';
+import 'package:home_care/services/document_storage.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 import 'package:home_care/services/product_store.dart';
 import 'package:home_care/services/reminder_service.dart';
@@ -445,6 +447,10 @@ class _ProfilePageState extends State<ProfilePage> {
       (
         'How do I track repairs and servicing?',
         'Open an appliance and scroll to "Service & maintenance". Add service records with cost and technician, and schedule the next service to get a reminder.'
+      ),
+      (
+        'Can I scan a barcode instead of typing the serial number?',
+        'Yes. Tap the scan icon on the serial number field when adding an appliance. On Home, the scan icon in the top bar finds an appliance by its label, or offers to add it if it is new.'
       ),
       (
         'How do I mark favorites?',
@@ -898,6 +904,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final db = FirebaseFirestore.instance;
     final products =
         await db.collection('products').where('uid', isEqualTo: user.uid).get();
+    await DocumentStorage.deleteAll(
+        products.docs.map((d) => Products.fromMap(d.data(), d.id)));
     final batch = db.batch();
     for (final doc in products.docs) {
       batch.delete(doc.reference);

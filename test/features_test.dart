@@ -39,8 +39,7 @@ void main() {
     test('skips reminders already in the past', () {
       // 7-day mark (June 3) and 30-day mark (May 11) are handled correctly:
       // only the ones after "now" remain.
-      final r = planReminders([_p(warranty: DateTime(2026, 6, 10))],
-          now: now);
+      final r = planReminders([_p(warranty: DateTime(2026, 6, 10))], now: now);
       expect(r.map((e) => e.when),
           [DateTime(2026, 6, 3, 9), DateTime(2026, 6, 10, 9)]);
     });
@@ -95,7 +94,8 @@ void main() {
         warranty: DateTime(2027, 1, 1),
         nextService: DateTime(2026, 9, 1),
         history: [
-          ServiceRecord(date: DateTime(2025, 1, 1), title: 'Cleaning', cost: 40),
+          ServiceRecord(
+              date: DateTime(2025, 1, 1), title: 'Cleaning', cost: 40),
           ServiceRecord(
               date: DateTime(2026, 2, 1),
               title: 'Gas refill',
@@ -107,8 +107,8 @@ void main() {
       final copy = Products.fromMap(p.toJSON(), p.id);
       expect(copy.isFavorite, isTrue);
       expect(copy.nextServiceDate, DateTime(2026, 9, 1));
-      expect(copy.serviceHistory.map((r) => r.title),
-          ['Gas refill', 'Cleaning']);
+      expect(
+          copy.serviceHistory.map((r) => r.title), ['Gas refill', 'Cleaning']);
       expect(copy.serviceHistory.first.provider, 'CoolFix');
       expect(copy.maintenanceCost, 100.5);
     });

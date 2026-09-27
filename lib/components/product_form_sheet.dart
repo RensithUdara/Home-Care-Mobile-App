@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:home_care/components/ui/common.dart';
 import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/models/products.dart';
+import 'package:home_care/screens/scanner_page.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -15,6 +16,9 @@ class ProductFormSheet extends StatefulWidget {
 
   /// When set (and [product] is null), prefills a new appliance from it.
   final Products? template;
+
+  /// Pre-fills the serial number (e.g. from a barcode scan) for a new item.
+  final String? initialSerial;
   final VoidCallback onSaved;
 
   const ProductFormSheet({
@@ -23,6 +27,7 @@ class ProductFormSheet extends StatefulWidget {
     required this.onSaved,
     this.product,
     this.template,
+    this.initialSerial,
   });
 
   bool get isEditing => product != null;
@@ -34,6 +39,7 @@ class ProductFormSheet extends StatefulWidget {
     required VoidCallback onSaved,
     Products? product,
     Products? template,
+    String? initialSerial,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -47,7 +53,11 @@ class ProductFormSheet extends StatefulWidget {
             maxHeight: MediaQuery.of(context).size.height * 0.92,
           ),
           child: ProductFormSheet(
-              uid: uid, onSaved: onSaved, product: product, template: template),
+              uid: uid,
+              onSaved: onSaved,
+              product: product,
+              template: template,
+              initialSerial: initialSerial),
         ),
       ),
     );
@@ -96,6 +106,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       _purchase = p.purchasedDate;
       _warranty = p.warrantyPeriod;
     }
+    if (widget.initialSerial != null) _serial.text = widget.initialSerial!;
   }
 
   @override
@@ -211,6 +222,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       isFavorite: widget.product?.isFavorite ?? false,
       nextServiceDate: widget.product?.nextServiceDate,
       serviceHistory: widget.product?.serviceHistory,
+      documents: widget.product?.documents,
     );
 
     try {
@@ -297,7 +309,13 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _field(
-                      _serial, 'Serial no. (optional)', Icons.qr_code_rounded),
+                      _serial, 'Serial no. (optional)', Icons.qr_code_rounded,
+                      suffix: IconButton(
+                        tooltip: 'Scan barcode',
+                        icon: const Icon(Icons.qr_code_scanner_rounded,
+                            color: AppColors.primary),
+                        onPressed: _scanSerial,
+                      )),
                 ),
               ],
             ),
@@ -378,12 +396,22 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
         ),
       );
 
+  Future<void> _scanSerial() async {
+    final value = await ScannerPage.scan(context,
+        title: 'Scan serial number',
+        hint: 'Point at the serial number barcode on the appliance label');
+    if (value == null || !mounted) return;
+    setState(() => _serial.text = value);
+    _clearError();
+  }
+
   Widget _field(
     TextEditingController controller,
     String hint,
     IconData icon, {
     TextInputType keyboard = TextInputType.text,
     int maxLines = 1,
+    Widget? suffix,
     TextCapitalization capitalization = TextCapitalization.sentences,
   }) {
     return TextField(
@@ -396,6 +424,7 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       decoration: InputDecoration(
         hintText: hint,
         prefixIcon: maxLines == 1 ? Icon(icon, size: 20) : null,
+        suffixIcon: suffix,
         isDense: true,
       ),
     );

@@ -8,6 +8,7 @@ import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/components/ui/modern_app_bar.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/screens/product.dart';
+import 'package:home_care/screens/scanner_page.dart';
 import 'package:home_care/services/product_store.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -90,6 +91,7 @@ class _HomeTabState extends State<HomeTab> {
       final matchesSearch = q.isEmpty ||
           p.name.toLowerCase().contains(q) ||
           p.location.toLowerCase().contains(q) ||
+          (p.serialNumber?.toLowerCase().contains(q) ?? false) ||
           (p.brand?.toLowerCase().contains(q) ?? false) ||
           ProductUtils.categoryName(p.type).toLowerCase().contains(q);
       final matchesCategory = _favoritesOnly
@@ -102,13 +104,83 @@ class _HomeTabState extends State<HomeTab> {
 
   void _open(Products p) => ProductPage.open(context, p);
 
+  /// Scans a label and opens the matching appliance, or offers to add it.
+  Future<void> _scanLookup() async {
+    final value = await ScannerPage.scan(
+      context,
+      title: 'Find appliance',
+      hint: 'Scan the serial number barcode or QR code on the appliance',
+    );
+    if (value == null || !mounted) return;
+    final store = context.read<ProductStore>();
+    final match = findBySerial(store.products, value);
+    if (match != null) {
+      _open(match);
+      return;
+    }
+    showModalBottomSheet(
+      context: context,
+      builder: (sheetContext) => SheetFrame(
+        title: 'Not in your home yet',
+        subtitle: 'No appliance has this serial number',
+        icon: Icons.qr_code_2_rounded,
+        color: AppColors.info,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+              20, 8, 20, 20 + MediaQuery.of(sheetContext).padding.bottom),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: sheetContext.surfaceAlt,
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                child: SelectableText(
+                  value,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      fontWeight: FontWeight.w800,
+                      fontSize: 16,
+                      letterSpacing: 0.5),
+                ),
+              ),
+              const SizedBox(height: 18),
+              Button3D(
+                label: 'Add as new appliance',
+                icon: Icons.add_rounded,
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  ProductFormSheet.show(context,
+                      uid: store.uid,
+                      initialSerial: value,
+                      onSaved: store.refresh);
+                },
+              ),
+              const SizedBox(height: 8),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(sheetContext);
+                  _scanLookup();
+                },
+                child: const Text('Scan again'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _delete(Products p) async {
     final store = context.read<ProductStore>();
     final messenger = ScaffoldMessenger.of(context);
     try {
       final backup = await store.delete(p);
       messenger.hideCurrentSnackBar();
-      messenger.showSnackBar(SnackBar(
+      final bar = messenger.showSnackBar(SnackBar(
         backgroundColor: AppColors.primaryDark,
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 100),
         content: Text('${p.name} deleted',
@@ -120,6 +192,10 @@ class _HomeTabState extends State<HomeTab> {
           onPressed: () => store.restore(backup),
         ),
       ));
+      // Photos are only removed once the undo window has passed.
+      bar.closed.then((reason) {
+        if (reason != SnackBarClosedReason.action) store.purgeFiles(backup);
+      });
     } catch (_) {
       if (mounted) AppSnack.error(context, 'Could not delete ${p.name}');
     }
@@ -311,6 +387,13 @@ class _HomeTabState extends State<HomeTab> {
       title: const Text('Home Care',
           style: TextStyle(color: Colors.white, fontWeight: FontWeight.w800)),
       actions: [
+        AppBarIconButton(
+          icon: Icons.qr_code_scanner_rounded,
+          tooltip: 'Scan appliance label',
+          onGradient: true,
+          onPressed: _scanLookup,
+        ),
+        const SizedBox(width: 10),
         AppBarIconButton(
           icon: Icons.notifications_rounded,
           tooltip: 'Warranty alerts',

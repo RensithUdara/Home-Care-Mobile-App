@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:home_care/models/products.dart';
+import 'package:home_care/services/document_storage.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/utils/warranty.dart';
@@ -137,6 +138,15 @@ class ProductStore extends ChangeNotifier {
     return backup;
   }
 
+  /// Deletes a product's stored photos. Call once undo is no longer
+  /// possible, since a restored product would point at missing files.
+  Future<void> purgeFiles(Products product) =>
+      DocumentStorage.deleteAll([product]);
+
+  /// Appliances without a receipt or invoice photo.
+  List<Products> get missingReceipts =>
+      _products.where((p) => !p.hasReceipt).toList();
+
   Future<void> restore(Products product) async {
     await FirestoreService.restoreProduct(product);
     _products.add(product);
@@ -161,4 +171,23 @@ class ProductStore extends ChangeNotifier {
     }
     return copy;
   }
+}
+
+String _normalizeSerial(String s) =>
+    s.toUpperCase().replaceAll(RegExp(r'[^A-Z0-9]'), '');
+
+/// Finds the product whose serial number matches a scanned value. Ignores
+/// case, spaces and punctuation, and also matches when the scan contains the
+/// serial (e.g. a QR code reading "SN: ABC123 / MODEL X").
+Products? findBySerial(List<Products> products, String scanned) {
+  final scan = _normalizeSerial(scanned);
+  if (scan.isEmpty) return null;
+  Products? partial;
+  for (final p in products) {
+    final serial = _normalizeSerial(p.serialNumber ?? '');
+    if (serial.isEmpty) continue;
+    if (serial == scan) return p;
+    if (serial.length >= 5 && scan.contains(serial)) partial ??= p;
+  }
+  return partial;
 }
