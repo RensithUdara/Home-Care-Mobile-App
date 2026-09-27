@@ -108,8 +108,8 @@ class _ReportPageState extends State<ReportPage> {
                   icon: Icons.meeting_room_rounded,
                   label: 'Group by room',
                   selected: _options.groupByRoom,
-                  onTap: () => _toggle(_options.copyWith(
-                      groupByRoom: !_options.groupByRoom)),
+                  onTap: () => _toggle(
+                      _options.copyWith(groupByRoom: !_options.groupByRoom)),
                 ),
                 _OptionChip(
                   icon: Icons.build_rounded,
@@ -194,13 +194,12 @@ class _OptionChip extends StatelessWidget {
                 color: selected ? Colors.transparent : context.outline),
             boxShadow: selected
                 ? AppShadows.glow(AppColors.primary, strength: 0.6)
-                : null,
+                : const [],
           ),
           child: Row(
             children: [
               Icon(selected ? Icons.check_rounded : icon,
-                  size: 17,
-                  color: selected ? Colors.white : context.textMuted),
+                  size: 17, color: selected ? Colors.white : context.textMuted),
               const SizedBox(width: 6),
               Text(label,
                   style: TextStyle(
