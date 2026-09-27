@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:home_care/components/product_form_sheet.dart';
+import 'package:home_care/components/service_section.dart';
 import 'package:home_care/components/ui/common.dart';
 import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/components/ui/modern_app_bar.dart';
@@ -11,6 +12,7 @@ import 'package:home_care/models/products.dart';
 import 'package:home_care/services/product_store.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
+import 'package:home_care/utils/share_helper.dart';
 import 'package:home_care/utils/warranty.dart';
 import 'package:provider/provider.dart';
 
@@ -117,10 +119,32 @@ class _ProductPageState extends State<ProductPage> {
             ),
             title: Text(
               product.name,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(
                   color: Colors.white, fontWeight: FontWeight.w800),
             ),
             actions: [
+              AppBarIconButton(
+                icon: product.isFavorite
+                    ? Icons.star_rounded
+                    : Icons.star_outline_rounded,
+                tooltip: product.isFavorite
+                    ? 'Remove from favorites'
+                    : 'Add to favorites',
+                color: product.isFavorite ? const Color(0xFFFBBF24) : null,
+                onGradient: true,
+                onPressed: () async {
+                  try {
+                    await store.toggleFavorite(product);
+                  } catch (_) {
+                    if (context.mounted) {
+                      AppSnack.error(context, 'Could not update favorites');
+                    }
+                  }
+                },
+              ),
+              const SizedBox(width: 10),
               AppBarIconButton(
                 icon: Icons.edit_rounded,
                 tooltip: 'Edit',
@@ -154,9 +178,11 @@ class _ProductPageState extends State<ProductPage> {
                     const SizedBox(height: 16),
                     Entrance(index: 2, child: _buildNotes(product.notes!)),
                   ],
+                  const SizedBox(height: 16),
+                  Entrance(index: 3, child: ServiceSection(product: product)),
                   const SizedBox(height: 20),
                   Entrance(
-                    index: 3,
+                    index: 4,
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
@@ -184,15 +210,23 @@ class _ProductPageState extends State<ProductPage> {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
+                                child: Builder(
+                                  builder: (buttonContext) => _secondaryAction(
+                                    Icons.ios_share_rounded,
+                                    'Share',
+                                    () => shareProduct(buttonContext, product),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
                                 child: _secondaryAction(
-                                  Icons.ios_share_rounded,
-                                  'Copy details',
-                                  () {
-                                    Clipboard.setData(ClipboardData(
-                                        text: ProductUtils.shareText(product)));
-                                    AppSnack.success(
-                                        context, 'Details copied to clipboard');
-                                  },
+                                  Icons.library_add_rounded,
+                                  'Duplicate',
+                                  () => ProductFormSheet.show(context,
+                                      uid: store.uid,
+                                      template: product,
+                                      onSaved: store.refresh),
                                 ),
                               ),
                             ],
@@ -508,13 +542,16 @@ class _ProductPageState extends State<ProductPage> {
       onTap: onTap,
       depth: 0.5,
       radius: 16,
-      padding: const EdgeInsets.symmetric(vertical: 14),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 4),
+      child: Column(
         children: [
-          Icon(icon, size: 18, color: AppColors.primary),
-          const SizedBox(width: 8),
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+          Icon(icon, size: 22, color: AppColors.primary),
+          const SizedBox(height: 4),
+          Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style:
+                  const TextStyle(fontWeight: FontWeight.w700, fontSize: 12.5)),
         ],
       ),
     );

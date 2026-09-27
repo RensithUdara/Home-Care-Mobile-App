@@ -40,6 +40,7 @@ class ProductGridCard extends StatelessWidget {
                 child: ProductThumb(type: product.type, size: 58),
               ),
               const Spacer(),
+              _Badges(product: product),
               Container(
                 width: 10,
                 height: 10,
@@ -125,6 +126,7 @@ class ProductListCard extends StatelessWidget {
               children: [
                 Row(
                   children: [
+                    _Badges(product: product),
                     Expanded(
                       child: Text(
                         product.name,
@@ -246,6 +248,40 @@ class AttentionCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Small favorite / service-due markers shown next to a product.
+class _Badges extends StatelessWidget {
+  final Products product;
+  const _Badges({required this.product});
+
+  @override
+  Widget build(BuildContext context) {
+    final service = product.serviceStatus;
+    final serviceAlert =
+        service == ServiceStatus.dueSoon || service == ServiceStatus.overdue;
+    if (!product.isFavorite && !serviceAlert) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (product.isFavorite)
+            const Tooltip(
+              message: 'Favorite',
+              child:
+                  Icon(Icons.star_rounded, size: 17, color: Color(0xFFFBBF24)),
+            ),
+          if (serviceAlert)
+            Tooltip(
+              message: product.serviceLabel,
+              child: Icon(Icons.build_circle_rounded,
+                  size: 17, color: service.color),
+            ),
+        ],
       ),
     );
   }

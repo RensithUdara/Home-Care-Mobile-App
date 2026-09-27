@@ -21,8 +21,13 @@ class WarrantyTab extends StatefulWidget {
   State<WarrantyTab> createState() => _WarrantyTabState();
 }
 
+/// Filter value for the "Services" view (other values are [WarrantyStatus]).
+const _servicesFilter = 'services';
+
 class _WarrantyTabState extends State<WarrantyTab> {
-  WarrantyStatus? _filter;
+  Object? _filter;
+
+  bool get _servicesMode => _filter == _servicesFilter;
 
   @override
   Widget build(BuildContext context) {
@@ -35,16 +40,18 @@ class _WarrantyTabState extends State<WarrantyTab> {
           WarrantyStatus.active => 1,
           WarrantyStatus.expired => 2,
         };
-    final items = all
-        .where((p) => _filter == null || p.warrantyStatus == _filter)
-        .toList()
-      ..sort((a, b) {
-        final r = rank(a).compareTo(rank(b));
-        if (r != 0) return r;
-        return a.warrantyStatus == WarrantyStatus.expired
-            ? b.warrantyPeriod.compareTo(a.warrantyPeriod)
-            : a.warrantyPeriod.compareTo(b.warrantyPeriod);
-      });
+    final items = _servicesMode
+        ? store.scheduledServices
+        : (all
+            .where((p) => _filter == null || p.warrantyStatus == _filter)
+            .toList()
+          ..sort((a, b) {
+            final r = rank(a).compareTo(rank(b));
+            if (r != 0) return r;
+            return a.warrantyStatus == WarrantyStatus.expired
+                ? b.warrantyPeriod.compareTo(a.warrantyPeriod)
+                : a.warrantyPeriod.compareTo(b.warrantyPeriod);
+          }));
 
     final top = MediaQuery.of(context).padding.top + 88;
 
@@ -78,12 +85,20 @@ class _WarrantyTabState extends State<WarrantyTab> {
               )
             else if (items.isEmpty)
               SliverToBoxAdapter(
-                child: EmptyState(
-                  icon: _filter?.icon ?? Icons.inbox_rounded,
-                  title: 'Nothing here',
-                  message:
-                      'No appliances are ${_filter?.label.toLowerCase() ?? 'listed'} right now.',
-                ),
+                child: _servicesMode
+                    ? const EmptyState(
+                        icon: Icons.event_repeat_rounded,
+                        title: 'No services scheduled',
+                        message:
+                            'Open an appliance and tap "Schedule next service" to get a reminder when it is due.',
+                      )
+                    : EmptyState(
+                        icon: (_filter as WarrantyStatus?)?.icon ??
+                            Icons.inbox_rounded,
+                        title: 'Nothing here',
+                        message:
+                            'No appliances are ${(_filter as WarrantyStatus?)?.label.toLowerCase() ?? 'listed'} right now.',
+                      ),
               )
             else
               SliverPadding(
@@ -96,6 +111,7 @@ class _WarrantyTabState extends State<WarrantyTab> {
                       product: items[i],
                       isFirst: i == 0,
                       isLast: i == items.length - 1,
+                      service: _servicesMode,
                     ),
                   ),
                 ),
@@ -107,7 +123,7 @@ class _WarrantyTabState extends State<WarrantyTab> {
   }
 
   Widget _buildFilters(ProductStore store) {
-    final options = <(WarrantyStatus?, String, int, Color)>[
+    final options = <(Object?, String, int, Color)>[
       (null, 'All', store.count, AppColors.primary),
       for (final s in [
         WarrantyStatus.expiringSoon,
@@ -115,6 +131,12 @@ class _WarrantyTabState extends State<WarrantyTab> {
         WarrantyStatus.active,
       ])
         (s, s.label, store.withStatus(s).length, s.color),
+      (
+        _servicesFilter,
+        'Services',
+        store.scheduledServices.length,
+        AppColors.info
+      ),
     ];
     return SizedBox(
       height: 64,
@@ -170,15 +192,20 @@ class _TimelineItem extends StatelessWidget {
   final bool isFirst;
   final bool isLast;
 
+  /// Show the next scheduled service instead of the warranty.
+  final bool service;
+
   const _TimelineItem({
     required this.product,
     required this.isFirst,
     required this.isLast,
+    this.service = false,
   });
 
   @override
   Widget build(BuildContext context) {
     final status = product.warrantyStatus;
+    final accent = service ? product.serviceStatus.color : status.color;
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -198,9 +225,9 @@ class _TimelineItem extends StatelessWidget {
                   height: 16,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    gradient: AppColors.shade(status.color),
+                    gradient: AppColors.shade(accent),
                     border: Border.all(color: context.background, width: 3),
-                    boxShadow: AppShadows.glow(status.color),
+                    boxShadow: AppShadows.glow(accent),
                   ),
                 ),
                 Expanded(
@@ -248,26 +275,56 @@ class _TimelineItem extends StatelessWidget {
                           ),
                         ),
                         _DateBadge(
-                            date: product.warrantyPeriod, color: status.color),
+                            date: service
+                                ? product.nextServiceDate!
+                                : product.warrantyPeriod,
+                            color: accent),
                       ],
                     ),
                     const SizedBox(height: 12),
-                    WarrantyBar(product: product),
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        StatusPill(status: status, compact: true),
-                        const Spacer(),
-                        Text(
-                          product.daysLeftLabel,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w800,
-                            color: status.color,
+                    if (service)
+                      Row(
+                        children: [
+                          Icon(Icons.build_circle_rounded,
+                              size: 18, color: accent),
+                          const SizedBox(width: 6),
+                          Text(product.serviceStatus.label,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: accent)),
+                          const Spacer(),
+                          Flexible(
+                            child: Text(
+                              product.serviceLabel,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w800,
+                                  color: accent),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      )
+                    else ...[
+                      WarrantyBar(product: product),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          StatusPill(status: status, compact: true),
+                          const Spacer(),
+                          Text(
+                            product.daysLeftLabel,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w800,
+                              color: status.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),

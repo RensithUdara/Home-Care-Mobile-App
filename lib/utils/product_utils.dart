@@ -121,6 +121,11 @@ class ProductUtils {
       'Warranty until: ${formatDate(p.warrantyPeriod)}',
       if (p.price != null) 'Price: ${formatMoney(p.price!)}',
       'Support: ${p.contactNumber}',
+      if (p.nextServiceDate != null)
+        'Next service: ${formatDate(p.nextServiceDate!)}',
+      if (p.serviceHistory.isNotEmpty)
+        'Service records: ${p.serviceHistory.length}'
+            '${p.maintenanceCost > 0 ? ' (${formatMoney(p.maintenanceCost)} spent)' : ''}',
       if (p.notes != null) 'Notes: ${p.notes}',
     ];
     return lines.join('\n');

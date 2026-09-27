@@ -6,6 +6,7 @@ import 'package:home_care/screens/insights.dart';
 import 'package:home_care/screens/profile.dart';
 import 'package:home_care/screens/warranty.dart';
 import 'package:home_care/services/product_store.dart';
+import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +24,12 @@ class MainShell extends StatefulWidget {
 class _MainShellState extends State<MainShell> {
   int _index = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    ReminderService.instance.requestPermissionOnce();
+  }
+
   void _goTo(int index) {
     if (index == _index) return;
     HapticFeedback.selectionClick();
@@ -36,8 +43,7 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final attention =
-        context.select<ProductStore, int>((s) => s.needsAttention.length);
+    final attention = context.select<ProductStore, int>((s) => s.alertCount);
 
     return Scaffold(
       extendBody: true,

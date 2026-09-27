@@ -73,6 +73,14 @@ class InsightsTab extends StatelessWidget {
                         padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
                     Entrance(index: 4, child: _ValueBars(store: store)),
                   ],
+                  if (products.any((p) =>
+                      p.serviceHistory.isNotEmpty ||
+                      p.nextServiceDate != null)) ...[
+                    const SectionHeader(
+                        title: 'Maintenance',
+                        padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
+                    Entrance(index: 5, child: _Maintenance(store: store)),
+                  ],
                   const SectionHeader(
                       title: 'Rooms',
                       padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
@@ -729,4 +737,100 @@ class _DonutPainter extends CustomPainter {
   @override
   bool shouldRepaint(_DonutPainter old) =>
       old.progress != progress || old.slices != slices || old.track != track;
+}
+
+class _Maintenance extends StatelessWidget {
+  final ProductStore store;
+  const _Maintenance({required this.store});
+
+  @override
+  Widget build(BuildContext context) {
+    final products = store.products;
+    final records =
+        products.fold<int>(0, (n, p) => n + p.serviceHistory.length);
+    final mostServiced = products
+        .where((p) => p.serviceHistory.isNotEmpty)
+        .toList()
+      ..sort(
+          (a, b) => b.serviceHistory.length.compareTo(a.serviceHistory.length));
+    final next = store.scheduledServices
+        .where((p) => p.serviceStatus != ServiceStatus.overdue)
+        .firstOrNull;
+    final overdue =
+        products.where((p) => p.serviceStatus == ServiceStatus.overdue).length;
+
+    Widget stat(String value, String label, Color color) => Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FittedBox(
+                child: Text(value,
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w800,
+                        color: color)),
+              ),
+              Text(label,
+                  style: TextStyle(fontSize: 12, color: context.textMuted)),
+            ],
+          ),
+        );
+
+    return DepthCard(
+      depth: 0.7,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              stat(ProductUtils.formatMoney(store.maintenanceCost),
+                  'Spent on upkeep', AppColors.secondary),
+              stat('$records', 'Service records', AppColors.info),
+              stat('$overdue', 'Overdue',
+                  overdue > 0 ? AppColors.danger : AppColors.success),
+            ],
+          ),
+          if (mostServiced.isNotEmpty || next != null)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 12),
+              child: Divider(),
+            ),
+          if (mostServiced.isNotEmpty)
+            _line(
+              context,
+              Icons.handyman_rounded,
+              'Most serviced',
+              '${mostServiced.first.name} · ${mostServiced.first.serviceHistory.length}×',
+            ),
+          if (next != null)
+            _line(context, Icons.event_repeat_rounded, 'Next service',
+                '${next.name} · ${ProductUtils.formatDate(next.nextServiceDate!)}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _line(
+      BuildContext context, IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        children: [
+          Icon(icon, size: 18, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Text('$label  ',
+              style: TextStyle(color: context.textMuted, fontSize: 13)),
+          Expanded(
+            child: Text(value,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.right,
+                style:
+                    const TextStyle(fontWeight: FontWeight.w700, fontSize: 13)),
+          ),
+        ],
+      ),
+    );
+  }
 }

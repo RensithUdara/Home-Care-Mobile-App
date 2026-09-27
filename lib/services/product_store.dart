@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:home_care/models/products.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
+import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/utils/warranty.dart';
 
 enum ProductSort { recent, name, expiry, price }
@@ -41,6 +42,26 @@ class ProductStore extends ChangeNotifier {
       _products.where((p) => p.warrantyStatus != WarrantyStatus.active).toList()
         ..sort((a, b) => a.daysLeft.compareTo(b.daysLeft));
 
+  /// Appliances whose service is overdue or due within a week.
+  List<Products> get serviceAlerts => _products.where(isServiceAlert).toList()
+    ..sort((a, b) => a.serviceDaysLeft!.compareTo(b.serviceDaysLeft!));
+
+  /// Appliances with a next service date, soonest first.
+  List<Products> get scheduledServices =>
+      _products.where((p) => p.nextServiceDate != null).toList()
+        ..sort((a, b) => a.nextServiceDate!.compareTo(b.nextServiceDate!));
+
+  /// Distinct products needing attention for warranty or service reasons.
+  int get alertCount => {
+        ...needsAttention.map((p) => p.id),
+        ...serviceAlerts.map((p) => p.id)
+      }.length;
+
+  List<Products> get favorites => _products.where((p) => p.isFavorite).toList();
+
+  double get maintenanceCost =>
+      _products.fold(0.0, (sum, p) => sum + p.maintenanceCost);
+
   double get totalValue =>
       _products.fold(0.0, (sum, p) => sum + (p.price ?? 0));
 
@@ -71,6 +92,32 @@ class ProductStore extends ChangeNotifier {
     }
     _loading = false;
     notifyListeners();
+    _syncReminders();
+  }
+
+  void _syncReminders() => ReminderService.instance.sync(_products);
+
+  /// Saves [updated] (matched by id), applying it locally first so the UI
+  /// responds instantly, and rolls back if the write fails.
+  Future<void> update(Products updated) async {
+    final i = _products.indexWhere((p) => p.id == updated.id);
+    if (i < 0) return;
+    final previous = _products[i];
+    _products[i] = updated;
+    notifyListeners();
+    try {
+      await FirestoreService.editProduct(updated);
+      _syncReminders();
+    } catch (e) {
+      _products[i] = previous;
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  Future<void> toggleFavorite(Products product) {
+    final updated = product.copy()..isFavorite = !product.isFavorite;
+    return update(updated);
   }
 
   /// Removes the product locally right away, then deletes it remotely.
@@ -86,6 +133,7 @@ class ProductStore extends ChangeNotifier {
       notifyListeners();
       rethrow;
     }
+    _syncReminders();
     return backup;
   }
 
@@ -93,6 +141,7 @@ class ProductStore extends ChangeNotifier {
     await FirestoreService.restoreProduct(product);
     _products.add(product);
     notifyListeners();
+    _syncReminders();
   }
 
   Products? byId(String id) => _products.where((p) => p.id == id).firstOrNull;

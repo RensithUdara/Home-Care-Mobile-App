@@ -9,6 +9,7 @@ import 'package:home_care/screens/legal_page.dart';
 import 'package:home_care/services/auth/authentication.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
 import 'package:home_care/services/product_store.dart';
+import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/themes/theme_provider.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -34,19 +35,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
   static const _notificationPrefs = [
     (
-      'notif_warranty',
+      ReminderService.warrantyPrefKey,
       'Warranty expiry alerts',
-      'Get reminded before warranties expire',
-      true
+      '30 days, 7 days and on the day a warranty ends',
     ),
     (
-      'notif_new_product',
-      'New product added',
-      'Confirmation when an appliance is added',
-      true
+      ReminderService.servicePrefKey,
+      'Service reminders',
+      '3 days before and on the day a service is due',
     ),
-    ('notif_updates', 'App updates', 'Hear about new features', false),
-    ('notif_tips', 'Tips & tricks', 'Helpful tips for using the app', false),
   ];
 
   @override
@@ -309,23 +306,30 @@ class _ProfilePageState extends State<ProfilePage> {
       prefs = await SharedPreferences.getInstance();
     } catch (_) {}
     if (!mounted) return;
+    final store = context.read<ProductStore>();
     final values = {
-      for (final p in _notificationPrefs) p.$1: prefs?.getBool(p.$1) ?? p.$4,
+      for (final p in _notificationPrefs) p.$1: prefs?.getBool(p.$1) ?? true,
     };
+    var hour = prefs?.getInt(ReminderService.hourPrefKey) ?? 9;
+    const hours = [8, 9, 12, 18, 20];
+
+    Future<void> resync() => ReminderService.instance.sync(store.products);
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       builder: (sheetContext) => StatefulBuilder(
         builder: (sheetContext, setSheet) => SheetFrame(
-          title: 'Notifications',
-          subtitle: 'Choose what you hear about',
+          title: 'Reminders',
+          subtitle: 'Notifications on this device',
           icon: Icons.notifications_active_rounded,
           color: AppColors.warning,
-          child: Padding(
+          child: SingleChildScrollView(
             padding: EdgeInsets.fromLTRB(
                 16, 4, 16, 16 + MediaQuery.of(sheetContext).padding.bottom),
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 for (final p in _notificationPrefs)
                   SwitchListTile(
@@ -335,12 +339,56 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: const TextStyle(fontWeight: FontWeight.w700)),
                     subtitle: Text(p.$3,
                         style: TextStyle(color: sheetContext.textMuted)),
-                    onChanged: (v) {
+                    onChanged: (v) async {
                       HapticFeedback.lightImpact();
                       setSheet(() => values[p.$1] = v);
-                      prefs?.setBool(p.$1, v);
+                      await prefs?.setBool(p.$1, v);
+                      await resync();
                     },
                   ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(4, 12, 4, 10),
+                  child: Text('Remind me at',
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: sheetContext.textMuted)),
+                ),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    for (final h in hours)
+                      ChoiceChip(
+                        label: Text(MaterialLocalizations.of(sheetContext)
+                            .formatTimeOfDay(TimeOfDay(hour: h, minute: 0))),
+                        selected: hour == h,
+                        onSelected: (_) async {
+                          setSheet(() => hour = h);
+                          await prefs?.setInt(ReminderService.hourPrefKey, h);
+                          await resync();
+                        },
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Button3D(
+                  label: 'Send test notification',
+                  icon: Icons.notifications_rounded,
+                  height: 50,
+                  gradient: AppColors.oceanGradient,
+                  onPressed: () async {
+                    final granted =
+                        await ReminderService.instance.requestPermission();
+                    if (!granted) {
+                      if (mounted) {
+                        AppSnack.error(context,
+                            'Notifications are blocked. Enable them in your phone settings.');
+                      }
+                      return;
+                    }
+                    await ReminderService.instance.showTest();
+                  },
+                ),
               ],
             ),
           ),
@@ -389,6 +437,18 @@ class _ProfilePageState extends State<ProfilePage> {
       (
         'Can I backup my data?',
         'Your data is automatically backed up to the cloud while you\'re signed in. You can also export everything via Profile → Export data.'
+      ),
+      (
+        'Will the app remind me before a warranty ends?',
+        'Yes. Home Care sends a notification 30 days before, 7 days before and on the day a warranty ends. Change the time or turn it off in Profile → Reminders.'
+      ),
+      (
+        'How do I track repairs and servicing?',
+        'Open an appliance and scroll to "Service & maintenance". Add service records with cost and technician, and schedule the next service to get a reminder.'
+      ),
+      (
+        'How do I mark favorites?',
+        "Tap the star on an appliance's page or long-press its card on Home. Use the Favorites chip on Home to see only those."
       ),
       (
         'How do I change themes?',
@@ -899,8 +959,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   _SettingsTile(
                     icon: Icons.notifications_active_rounded,
                     color: AppColors.warning,
-                    title: 'Notifications',
-                    subtitle: 'Alerts & reminders',
+                    title: 'Reminders',
+                    subtitle: 'Warranty & service notifications',
                     onTap: _showNotificationSettings,
                   ),
                   _SettingsTile(

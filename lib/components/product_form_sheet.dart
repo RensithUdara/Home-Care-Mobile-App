@@ -8,10 +8,13 @@ import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
 import 'package:intl/intl.dart';
 
-/// One form for both adding and editing an appliance.
+/// One form for adding, editing, or duplicating an appliance.
 class ProductFormSheet extends StatefulWidget {
   final String uid;
   final Products? product;
+
+  /// When set (and [product] is null), prefills a new appliance from it.
+  final Products? template;
   final VoidCallback onSaved;
 
   const ProductFormSheet({
@@ -19,15 +22,18 @@ class ProductFormSheet extends StatefulWidget {
     required this.uid,
     required this.onSaved,
     this.product,
+    this.template,
   });
 
   bool get isEditing => product != null;
+  bool get isDuplicating => product == null && template != null;
 
   static Future<void> show(
     BuildContext context, {
     required String uid,
     required VoidCallback onSaved,
     Products? product,
+    Products? template,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -40,7 +46,8 @@ class ProductFormSheet extends StatefulWidget {
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.92,
           ),
-          child: ProductFormSheet(uid: uid, onSaved: onSaved, product: product),
+          child: ProductFormSheet(
+              uid: uid, onSaved: onSaved, product: product, template: template),
         ),
       ),
     );
@@ -71,9 +78,9 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
   @override
   void initState() {
     super.initState();
-    final p = widget.product;
+    final p = widget.product ?? widget.template;
     if (p != null) {
-      _name.text = p.name;
+      _name.text = widget.isDuplicating ? '${p.name} (copy)' : p.name;
       _brand.text = p.brand ?? '';
       _location.text = p.location;
       _contact.text = p.contactNumber.toString();
@@ -82,7 +89,8 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
           : (p.price! % 1 == 0
               ? p.price!.toInt().toString()
               : p.price!.toStringAsFixed(2));
-      _serial.text = p.serialNumber ?? '';
+      // Serial numbers are unique per unit, so a duplicate starts blank.
+      _serial.text = widget.isDuplicating ? '' : (p.serialNumber ?? '');
       _notes.text = p.notes ?? '';
       _category = p.type;
       _purchase = p.purchasedDate;
@@ -199,6 +207,10 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
       serialNumber: _serial.text.trim().isEmpty ? null : _serial.text.trim(),
       price: price,
       notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
+      // Fields managed outside this form must survive an edit.
+      isFavorite: widget.product?.isFavorite ?? false,
+      nextServiceDate: widget.product?.nextServiceDate,
+      serviceHistory: widget.product?.serviceHistory,
     );
 
     try {
@@ -236,7 +248,9 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
   @override
   Widget build(BuildContext context) {
     return SheetFrame(
-      title: widget.isEditing ? 'Edit Appliance' : 'Add Appliance',
+      title: widget.isEditing
+          ? 'Edit Appliance'
+          : (widget.isDuplicating ? 'Duplicate Appliance' : 'Add Appliance'),
       subtitle: widget.isEditing
           ? 'Update the details below'
           : 'Track it and never miss a warranty',

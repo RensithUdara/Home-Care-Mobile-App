@@ -11,6 +11,7 @@ import 'package:home_care/screens/product.dart';
 import 'package:home_care/services/product_store.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
+import 'package:home_care/utils/share_helper.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -35,6 +36,7 @@ class _HomeTabState extends State<HomeTab> {
 
   final TextEditingController _searchController = TextEditingController();
   Category? _selectedCategory;
+  bool _favoritesOnly = false;
   ProductSort _sort = ProductSort.recent;
   bool _grid = true;
 
@@ -90,8 +92,9 @@ class _HomeTabState extends State<HomeTab> {
           p.location.toLowerCase().contains(q) ||
           (p.brand?.toLowerCase().contains(q) ?? false) ||
           ProductUtils.categoryName(p.type).toLowerCase().contains(q);
-      final matchesCategory =
-          _selectedCategory == null || p.type == _selectedCategory;
+      final matchesCategory = _favoritesOnly
+          ? p.isFavorite
+          : (_selectedCategory == null || p.type == _selectedCategory);
       return matchesSearch && matchesCategory;
     }).toList();
     return ProductStore.sorted(filtered, _sort);
@@ -145,11 +148,27 @@ class _HomeTabState extends State<HomeTab> {
                 ProductFormSheet.show(context,
                     uid: store.uid, product: p, onSaved: store.refresh);
               }),
-              _actionTile(sheetContext, Icons.copy_rounded, 'Copy details',
-                  AppColors.secondary, () {
-                Clipboard.setData(
-                    ClipboardData(text: ProductUtils.shareText(p)));
-                AppSnack.success(context, 'Details copied to clipboard');
+              _actionTile(
+                  sheetContext,
+                  p.isFavorite
+                      ? Icons.star_rounded
+                      : Icons.star_outline_rounded,
+                  p.isFavorite ? 'Remove from favorites' : 'Add to favorites',
+                  const Color(0xFFF59E0B), () async {
+                try {
+                  await store.toggleFavorite(p);
+                } catch (_) {
+                  if (mounted) {
+                    AppSnack.error(context, 'Could not update favorites');
+                  }
+                }
+              }),
+              _actionTile(sheetContext, Icons.ios_share_rounded, 'Share',
+                  AppColors.secondary, () => shareProduct(context, p)),
+              _actionTile(sheetContext, Icons.library_add_rounded, 'Duplicate',
+                  AppColors.success, () {
+                ProductFormSheet.show(context,
+                    uid: store.uid, template: p, onSaved: store.refresh);
               }),
               _actionTile(sheetContext, Icons.delete_rounded, 'Delete',
                   AppColors.danger, () async {
@@ -184,6 +203,7 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     final store = context.watch<ProductStore>();
+    if (_favoritesOnly && store.favorites.isEmpty) _favoritesOnly = false;
     final visible = _visible(store.products);
     final attention = store.needsAttention;
 
@@ -195,7 +215,7 @@ class _HomeTabState extends State<HomeTab> {
           physics: const BouncingScrollPhysics(
               parent: AlwaysScrollableScrollPhysics()),
           slivers: [
-            _buildAppBar(store, attention.length),
+            _buildAppBar(store, store.alertCount),
             SliverToBoxAdapter(child: _buildSearchBar()),
             if (attention.isNotEmpty) ...[
               SliverToBoxAdapter(
@@ -467,6 +487,10 @@ class _HomeTabState extends State<HomeTab> {
           children: [
             _chip(null, 'All', Icons.apps_rounded, store.count,
                 AppColors.primary),
+            if (store.favorites.isNotEmpty)
+              _chip(null, 'Favorites', Icons.star_rounded,
+                  store.favorites.length, const Color(0xFFF59E0B),
+                  favorites: true),
             for (final c in cats)
               _chip(c, ProductUtils.categoryName(c), ProductUtils.iconOf(c),
                   counts[c]!.length, ProductUtils.colorOf(c)),
@@ -476,15 +500,20 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _chip(
-      Category? c, String label, IconData icon, int count, Color color) {
-    final selected = _selectedCategory == c;
+  Widget _chip(Category? c, String label, IconData icon, int count, Color color,
+      {bool favorites = false}) {
+    final selected = favorites
+        ? _favoritesOnly
+        : (!_favoritesOnly && _selectedCategory == c);
     return Padding(
       padding: const EdgeInsets.only(right: 10),
       child: GestureDetector(
         onTap: () {
           HapticFeedback.selectionClick();
-          setState(() => _selectedCategory = c);
+          setState(() {
+            _favoritesOnly = favorites;
+            _selectedCategory = c;
+          });
         },
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 220),
@@ -671,8 +700,9 @@ class _HomeTabState extends State<HomeTab> {
   }
 
   Widget _buildEmptyState(ProductStore store) {
-    final filtering =
-        _searchController.text.isNotEmpty || _selectedCategory != null;
+    final filtering = _searchController.text.isNotEmpty ||
+        _selectedCategory != null ||
+        _favoritesOnly;
     if (filtering && store.count > 0) {
       return const EmptyState(
         icon: Icons.search_off_rounded,

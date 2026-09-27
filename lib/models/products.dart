@@ -15,6 +15,9 @@ class Products {
   String? serialNumber;
   double? price;
   String? notes;
+  bool isFavorite;
+  DateTime? nextServiceDate;
+  List<ServiceRecord> serviceHistory;
 
   Products({
     required this.uid,
@@ -29,7 +32,14 @@ class Products {
     this.serialNumber,
     this.price,
     this.notes,
-  });
+    this.isFavorite = false,
+    this.nextServiceDate,
+    List<ServiceRecord>? serviceHistory,
+  }) : serviceHistory = serviceHistory ?? [];
+
+  /// Total spent on recorded repairs and servicing.
+  double get maintenanceCost =>
+      serviceHistory.fold(0.0, (total, r) => total + (r.cost ?? 0));
 
   // Convert a Products instance to a map
   Map<String, dynamic> toJSON() {
@@ -46,6 +56,10 @@ class Products {
       'serialNumber': serialNumber,
       'price': price,
       'notes': notes,
+      'isFavorite': isFavorite,
+      'nextServiceDate':
+          nextServiceDate == null ? null : _toDateOnly(nextServiceDate!),
+      'serviceHistory': serviceHistory.map((r) => r.toJSON()).toList(),
     };
   }
 
@@ -67,6 +81,15 @@ class Products {
       serialNumber: _nonEmpty(map['serialNumber']),
       price: (map['price'] as num?)?.toDouble(),
       notes: _nonEmpty(map['notes']),
+      isFavorite: map['isFavorite'] == true,
+      nextServiceDate: map['nextServiceDate'] == null
+          ? null
+          : _parseDate(map['nextServiceDate']),
+      serviceHistory: (map['serviceHistory'] as List? ?? const [])
+          .whereType<Map>()
+          .map((m) => ServiceRecord.fromMap(Map<String, dynamic>.from(m)))
+          .toList()
+        ..sort((a, b) => b.date.compareTo(a.date)),
     );
   }
 
@@ -77,6 +100,8 @@ class Products {
     return DateTime(dateTime.year, dateTime.month, dateTime.day)
         .toIso8601String();
   }
+
+  static DateTime parseDate(dynamic value) => _parseDate(value);
 
   static DateTime _parseDate(dynamic value) {
     if (value is Timestamp) return value.toDate();
@@ -94,6 +119,41 @@ class Products {
     if (value is String && value.trim().isNotEmpty) return value.trim();
     return null;
   }
+}
+
+/// One repair, service visit or maintenance task done on an appliance.
+class ServiceRecord {
+  DateTime date;
+  String title;
+  double? cost;
+  String? provider;
+  String? notes;
+
+  ServiceRecord({
+    required this.date,
+    required this.title,
+    this.cost,
+    this.provider,
+    this.notes,
+  });
+
+  Map<String, dynamic> toJSON() => {
+        'date': DateTime(date.year, date.month, date.day).toIso8601String(),
+        'title': title,
+        'cost': cost,
+        'provider': provider,
+        'notes': notes,
+      };
+
+  factory ServiceRecord.fromMap(Map<String, dynamic> map) => ServiceRecord(
+        date: Products.parseDate(map['date']),
+        title: (map['title'] as String?)?.trim().isNotEmpty == true
+            ? map['title']
+            : 'Service',
+        cost: (map['cost'] as num?)?.toDouble(),
+        provider: Products._nonEmpty(map['provider']),
+        notes: Products._nonEmpty(map['notes']),
+      );
 }
 
 enum Category {

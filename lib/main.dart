@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:home_care/firebase_options.dart';
 import 'package:home_care/screens/splash.dart';
+import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/themes/dark_mode.dart';
 import 'package:home_care/themes/light_mode.dart';
 import 'package:home_care/themes/theme_provider.dart';
@@ -10,6 +11,7 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await ReminderService.instance.init();
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(
