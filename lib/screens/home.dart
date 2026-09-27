@@ -155,6 +155,7 @@ class _HomeTabState extends State<HomeTab> {
                   Navigator.pop(sheetContext);
                   ProductFormSheet.show(context,
                       uid: store.uid,
+                      householdId: store.activeHouseholdId,
                       initialSerial: value,
                       onSaved: store.refresh);
                 },
@@ -222,7 +223,10 @@ class _HomeTabState extends State<HomeTab> {
               _actionTile(
                   sheetContext, Icons.edit_rounded, 'Edit', AppColors.info, () {
                 ProductFormSheet.show(context,
-                    uid: store.uid, product: p, onSaved: store.refresh);
+                    uid: store.uid,
+                    householdId: store.activeHouseholdId,
+                    product: p,
+                    onSaved: store.refresh);
               }),
               _actionTile(
                   sheetContext,
@@ -244,7 +248,10 @@ class _HomeTabState extends State<HomeTab> {
               _actionTile(sheetContext, Icons.library_add_rounded, 'Duplicate',
                   AppColors.success, () {
                 ProductFormSheet.show(context,
-                    uid: store.uid, template: p, onSaved: store.refresh);
+                    uid: store.uid,
+                    householdId: store.activeHouseholdId,
+                    template: p,
+                    onSaved: store.refresh);
               }),
               _actionTile(sheetContext, Icons.delete_rounded, 'Delete',
                   AppColors.danger, () async {

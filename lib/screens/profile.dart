@@ -6,6 +6,7 @@ import 'package:home_care/components/ui/common.dart';
 import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/data/legal_text.dart';
 import 'package:home_care/screens/legal_page.dart';
+import 'package:home_care/screens/report_page.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/services/auth/authentication.dart';
 import 'package:home_care/services/document_storage.dart';
@@ -412,6 +413,157 @@ class _ProfilePageState extends State<ProfilePage> {
     Clipboard.setData(ClipboardData(text: text));
     AppSnack.success(
         context, 'Exported ${products.length} appliances to clipboard');
+  }
+
+  void _openReport() => ReportPage.open(context);
+
+  void _showHousehold() {
+    final store = context.read<ProductStore>();
+    final household = store.activeHousehold;
+    if (household == null) {
+      AppSnack.info(
+          context, 'Household is still loading. Try again in a moment.');
+      return;
+    }
+
+    final name = TextEditingController(text: household.name);
+    final invite = TextEditingController();
+    String error = '';
+    bool savingName = false;
+    bool inviting = false;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (sheetContext) => StatefulBuilder(
+        builder: (sheetContext, setSheet) {
+          final liveStore = sheetContext.watch<ProductStore>();
+          final liveHousehold = liveStore.activeHousehold ?? household;
+          final members = liveHousehold.memberIds.length;
+          final pending = liveHousehold.inviteEmails;
+
+          Future<void> rename() async {
+            setSheet(() {
+              savingName = true;
+              error = '';
+            });
+            try {
+              await liveStore.renameHousehold(name.text);
+              if (sheetContext.mounted) {
+                AppSnack.success(sheetContext, 'Household updated');
+              }
+            } catch (e) {
+              setSheet(() => error = 'Could not rename household: $e');
+            } finally {
+              if (sheetContext.mounted) {
+                setSheet(() => savingName = false);
+              }
+            }
+          }
+
+          Future<void> sendInvite() async {
+            setSheet(() {
+              inviting = true;
+              error = '';
+            });
+            try {
+              await liveStore.inviteToHousehold(invite.text);
+              invite.clear();
+              if (sheetContext.mounted) {
+                AppSnack.success(sheetContext, 'Invite saved');
+              }
+            } catch (e) {
+              final message = e.toString().replaceFirst('Exception: ', '');
+              setSheet(() => error = message);
+            } finally {
+              if (sheetContext.mounted) setSheet(() => inviting = false);
+            }
+          }
+
+          return Padding(
+            padding: EdgeInsets.only(
+                bottom: MediaQuery.of(sheetContext).viewInsets.bottom),
+            child: SheetFrame(
+              title: 'Household',
+              subtitle: 'Shared appliances and reminders',
+              icon: Icons.groups_rounded,
+              color: AppColors.primary,
+              child: SingleChildScrollView(
+                padding: EdgeInsets.fromLTRB(
+                    20, 8, 20, 20 + MediaQuery.of(sheetContext).padding.bottom),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextField(
+                      controller: name,
+                      textCapitalization: TextCapitalization.words,
+                      decoration: const InputDecoration(
+                        hintText: 'Household name',
+                        prefixIcon: Icon(Icons.home_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Button3D(
+                      label: 'Save Name',
+                      icon: Icons.check_rounded,
+                      height: 48,
+                      loading: savingName,
+                      onPressed: rename,
+                    ),
+                    const SizedBox(height: 18),
+                    TextField(
+                      controller: invite,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        hintText: 'Family member email',
+                        prefixIcon: Icon(Icons.alternate_email_rounded),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Button3D(
+                      label: 'Invite Member',
+                      icon: Icons.person_add_alt_1_rounded,
+                      height: 48,
+                      gradient: AppColors.oceanGradient,
+                      loading: inviting,
+                      onPressed: sendInvite,
+                    ),
+                    if (error.isNotEmpty) ...[
+                      const SizedBox(height: 12),
+                      Text(error,
+                          style: const TextStyle(
+                              color: AppColors.danger,
+                              fontWeight: FontWeight.w700)),
+                    ],
+                    const SizedBox(height: 18),
+                    _InfoRow(
+                      icon: Icons.people_alt_rounded,
+                      title: '$members member${members == 1 ? '' : 's'}',
+                      subtitle:
+                          'Everyone in this household sees the same appliances.',
+                    ),
+                    if (pending.isNotEmpty) ...[
+                      const SizedBox(height: 10),
+                      for (final email in pending)
+                        _InfoRow(
+                          icon: Icons.schedule_send_rounded,
+                          title: email,
+                          subtitle: 'Pending until this email signs in.',
+                        ),
+                    ],
+                  ],
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    ).whenComplete(() {
+      name.dispose();
+      invite.dispose();
+    });
   }
 
   void _showFAQ() {
@@ -972,6 +1124,20 @@ class _ProfilePageState extends State<ProfilePage> {
                     onTap: _showNotificationSettings,
                   ),
                   _SettingsTile(
+                    icon: Icons.groups_rounded,
+                    color: AppColors.primaryDark,
+                    title: 'Household sharing',
+                    subtitle: store.activeHousehold?.name ?? 'Shared home',
+                    onTap: _showHousehold,
+                  ),
+                  _SettingsTile(
+                    icon: Icons.picture_as_pdf_rounded,
+                    color: AppColors.danger,
+                    title: 'Inventory PDF',
+                    subtitle: 'Insurance and moving report',
+                    onTap: _openReport,
+                  ),
+                  _SettingsTile(
                     icon: Icons.ios_share_rounded,
                     color: AppColors.success,
                     title: 'Export data',
@@ -1304,6 +1470,49 @@ class _SettingsGroup extends StatelessWidget {
                 child: Divider(color: context.outline.withValues(alpha: 0.6)),
               ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String subtitle;
+
+  const _InfoRow({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.surfaceAlt,
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          IconOrb(icon: icon, color: AppColors.primary, size: 34),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
+                const SizedBox(height: 2),
+                Text(subtitle,
+                    style: TextStyle(color: context.textMuted, fontSize: 12.5)),
+              ],
+            ),
+          ),
         ],
       ),
     );

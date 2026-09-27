@@ -40,7 +40,10 @@ class _MainShellState extends State<MainShell> {
 
   void _add() {
     final store = context.read<ProductStore>();
-    ProductFormSheet.show(context, uid: widget.uid, onSaved: store.refresh);
+    ProductFormSheet.show(context,
+        uid: widget.uid,
+        householdId: store.activeHouseholdId,
+        onSaved: store.refresh);
   }
 
   @override

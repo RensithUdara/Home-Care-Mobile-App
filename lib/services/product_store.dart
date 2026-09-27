@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart' hide Category;
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:home_care/models/household.dart';
 import 'package:home_care/models/products.dart';
 import 'package:home_care/services/document_storage.dart';
 import 'package:home_care/services/firestore/firestore_services.dart';
+import 'package:home_care/services/household_service.dart';
 import 'package:home_care/services/reminder_service.dart';
 import 'package:home_care/utils/warranty.dart';
 
@@ -26,10 +29,16 @@ class ProductStore extends ChangeNotifier {
   }
 
   List<Products> _products = [];
+  List<Household> _households = [];
+  String? _activeHouseholdId;
   bool _loading = true;
   String? _error;
 
   List<Products> get products => List.unmodifiable(_products);
+  List<Household> get households => List.unmodifiable(_households);
+  String? get activeHouseholdId => _activeHouseholdId;
+  Household? get activeHousehold =>
+      _households.where((h) => h.id == _activeHouseholdId).firstOrNull;
   bool get isLoading => _loading;
   String? get error => _error;
 
@@ -87,7 +96,27 @@ class ProductStore extends ChangeNotifier {
     _error = null;
     notifyListeners();
     try {
-      _products = await FirestoreService.fetchProducts(uid);
+      final user = FirebaseAuth.instance.currentUser;
+      final email = user?.email ?? '';
+      final defaultHousehold = await HouseholdService.ensurePersonalHousehold(
+        uid: uid,
+        email: email,
+        displayName: user?.displayName,
+      );
+      _households = await HouseholdService.householdsFor(uid);
+      if (_households.isEmpty) _households = [defaultHousehold];
+      _activeHouseholdId ??= defaultHousehold.id;
+      if (!_households.any((h) => h.id == _activeHouseholdId)) {
+        _activeHouseholdId = _households.first.id;
+      }
+      await FirestoreService.assignHouseholdToLegacyProducts(
+        uid: uid,
+        householdId: _activeHouseholdId!,
+      );
+      _products = await FirestoreService.fetchProductsForHouseholds(
+        uid: uid,
+        householdIds: _households.map((h) => h.id).toList(),
+      );
     } catch (e) {
       _error = 'Could not load your appliances. Pull down to retry.';
     }
@@ -104,6 +133,7 @@ class ProductStore extends ChangeNotifier {
     final i = _products.indexWhere((p) => p.id == updated.id);
     if (i < 0) return;
     final previous = _products[i];
+    updated.householdId ??= previous.householdId ?? _activeHouseholdId;
     _products[i] = updated;
     notifyListeners();
     try {
@@ -148,10 +178,25 @@ class ProductStore extends ChangeNotifier {
       _products.where((p) => !p.hasReceipt).toList();
 
   Future<void> restore(Products product) async {
+    product.householdId ??= _activeHouseholdId;
     await FirestoreService.restoreProduct(product);
     _products.add(product);
     notifyListeners();
     _syncReminders();
+  }
+
+  Future<void> inviteToHousehold(String email) async {
+    final household = activeHousehold;
+    if (household == null) throw Exception('No household found');
+    await HouseholdService.inviteByEmail(household: household, email: email);
+    await refresh();
+  }
+
+  Future<void> renameHousehold(String name) async {
+    final household = activeHousehold;
+    if (household == null) throw Exception('No household found');
+    await HouseholdService.renameHousehold(household: household, name: name);
+    await refresh();
   }
 
   Products? byId(String id) => _products.where((p) => p.id == id).firstOrNull;

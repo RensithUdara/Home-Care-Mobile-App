@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart' hide Category;
 import 'package:home_care/models/products.dart';
 import 'package:home_care/utils/product_utils.dart';
@@ -92,9 +90,8 @@ Future<Uint8List> buildInventoryReport({
 
   // Helvetica can only draw Latin-1; replace anything else so generation
   // never fails on names in other scripts.
-  String t(String s) => fonts.unicode
-      ? s
-      : s.replaceAll(RegExp(r'[^\x00-\xFF]'), '?');
+  String t(String s) =>
+      fonts.unicode ? s : s.replaceAll(RegExp(r'[^\x00-\xFF]'), '?');
 
   final sorted = [...products]..sort((a, b) {
       if (options.groupByRoom) {
@@ -214,23 +211,23 @@ Future<Uint8List> buildInventoryReport({
   // ---- Summary table ----
   const headers = [
     'Appliance',
+    'Brand',
     'Category',
     'Room',
     'Serial no.',
-    'Purchased',
-    'Warranty until',
+    'Warranty dates',
     'Status',
     'Price',
   ];
   final rows = [
     for (final p in sorted)
       [
-        t(p.brand == null ? p.name : '${p.name}\n${p.brand}'),
+        t(p.name),
+        t(p.brand ?? '-'),
         ProductUtils.categoryName(p.type),
         t(p.location),
         t(p.serialNumber ?? '-'),
-        dateFmt.format(p.purchasedDate),
-        dateFmt.format(p.warrantyPeriod),
+        '${dateFmt.format(p.purchasedDate)}\n${dateFmt.format(p.warrantyPeriod)}',
         p.warrantyStatus.label,
         p.price == null ? '-' : ProductUtils.formatMoney(p.price!),
       ],
@@ -249,13 +246,13 @@ Future<Uint8List> buildInventoryReport({
         border: pw.Border(bottom: pw.BorderSide(color: _line, width: 0.5))),
     oddRowDecoration: const pw.BoxDecoration(color: _zebra),
     columnWidths: {
-      0: const pw.FlexColumnWidth(2.2),
-      1: const pw.FlexColumnWidth(1.5),
-      2: const pw.FlexColumnWidth(1.3),
-      3: const pw.FlexColumnWidth(1.5),
-      4: const pw.FlexColumnWidth(1.3),
-      5: const pw.FlexColumnWidth(1.3),
-      6: const pw.FlexColumnWidth(1.2),
+      0: const pw.FlexColumnWidth(1.8),
+      1: const pw.FlexColumnWidth(1.2),
+      2: const pw.FlexColumnWidth(1.4),
+      3: const pw.FlexColumnWidth(1.1),
+      4: const pw.FlexColumnWidth(1.4),
+      5: const pw.FlexColumnWidth(1.6),
+      6: const pw.FlexColumnWidth(1.1),
       7: const pw.FlexColumnWidth(1),
     },
     cellAlignments: {7: pw.Alignment.centerRight},
@@ -298,8 +295,7 @@ Future<Uint8List> buildInventoryReport({
                   style: pw.TextStyle(
                       fontSize: 12, fontWeight: pw.FontWeight.bold)),
             ),
-            pw.Text(
-                t('${ProductUtils.categoryName(p.type)}  |  ${p.location}'),
+            pw.Text(t('${ProductUtils.categoryName(p.type)}  |  ${p.location}'),
                 style: const pw.TextStyle(fontSize: 8.5, color: _muted)),
           ]),
           pw.SizedBox(height: 4),

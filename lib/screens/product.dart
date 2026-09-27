@@ -96,6 +96,8 @@ class _ProductPageState extends State<ProductPage> {
     final color = ProductUtils.colorOf(product.type);
     final status = product.warrantyStatus;
     final contact = product.contactNumber.toString();
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final expandedHeight = screenHeight < 700 ? 330.0 : 360.0;
 
     return Scaffold(
       body: CustomScrollView(
@@ -103,7 +105,7 @@ class _ProductPageState extends State<ProductPage> {
         slivers: [
           SliverAppBar(
             pinned: true,
-            expandedHeight: 380,
+            expandedHeight: expandedHeight,
             backgroundColor: AppColors.darken(color, 0.12),
             systemOverlayStyle: SystemUiOverlayStyle.light,
             automaticallyImplyLeading: false,
@@ -152,7 +154,10 @@ class _ProductPageState extends State<ProductPage> {
                 tooltip: 'Edit',
                 onGradient: true,
                 onPressed: () => ProductFormSheet.show(context,
-                    uid: store.uid, product: product, onSaved: store.refresh),
+                    uid: store.uid,
+                    householdId: store.activeHouseholdId,
+                    product: product,
+                    onSaved: store.refresh),
               ),
               const SizedBox(width: 10),
               AppBarIconButton(
@@ -170,7 +175,7 @@ class _ProductPageState extends State<ProductPage> {
           ),
           SliverToBoxAdapter(
             child: Transform.translate(
-              offset: const Offset(0, -28),
+              offset: Offset.zero,
               child: Column(
                 children: [
                   Entrance(child: _buildWarrantyCard(product, status)),
@@ -229,6 +234,7 @@ class _ProductPageState extends State<ProductPage> {
                                   'Duplicate',
                                   () => ProductFormSheet.show(context,
                                       uid: store.uid,
+                                      householdId: store.activeHouseholdId,
                                       template: product,
                                       onSaved: store.refresh),
                                 ),
@@ -267,7 +273,7 @@ class _ProductPageState extends State<ProductPage> {
           SafeArea(
             child: Column(
               children: [
-                const SizedBox(height: 60),
+                const SizedBox(height: 54),
                 Expanded(
                   child: GestureDetector(
                     onPanUpdate: (d) => setState(() {
@@ -302,9 +308,9 @@ class _ProductPageState extends State<ProductPage> {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           color: Colors.white,
-                          fontSize: 26,
+                          fontSize: 25,
                           fontWeight: FontWeight.w800,
-                          letterSpacing: -0.4,
+                          letterSpacing: 0,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -612,11 +618,11 @@ class _Pedestal extends StatelessWidget {
               child: Hero(
                 tag: 'product_${product.id}',
                 child: Container(
-                  width: 158,
-                  height: 158,
-                  padding: const EdgeInsets.all(22),
+                  width: 164,
+                  height: 146,
+                  padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(44),
+                    borderRadius: BorderRadius.circular(38),
                     gradient: LinearGradient(
                       begin: Alignment(-math.sin(rotY) - 0.6, -0.8),
                       end: Alignment(math.sin(rotY) + 0.6, 0.9),

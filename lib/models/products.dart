@@ -11,6 +11,7 @@ class Products {
   Category type;
 
   // Optional details. Older documents simply don't have these fields.
+  String? householdId;
   String? brand;
   String? serialNumber;
   double? price;
@@ -29,6 +30,7 @@ class Products {
     required this.contactNumber,
     required this.warrantyPeriod,
     required this.type,
+    this.householdId,
     this.brand,
     this.serialNumber,
     this.price,
@@ -58,6 +60,7 @@ class Products {
       'warrantyPeriod': _toDateOnly(warrantyPeriod),
       'contactNumber': contactNumber,
       'type': type.toString().split('.').last, // Store enum as a string
+      'householdId': householdId,
       'brand': brand,
       'serialNumber': serialNumber,
       'price': price,
@@ -84,6 +87,7 @@ class Products {
         (e) => e.toString().split('.').last == map['type'],
         orElse: () => Category.Other,
       ),
+      householdId: _nonEmpty(map['householdId']),
       brand: _nonEmpty(map['brand']),
       serialNumber: _nonEmpty(map['serialNumber']),
       price: (map['price'] as num?)?.toDouble(),

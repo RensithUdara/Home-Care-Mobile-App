@@ -12,6 +12,7 @@ import 'package:intl/intl.dart';
 /// One form for adding, editing, or duplicating an appliance.
 class ProductFormSheet extends StatefulWidget {
   final String uid;
+  final String? householdId;
   final Products? product;
 
   /// When set (and [product] is null), prefills a new appliance from it.
@@ -25,6 +26,7 @@ class ProductFormSheet extends StatefulWidget {
     super.key,
     required this.uid,
     required this.onSaved,
+    this.householdId,
     this.product,
     this.template,
     this.initialSerial,
@@ -37,6 +39,7 @@ class ProductFormSheet extends StatefulWidget {
     BuildContext context, {
     required String uid,
     required VoidCallback onSaved,
+    String? householdId,
     Products? product,
     Products? template,
     String? initialSerial,
@@ -54,6 +57,7 @@ class ProductFormSheet extends StatefulWidget {
           ),
           child: ProductFormSheet(
               uid: uid,
+              householdId: householdId,
               onSaved: onSaved,
               product: product,
               template: template,
@@ -208,6 +212,9 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
     final product = Products(
       id: widget.product?.id ?? '',
       uid: widget.product?.uid ?? widget.uid,
+      householdId: widget.product?.householdId ??
+          widget.template?.householdId ??
+          widget.householdId,
       name: _name.text.trim(),
       location: _location.text.trim(),
       purchasedDate: _purchase!,
