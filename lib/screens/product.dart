@@ -1,717 +1,662 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
-import 'package:home_care/components/edit_product_bottom_sheet.dart';
+import 'package:home_care/components/product_form_sheet.dart';
+import 'package:home_care/components/ui/common.dart';
+import 'package:home_care/components/ui/depth.dart';
+import 'package:home_care/components/ui/modern_app_bar.dart';
 import 'package:home_care/models/products.dart';
+import 'package:home_care/services/product_store.dart';
+import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
-import 'package:intl/intl.dart';
+import 'package:home_care/utils/warranty.dart';
+import 'package:provider/provider.dart';
 
 class ProductPage extends StatefulWidget {
-  final Products product;
-  final Function(String) onDelete;
-  final Function onProductEdited;
-  const ProductPage(
-      {super.key,
-      required this.product,
-      required this.onDelete,
-      required this.onProductEdited});
+  final String productId;
+  const ProductPage({super.key, required this.productId});
+
+  /// Pushes the detail page, carrying the [ProductStore] across the route.
+  static Future<void> open(BuildContext context, Products product) {
+    final store = context.read<ProductStore>();
+    return Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => ChangeNotifierProvider.value(
+        value: store,
+        child: ProductPage(productId: product.id),
+      ),
+    ));
+  }
 
   @override
   State<ProductPage> createState() => _ProductPageState();
 }
 
-class _ProductPageState extends State<ProductPage>
-    with SingleTickerProviderStateMixin {
-  late AnimationController _animationController;
-  late Animation<double> _fadeAnimation;
-  late Animation<Offset> _slideAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      duration: const Duration(milliseconds: 800),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeInOut),
-    );
-
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.3),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _animationController, curve: Curves.easeOut),
-    );
-
-    _animationController.forward();
-  }
-
-  @override
-  void dispose() {
-    _animationController.dispose();
-    super.dispose();
-  }
+class _ProductPageState extends State<ProductPage> {
+  // Drag rotation of the 3D showcase, in radians.
+  double _rotY = -0.35;
+  double _rotX = 0.12;
+  bool _deleting = false;
 
   Future<void> _callSupport(String phoneNumber) async {
     try {
       await FlutterPhoneDirectCaller.callNumber(phoneNumber);
     } catch (e) {
+      if (mounted) AppSnack.error(context, 'Could not make call: $e');
+    }
+  }
+
+  Future<void> _delete(Products product) async {
+    final ok = await showConfirmDialog(
+      context,
+      title: 'Delete appliance?',
+      message: 'Are you sure you want to delete "${product.name}"? '
+          'This can\'t be undone.',
+      confirmLabel: 'Delete',
+      icon: Icons.delete_forever_rounded,
+    );
+    if (!ok || !mounted) return;
+    final store = context.read<ProductStore>();
+    final navigator = Navigator.of(context);
+    setState(() => _deleting = true);
+    try {
+      await store.delete(product);
+      navigator.pop();
+    } catch (_) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Could not make call: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        setState(() => _deleting = false);
+        AppSnack.error(context, 'Could not delete ${product.name}');
       }
     }
   }
 
-  void _showEditProductBottomSheet(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (BuildContext context) => EditProductBottomSheet(
-        product: widget.product,
-        onProductEdited: () {
-          widget.onProductEdited();
-          Navigator.pop(context);
-        },
-      ),
-    );
-  }
-
-  void _showDeleteConfirmation() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          title: const Text('Delete Product?'),
-          content: Text('Are you sure you want to delete "${widget.product.name}"?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancel'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                widget.onDelete(widget.product.id);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-              },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-              child: const Text('Delete', style: TextStyle(color: Colors.white)),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
-    final typeString = ProductUtils.getTypeName(widget.product.type.toString());
-    final imgPath = ProductUtils.getImagePath(typeString);
-    final purchasedDate = DateFormat.yMMMd().format(widget.product.purchasedDate);
-    final warranty = DateFormat.yMMMd().format(widget.product.warrantyPeriod);
-    final contactNumber = widget.product.contactNumber.toString();
-    final primaryColor = ProductUtils.getColor(typeString);
+    final store = context.watch<ProductStore>();
+    final product = store.byId(widget.productId);
 
-    bool checkWarrantyExpiration(DateTime warrantyPeriod) {
-      DateTime currentDate = DateTime.now();
-      return currentDate.isAfter(warrantyPeriod);
+    if (product == null) {
+      return Scaffold(
+        appBar: const ModernAppBar(title: 'Appliance', showBack: true),
+        body: _deleting
+            ? const Center(child: CircularProgressIndicator())
+            : const EmptyState(
+                icon: Icons.inventory_2_rounded,
+                title: 'Not found',
+                message: 'This appliance no longer exists.',
+              ),
+      );
     }
 
-    bool isExpired = checkWarrantyExpiration(widget.product.warrantyPeriod);
-    int daysUntilExpiry = widget.product.warrantyPeriod.difference(DateTime.now()).inDays;
-    bool isExpiringSoon = daysUntilExpiry <= 30 && daysUntilExpiry > 0;
+    final color = ProductUtils.colorOf(product.type);
+    final status = product.warrantyStatus;
+    final contact = product.contactNumber.toString();
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0A0B) : const Color(0xFFF8FAFC),
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        elevation: 0,
-        backgroundColor: isDark 
-          ? Colors.black.withOpacity(0.7) 
-          : Colors.white.withOpacity(0.95),
-        surfaceTintColor: Colors.transparent,
-        systemOverlayStyle: isDark 
-          ? SystemUiOverlayStyle.light 
-          : SystemUiOverlayStyle.dark,
-        leading: _buildActionButton(
-          Icons.arrow_back_ios_new,
-          () {
-            HapticFeedback.lightImpact();
-            Navigator.pop(context);
-          },
-          isDark,
-          isDestructive: false,
-        ),
-        actions: [
-          _buildActionButton(
-            Icons.edit_outlined,
-            () {
-              HapticFeedback.lightImpact();
-              _showEditProductBottomSheet(context);
-            },
-            isDark,
-            isDestructive: false,
-          ),
-          _buildActionButton(
-            Icons.delete_outline,
-            () {
-              HapticFeedback.mediumImpact();
-              _showDeleteConfirmation();
-            },
-            isDark,
-            isDestructive: true,
-          ),
-          const SizedBox(width: 16),
-        ],
-      ),
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Hero Section
-          SliverToBoxAdapter(
-            child: Container(
-              height: 320,
-              margin: const EdgeInsets.fromLTRB(20, 100, 20, 20),
-              decoration: BoxDecoration(
-                color: isDark 
-                  ? const Color(0xFF1A1A1B) 
-                  : Colors.white,
-                borderRadius: BorderRadius.circular(28),
-                border: Border.all(
-                  color: isDark 
-                    ? primaryColor.withOpacity(0.3) 
-                    : primaryColor.withOpacity(0.15),
-                  width: isDark ? 1 : 1.5,
+          SliverAppBar(
+            pinned: true,
+            expandedHeight: 380,
+            backgroundColor: AppColors.darken(color, 0.12),
+            systemOverlayStyle: SystemUiOverlayStyle.light,
+            automaticallyImplyLeading: false,
+            leadingWidth: 68,
+            leading: Padding(
+              padding: const EdgeInsets.only(left: 16),
+              child: Center(
+                child: AppBarIconButton(
+                  icon: Icons.arrow_back_ios_new_rounded,
+                  tooltip: 'Back',
+                  onGradient: true,
+                  onPressed: () => Navigator.pop(context),
                 ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withOpacity(0.4)
-                        : primaryColor.withOpacity(0.12),
-                    blurRadius: isDark ? 25 : 20,
-                    offset: const Offset(0, 10),
-                    spreadRadius: isDark ? 0 : 2,
-                  ),
-                  if (!isDark)
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                ],
-              ),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Product Image
-                  Hero(
-                    tag: 'product_${widget.product.id}',
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Container(
-                        width: 120,
-                        height: 120,
-                        decoration: BoxDecoration(
-                          color: isDark
-                            ? primaryColor.withOpacity(0.15)
-                            : primaryColor.withOpacity(0.1),
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: primaryColor.withOpacity(isDark ? 0.4 : 0.3),
-                            width: 2,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: primaryColor.withOpacity(isDark ? 0.2 : 0.15),
-                              blurRadius: 15,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Image.asset(
-                          imgPath,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Icon(
-                              ProductUtils.getIconData(typeString),
-                              size: 60,
-                              color: primaryColor,
-                            );
-                          },
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  // Product Name
-                  SlideTransition(
-                    position: _slideAnimation,
-                    child: Text(
-                      widget.product.name,
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : Colors.black87,
-                      ),
-                      textAlign: TextAlign.center,
-                      maxLines: 2,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Product Type Badge
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: primaryColor,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: primaryColor.withOpacity(0.3),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ],
-                    ),
-                    child: Text(
-                      typeString,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ),
-                ],
               ),
             ),
+            title: Text(
+              product.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.w800),
+            ),
+            actions: [
+              AppBarIconButton(
+                icon: Icons.edit_rounded,
+                tooltip: 'Edit',
+                onGradient: true,
+                onPressed: () => ProductFormSheet.show(context,
+                    uid: store.uid, product: product, onSaved: store.refresh),
+              ),
+              const SizedBox(width: 10),
+              AppBarIconButton(
+                icon: Icons.delete_rounded,
+                tooltip: 'Delete',
+                onGradient: true,
+                onPressed: () => _delete(product),
+              ),
+              const SizedBox(width: 16),
+            ],
+            flexibleSpace: FlexibleSpaceBar(
+              collapseMode: CollapseMode.parallax,
+              background: _buildShowcase(product, color),
+            ),
           ),
-
-          // Warranty Status Banner
-          if (isExpired || isExpiringSoon)
-            SliverToBoxAdapter(
-              child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: isExpired ? Colors.red : Colors.orange,
-                  borderRadius: BorderRadius.circular(16),
-                  boxShadow: [
-                    BoxShadow(
-                      color: (isExpired ? Colors.red : Colors.orange).withOpacity(0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 5),
-                    ),
+          SliverToBoxAdapter(
+            child: Transform.translate(
+              offset: const Offset(0, -28),
+              child: Column(
+                children: [
+                  Entrance(child: _buildWarrantyCard(product, status)),
+                  const SizedBox(height: 16),
+                  Entrance(index: 1, child: _buildInfoGrid(product, contact)),
+                  if (product.notes != null) ...[
+                    const SizedBox(height: 16),
+                    Entrance(index: 2, child: _buildNotes(product.notes!)),
                   ],
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      isExpired ? Icons.warning_rounded : Icons.schedule_rounded,
-                      color: Colors.white,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
+                  const SizedBox(height: 20),
+                  Entrance(
+                    index: 3,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            isExpired ? 'Warranty Expired' : 'Warranty Expiring Soon',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
+                          Button3D(
+                            label: 'Call Support',
+                            icon: Icons.phone_in_talk_rounded,
+                            gradient: AppColors.shade(color),
+                            onPressed: () => _callSupport(contact),
                           ),
-                          Text(
-                            isExpired 
-                              ? 'Expired on $warranty'
-                              : 'Expires in $daysUntilExpiry days',
-                            style: const TextStyle(
-                              color: Colors.white70,
-                              fontSize: 14,
-                            ),
+                          const SizedBox(height: 14),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: _secondaryAction(
+                                  Icons.copy_rounded,
+                                  'Copy number',
+                                  () {
+                                    Clipboard.setData(
+                                        ClipboardData(text: contact));
+                                    AppSnack.success(
+                                        context, 'Support number copied');
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: _secondaryAction(
+                                  Icons.ios_share_rounded,
+                                  'Copy details',
+                                  () {
+                                    Clipboard.setData(ClipboardData(
+                                        text: ProductUtils.shareText(product)));
+                                    AppSnack.success(
+                                        context, 'Details copied to clipboard');
+                                  },
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-            ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-          // Product Details Cards
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                children: [
-                  // Quick Stats Row
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          'Purchase Date',
-                          purchasedDate,
-                          Icons.calendar_today,
-                          Colors.blue,
-                          isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          'Warranty Until',
-                          warranty,
-                          Icons.shield_outlined,
-                          isExpired ? Colors.red : Colors.green,
-                          isDark,
-                        ),
-                      ),
-                    ],
                   ),
-                  const SizedBox(height: 12),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _buildStatCard(
-                          'Product ID',
-                          widget.product.id.substring(0, 8).toUpperCase(),
-                          Icons.qr_code,
-                          Colors.purple,
-                          isDark,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildStatCard(
-                          'Support Contact',
-                          contactNumber,
-                          Icons.phone,
-                          Colors.orange,
-                          isDark,
-                        ),
-                      ),
-                    ],
-                  ),
+                  const SizedBox(height: 40),
                 ],
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
 
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-          // Additional Details Card
-          SliverToBoxAdapter(
-            child: Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20),
-              padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: isDark ? const Color(0xFF1A1A1B) : Colors.white,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(
-                  color: isDark 
-                    ? Colors.white.withOpacity(0.1) 
-                    : Colors.black.withOpacity(0.05),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: isDark
-                        ? Colors.black.withOpacity(0.3)
-                        : Colors.black.withOpacity(0.05),
-                    blurRadius: 15,
-                    offset: const Offset(0, 5),
+  Widget _buildShowcase(Products product, Color color) {
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            HSLColor.fromColor(color).withLightness(0.55).toColor(),
+            AppColors.darken(color, 0.2),
+          ],
+        ),
+      ),
+      child: Stack(
+        children: [
+          const Positioned.fill(child: FloatingOrbs()),
+          SafeArea(
+            child: Column(
+              children: [
+                const SizedBox(height: 60),
+                Expanded(
+                  child: GestureDetector(
+                    onPanUpdate: (d) => setState(() {
+                      _rotY = (_rotY + d.delta.dx * 0.012).clamp(-0.9, 0.9);
+                      _rotX = (_rotX - d.delta.dy * 0.012).clamp(-0.5, 0.5);
+                    }),
+                    onPanEnd: (_) => setState(() {
+                      _rotY = -0.35;
+                      _rotX = 0.12;
+                    }),
+                    child: TweenAnimationBuilder<Offset>(
+                      tween: Tween(end: Offset(_rotX, _rotY)),
+                      duration: const Duration(milliseconds: 350),
+                      curve: Curves.easeOutBack,
+                      builder: (context, r, _) => _Pedestal(
+                        product: product,
+                        color: color,
+                        rotX: r.dx,
+                        rotY: r.dy,
+                      ),
+                    ),
                   ),
-                ],
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 44),
+                  child: Column(
+                    children: [
+                      Text(
+                        product.name,
+                        textAlign: TextAlign.center,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w800,
+                          letterSpacing: -0.4,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        alignment: WrapAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
+                        children: [
+                          _glassTag(ProductUtils.iconOf(product.type),
+                              ProductUtils.categoryName(product.type)),
+                          if (product.brand != null)
+                            _glassTag(Icons.workspace_premium_rounded,
+                                product.brand!),
+                          _glassTag(Icons.place_rounded, product.location),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _glassTag(IconData icon, String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.18),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: Colors.white),
+          const SizedBox(width: 4),
+          Text(text,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildWarrantyCard(Products product, WarrantyStatus status) {
+    final remaining = 1 - product.warrantyElapsed;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DepthCard(
+        glow: status.color,
+        padding: const EdgeInsets.all(18),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 92,
+              height: 92,
+              child: TweenAnimationBuilder<double>(
+                tween: Tween(begin: 0, end: remaining),
+                duration: const Duration(milliseconds: 1100),
+                curve: Curves.easeOutCubic,
+                builder: (context, v, _) => CustomPaint(
+                  painter: _RingPainter(
+                    value: v,
+                    color: status.color,
+                    track: context.surfaceAlt,
+                  ),
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          '${(v * 100).round()}%',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.w800,
+                            color: status.color,
+                          ),
+                        ),
+                        Text('left',
+                            style: TextStyle(
+                                fontSize: 11, color: context.textMuted)),
+                      ],
+                    ),
+                  ),
+                ),
               ),
+            ),
+            const SizedBox(width: 18),
+            Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  StatusPill(status: status),
+                  const SizedBox(height: 10),
                   Text(
-                    'Product Details',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: isDark ? Colors.white : Colors.black87,
-                    ),
+                    product.daysLeftLabel,
+                    style: const TextStyle(
+                        fontSize: 19, fontWeight: FontWeight.w800),
                   ),
-                  const SizedBox(height: 16),
-                  _buildDetailRow('Type', typeString, isDark),
-                  _buildDetailRow('Location', widget.product.location, isDark),
-                  _buildDetailRow('Contact', contactNumber, isDark),
+                  const SizedBox(height: 4),
+                  Text(
+                    status == WarrantyStatus.expired
+                        ? 'Ended ${ProductUtils.formatDate(product.warrantyPeriod)}'
+                        : 'Covered until ${ProductUtils.formatDate(product.warrantyPeriod)}',
+                    style: TextStyle(color: context.textMuted, fontSize: 13),
+                  ),
                 ],
               ),
             ),
-          ),
+          ],
+        ),
+      ),
+    );
+  }
 
-          const SliverToBoxAdapter(child: SizedBox(height: 20)),
-
-          // Action Buttons
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+  Widget _buildInfoGrid(Products product, String contact) {
+    final tiles = <(IconData, String, String, Color)>[
+      (Icons.shopping_bag_rounded, 'Purchased',
+          ProductUtils.formatDate(product.purchasedDate), AppColors.info),
+      (Icons.hourglass_bottom_rounded, 'Age', product.ageLabel,
+          AppColors.secondary),
+      (Icons.support_agent_rounded, 'Support', contact, AppColors.warning),
+      (Icons.payments_rounded, 'Price',
+          product.price == null ? '—' : ProductUtils.formatMoney(product.price!),
+          AppColors.success),
+      if (product.serialNumber != null)
+        (Icons.qr_code_2_rounded, 'Serial no.', product.serialNumber!,
+            AppColors.accent),
+      (Icons.tag_rounded, 'Product ID',
+          product.id.length >= 8
+              ? product.id.substring(0, 8).toUpperCase()
+              : product.id.toUpperCase(),
+          const Color(0xFF64748B)),
+    ];
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: GridView.count(
+        crossAxisCount: 2,
+        shrinkWrap: true,
+        padding: EdgeInsets.zero,
+        physics: const NeverScrollableScrollPhysics(),
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.75,
+        children: [
+          for (final t in tiles)
+            DepthCard(
+              depth: 0.6,
+              padding: const EdgeInsets.all(12),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Call Support Button
-                  SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        _callSupport(contactNumber);
-                      },
-                      icon: const Icon(Icons.phone, size: 24, color: Colors.white),
-                      label: const Text(
-                        'Call Support',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: primaryColor,
-                        foregroundColor: Colors.white,
-                        elevation: isDark ? 8 : 4,
-                        shadowColor: primaryColor.withOpacity(0.4),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  // Secondary Actions
                   Row(
                     children: [
+                      IconOrb(icon: t.$1, color: t.$4, size: 30),
+                      const SizedBox(width: 8),
                       Expanded(
-                        child: _buildSecondaryButton(
-                          'Edit Product',
-                          Icons.edit_outlined,
-                          () {
-                            HapticFeedback.lightImpact();
-                            _showEditProductBottomSheet(context);
-                          },
-                          primaryColor,
-                          isDark,
-                          false,
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: _buildSecondaryButton(
-                          'Delete',
-                          Icons.delete_outline,
-                          () {
-                            HapticFeedback.lightImpact();
-                            _showDeleteConfirmation();
-                          },
-                          Colors.red,
-                          isDark,
-                          true,
-                        ),
+                        child: Text(t.$2,
+                            style: TextStyle(
+                                fontSize: 12,
+                                color: context.textMuted,
+                                fontWeight: FontWeight.w600)),
                       ),
                     ],
                   ),
+                  Text(
+                    t.$3,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                        fontSize: 15, fontWeight: FontWeight.w800),
+                  ),
                 ],
               ),
             ),
-          ),
-
-          const SliverToBoxAdapter(child: SizedBox(height: 40)),
         ],
       ),
     );
   }
 
-  Widget _buildActionButton(IconData icon, VoidCallback onPressed, bool isDark, {required bool isDestructive}) {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: isDestructive 
-          ? (isDark ? Colors.red.withOpacity(0.15) : Colors.red.withOpacity(0.1))
-          : (isDark ? Colors.white.withOpacity(0.1) : Colors.black.withOpacity(0.05)),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isDestructive 
-            ? Colors.red.withOpacity(0.3)
-            : (isDark ? Colors.white.withOpacity(0.15) : Colors.black.withOpacity(0.1)),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDestructive 
-              ? Colors.red.withOpacity(isDark ? 0.2 : 0.1)
-              : (isDark ? Colors.black.withOpacity(0.3) : Colors.black.withOpacity(0.08)),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: IconButton(
-        onPressed: onPressed,
-        icon: Icon(
-          icon,
-          color: isDestructive 
-            ? Colors.red 
-            : (isDark ? Colors.white : Colors.black87),
-          size: 20,
+  Widget _buildNotes(String notes) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: DepthCard(
+        depth: 0.6,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const IconOrb(
+                icon: Icons.sticky_note_2_rounded,
+                color: AppColors.warning,
+                size: 36),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Notes',
+                      style: TextStyle(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  Text(notes,
+                      style: TextStyle(color: context.textMuted, height: 1.45)),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildStatCard(String title, String value, IconData icon, Color color, bool isDark) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1A1A1B) : Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark 
-            ? color.withOpacity(0.3)
-            : color.withOpacity(0.2),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: isDark
-                ? Colors.black.withOpacity(0.3)
-                : Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+  Widget _secondaryAction(IconData icon, String label, VoidCallback onTap) {
+    return DepthCard(
+      onTap: onTap,
+      depth: 0.5,
+      radius: 16,
+      padding: const EdgeInsets.symmetric(vertical: 14),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
+          Icon(icon, size: 18, color: AppColors.primary),
+          const SizedBox(width: 8),
+          Text(label, style: const TextStyle(fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+  }
+}
+
+/// The product image floating above a lit pedestal, rotated in 3D.
+class _Pedestal extends StatelessWidget {
+  final Products product;
+  final Color color;
+  final double rotX;
+  final double rotY;
+
+  const _Pedestal({
+    required this.product,
+    required this.color,
+    required this.rotX,
+    required this.rotY,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          // Floor shadow shifts opposite to the tilt.
+          Positioned(
+            bottom: 0,
+            child: Transform.translate(
+              offset: Offset(-rotY * 30, 0),
+              child: Container(
+                width: 150,
+                height: 22,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  icon,
-                  size: 16,
-                  color: color,
+                  borderRadius: BorderRadius.circular(100),
+                  gradient: RadialGradient(colors: [
+                    Colors.black.withValues(alpha: 0.35),
+                    Colors.black.withValues(alpha: 0),
+                  ]),
                 ),
               ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: isDark ? Colors.white70 : Colors.black54,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 18),
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.0015)
+                ..rotateX(rotX)
+                ..rotateY(rotY),
+              child: Hero(
+                tag: 'product_${product.id}',
+                child: Container(
+                  width: 158,
+                  height: 158,
+                  padding: const EdgeInsets.all(22),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(44),
+                    gradient: LinearGradient(
+                      begin: Alignment(-math.sin(rotY) - 0.6, -0.8),
+                      end: Alignment(math.sin(rotY) + 0.6, 0.9),
+                      colors: [
+                        Colors.white,
+                        Colors.white.withValues(alpha: 0.82),
+                      ],
+                    ),
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.9), width: 2),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.darken(color, 0.25)
+                            .withValues(alpha: 0.5),
+                        blurRadius: 40,
+                        offset: Offset(-rotY * 24, 26),
+                        spreadRadius: -8,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    ProductUtils.getImagePath(
+                        ProductUtils.typeKey(product.type)),
+                    fit: BoxFit.contain,
+                    errorBuilder: (_, __, ___) => Icon(
+                        ProductUtils.iconOf(product.type),
+                        size: 80,
+                        color: color),
                   ),
                 ),
               ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: isDark ? Colors.white : Colors.black87,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value, bool isDark) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 80,
-            child: Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-                color: isDark ? Colors.white70 : Colors.black54,
-              ),
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-                color: isDark ? Colors.white : Colors.black87,
-              ),
             ),
           ),
         ],
       ),
     );
   }
+}
 
-  Widget _buildSecondaryButton(
-    String text,
-    IconData icon,
-    VoidCallback onPressed,
-    Color color,
-    bool isDark,
-    bool isDestructive,
-  ) {
-    return SizedBox(
-      height: 48,
-      child: OutlinedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 18, color: color),
-        label: Text(
-          text,
-          style: TextStyle(
-            color: color,
-            fontWeight: FontWeight.w600,
-            fontSize: 16,
-          ),
-        ),
-        style: OutlinedButton.styleFrom(
-          backgroundColor: isDark 
-            ? color.withOpacity(0.1) 
-            : Colors.white,
-          side: BorderSide(
-            color: color,
-            width: isDark ? 1 : 1.5,
-          ),
-          elevation: isDark ? 0 : 2,
-          shadowColor: color.withOpacity(0.2),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-        ),
-      ),
+class _RingPainter extends CustomPainter {
+  final double value;
+  final Color color;
+  final Color track;
+
+  _RingPainter({required this.value, required this.color, required this.track});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    const stroke = 10.0;
+    final rect = Offset.zero & size;
+    final center = rect.center;
+    final radius = (size.shortestSide - stroke) / 2;
+
+    canvas.drawCircle(
+      center,
+      radius,
+      Paint()
+        ..color = track
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke,
+    );
+
+    if (value <= 0) return;
+    final arcRect = Rect.fromCircle(center: center, radius: radius);
+    final sweep = 2 * math.pi * value;
+    canvas.drawArc(
+      arcRect.shift(const Offset(0, 3)),
+      -math.pi / 2,
+      sweep,
+      false,
+      Paint()
+        ..color = color.withValues(alpha: 0.3)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 4),
+    );
+    canvas.drawArc(
+      arcRect,
+      -math.pi / 2,
+      sweep,
+      false,
+      Paint()
+        ..shader = SweepGradient(
+          startAngle: -math.pi / 2,
+          endAngle: -math.pi / 2 + 2 * math.pi,
+          transform: const GradientRotation(-math.pi / 2),
+          colors: [
+            HSLColor.fromColor(color).withLightness(0.62).toColor(),
+            color,
+          ],
+        ).createShader(arcRect)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = stroke
+        ..strokeCap = StrokeCap.round,
     );
   }
+
+  @override
+  bool shouldRepaint(_RingPainter old) =>
+      old.value != value || old.color != color || old.track != track;
 }
