@@ -20,10 +20,20 @@ class _LoginRegisterToggleState extends State<LoginRegisterToggle> {
 
   @override
   Widget build(BuildContext context) {
-    if (loginPage) {
-      return Login(onTap: togglePages);
-    } else {
-      return Register(onTap: togglePages);
-    }
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 380),
+      switchInCurve: Curves.easeOutCubic,
+      transitionBuilder: (child, animation) => FadeTransition(
+        opacity: animation,
+        child: SlideTransition(
+          position: Tween(begin: const Offset(0.06, 0), end: Offset.zero)
+              .animate(animation),
+          child: child,
+        ),
+      ),
+      child: loginPage
+          ? Login(key: const ValueKey('login'), onTap: togglePages)
+          : Register(key: const ValueKey('register'), onTap: togglePages),
+    );
   }
 }

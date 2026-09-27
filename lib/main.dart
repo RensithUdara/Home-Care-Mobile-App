@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:home_care/firebase_options.dart';
-import 'package:home_care/services/auth/auth_check.dart';
+import 'package:home_care/screens/splash.dart';
+import 'package:home_care/themes/dark_mode.dart';
+import 'package:home_care/themes/light_mode.dart';
 import 'package:home_care/themes/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -24,10 +26,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Home Care',
       debugShowCheckedModeBanner: false,
-      theme: Provider.of<ThemeProvider>(context).themeData,
-      home: const AuthCheck(),
+      theme: lightMode,
+      darkTheme: darkMode,
+      themeMode: context.watch<ThemeProvider>().themeMode,
+      home: const SplashScreen(),
     );
   }
 }
