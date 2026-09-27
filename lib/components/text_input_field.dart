@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_care/themes/app_colors.dart';
 
 class TextInputField extends StatefulWidget {
   const TextInputField({
@@ -8,6 +9,11 @@ class TextInputField extends StatefulWidget {
     this.obscureText = false,
     required this.icon,
     this.keyboardType = TextInputType.text,
+    this.onChanged,
+    this.textInputAction,
+    this.onSubmitted,
+    this.autofillHints,
+    this.textCapitalization = TextCapitalization.none,
   });
 
   final TextEditingController controller;
@@ -15,6 +21,11 @@ class TextInputField extends StatefulWidget {
   final bool obscureText;
   final IconData icon;
   final TextInputType keyboardType;
+  final ValueChanged<String>? onChanged;
+  final TextInputAction? textInputAction;
+  final ValueChanged<String>? onSubmitted;
+  final Iterable<String>? autofillHints;
+  final TextCapitalization textCapitalization;
 
   @override
   State<TextInputField> createState() => _TextInputFieldState();
@@ -22,97 +33,65 @@ class TextInputField extends StatefulWidget {
 
 class _TextInputFieldState extends State<TextInputField> {
   late bool _obscureText;
+  final FocusNode _focus = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _obscureText = widget.obscureText;
+    _focus.addListener(() => setState(() {}));
+  }
+
+  @override
+  void dispose() {
+    _focus.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final focused = _focus.hasFocus;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 15,
-            offset: const Offset(0, 5),
-            spreadRadius: 1,
-          ),
-        ],
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: focused
+            ? AppShadows.glow(AppColors.primary, strength: 0.55)
+            : null,
       ),
       child: TextField(
+        focusNode: _focus,
         keyboardType: widget.keyboardType,
         obscureText: _obscureText,
         controller: widget.controller,
+        onChanged: widget.onChanged,
+        textInputAction: widget.textInputAction,
+        onSubmitted: widget.onSubmitted,
+        autofillHints: widget.autofillHints,
+        textCapitalization: widget.textCapitalization,
+        style: const TextStyle(fontSize: 15.5, fontWeight: FontWeight.w600),
         decoration: InputDecoration(
-          hintStyle: TextStyle(
-            fontWeight: FontWeight.w400,
-            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.5),
-          ),
           hintText: widget.labelText,
+          fillColor: focused ? context.surface : null,
           prefixIcon: Icon(
             widget.icon,
-            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
-            size: 22,
+            size: 21,
+            color: focused ? AppColors.primary : context.textMuted,
           ),
-          filled: true,
-          fillColor: Theme.of(context).colorScheme.tertiary,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 18,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.1),
-              width: 1,
-            ),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide(
-              color: Colors.blue.shade400,
-              width: 2,
-            ),
-          ),
-          errorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 2,
-            ),
-          ),
-          focusedErrorBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(
-              color: Colors.red,
-              width: 2,
-            ),
-          ),
-          // Enhanced eye icon for password fields
           suffixIcon: widget.obscureText
               ? IconButton(
+                  tooltip: _obscureText ? 'Show password' : 'Hide password',
                   icon: Icon(
-                    _obscureText ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                    color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
-                    size: 22,
+                    _obscureText
+                        ? Icons.visibility_off_rounded
+                        : Icons.visibility_rounded,
+                    color: context.textMuted,
+                    size: 21,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
-                  splashRadius: 20,
+                  onPressed: () =>
+                      setState(() => _obscureText = !_obscureText),
                 )
               : null,
-        ),
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Theme.of(context).colorScheme.inversePrimary,
         ),
       ),
     );

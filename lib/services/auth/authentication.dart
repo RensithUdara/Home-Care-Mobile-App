@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthServices {
@@ -8,10 +9,21 @@ class AuthServices {
   }
 
   Future<UserCredential> signUpWithEmailPassword(
-      {required String email, required String password}) async {
+      {required String email, required String password, String? name}) async {
     try {
       UserCredential userCredential = await _auth
           .createUserWithEmailAndPassword(email: email, password: password);
+      final user = userCredential.user;
+      if (user != null && name != null && name.trim().isNotEmpty) {
+        // Profile details are nice-to-have; never fail sign-up over them.
+        try {
+          await user.updateDisplayName(name.trim());
+          await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
+            {'name': name.trim(), 'email': email, 'updatedAt': FieldValue.serverTimestamp()},
+            SetOptions(merge: true),
+          );
+        } catch (_) {}
+      }
       return userCredential;
     } on FirebaseAuthException catch (e) {
       throw Exception(_getErrorMessage(e.code));

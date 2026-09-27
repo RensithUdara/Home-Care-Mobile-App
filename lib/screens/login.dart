@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:home_care/components/app_icon.dart';
-import 'package:home_care/components/main_button.dart';
+import 'package:home_care/components/auth_layout.dart';
 import 'package:home_care/components/text_input_field.dart';
+import 'package:home_care/components/ui/common.dart';
+import 'package:home_care/components/ui/depth.dart';
 import 'package:home_care/services/auth/authentication.dart';
+import 'package:home_care/themes/app_colors.dart';
 
 class Login extends StatefulWidget {
   final Function onTap;
@@ -15,7 +17,6 @@ class Login extends StatefulWidget {
 class _LoginState extends State<Login> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
   String _errorMessage = '';
 
@@ -41,341 +42,154 @@ class _LoginState extends State<Login> {
     });
   }
 
-  void login() async {
+  String _cleanError(Object e) {
+    final message = e.toString();
+    return message.startsWith('Exception: ') ? message.substring(11) : message;
+  }
+
+  Future<void> login() async {
     _clearError();
-    
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
+    FocusScope.of(context).unfocus();
 
-    setState(() {
-      _isLoading = true;
-    });
-
-    final auth = AuthServices();
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
-    // Basic validation
     if (email.isEmpty) {
       _showError("Please enter your email address");
       return;
     }
-
+    if (!AuthServices.isValidEmail(email)) {
+      _showError("Please enter a valid email address");
+      return;
+    }
     if (password.isEmpty) {
       _showError("Please enter your password");
       return;
     }
 
-    if (!AuthServices.isValidEmail(email)) {
-      _showError("Please enter a valid email address");
-      return;
-    }
-
+    setState(() => _isLoading = true);
     try {
-      await auth.signInWithEmailPassword(email: email, password: password);
+      await AuthServices()
+          .signInWithEmailPassword(email: email, password: password);
       // Success - navigation handled by auth state listener
     } catch (e) {
-      String errorMessage = e.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring(11);
-      }
-      _showError(errorMessage);
+      _showError(_cleanError(e));
     } finally {
       if (mounted && _errorMessage.isEmpty) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
 
-  void _forgotPassword() async {
+  Future<void> _forgotPassword() async {
+    _clearError();
     String email = _emailController.text.trim();
-    
+
     if (email.isEmpty) {
-      _showError("Please enter your email address first");
+      _showError("Enter your email above, then tap “Forgot password?”");
       return;
     }
-
     if (!AuthServices.isValidEmail(email)) {
       _showError("Please enter a valid email address");
       return;
     }
 
+    setState(() => _isLoading = true);
     try {
-      setState(() {
-        _isLoading = true;
-      });
-
-      final auth = AuthServices();
-      await auth.sendPasswordResetEmail(email: email);
-      
-      _showSuccessSnackbar(
-        "Password reset email sent! Please check your inbox and follow the instructions."
-      );
-    } catch (e) {
-      String errorMessage = e.toString();
-      if (errorMessage.startsWith('Exception: ')) {
-        errorMessage = errorMessage.substring(11);
-      }
-      _showError(errorMessage);
-    } finally {
+      await AuthServices().sendPasswordResetEmail(email: email);
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
+        AppSnack.success(context,
+            "Password reset email sent! Check your inbox for instructions.");
       }
+    } catch (e) {
+      _showError(_cleanError(e));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  void _showSuccessSnackbar(String message) {
-    if (!mounted) return;
-    final snackBar = SnackBar(
-      content: Row(
-        children: [
-          const Icon(Icons.check_circle_outline, color: Colors.white),
-          const SizedBox(width: 8),
-          Expanded(
-            child: Text(
-              message,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
-            ),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.green.shade600,
-      behavior: SnackBarBehavior.floating,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      margin: const EdgeInsets.all(16),
-      duration: const Duration(seconds: 4),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              Theme.of(context).colorScheme.surface,
-              Theme.of(context).colorScheme.surface.withOpacity(0.8),
-            ],
-          ),
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-            child: Center(
-              child: SingleChildScrollView(
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const AppIcon(),
-                      const SizedBox(height: 40),
-                      Text(
-                        'Welcome Back!',
-                        style: TextStyle(
-                          fontSize: 28, 
-                          fontWeight: FontWeight.bold,
-                          color: Theme.of(context).colorScheme.inversePrimary,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Sign in to continue to Home Care',
-                        style: TextStyle(
-                          fontSize: 16, 
-                          color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 40),
-                      TextInputField(
-                        controller: _emailController,
-                        labelText: 'Email Address',
-                        icon: Icons.email_outlined,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      const SizedBox(height: 16),
-                      TextInputField(
-                        controller: _passwordController,
-                        labelText: 'Password',
-                        icon: Icons.lock_outline,
-                        obscureText: true,
-                      ),
-                      
-                      // Error Message Display
-                      if (_errorMessage.isNotEmpty) ...[
-                        const SizedBox(height: 12),
-                        Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: Colors.red.shade50,
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.red.shade200),
-                          ),
-                          child: Row(
-                            children: [
-                              Icon(
-                                Icons.error_outline,
-                                color: Colors.red.shade700,
-                                size: 20,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  _errorMessage,
-                                  style: TextStyle(
-                                    color: Colors.red.shade700,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                      
-                      const SizedBox(height: 8),
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: TextButton(
-                          onPressed: _isLoading ? null : _forgotPassword,
-                          child: Text(
-                            'Forgot Password?',
-                            style: TextStyle(
-                              color: _isLoading 
-                                  ? Colors.grey 
-                                  : Colors.blue.shade600,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 32),
-                      SizedBox(
-                        width: double.infinity,
-                        child: _isLoading
-                            ? Container(
-                                padding: const EdgeInsets.symmetric(vertical: 18),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.shade300,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Center(
-                                  child: SizedBox(
-                                    width: 20,
-                                    height: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : MainButton(
-                                onTap: login,
-                                text: 'Sign In',
-                              ),
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Don't have an account?",
-                            style: TextStyle(
-                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.7),
-                              fontSize: 15,
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: _isLoading ? null : () {
-                              widget.onTap();
-                            },
-                            child: Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                color: _isLoading 
-                                    ? Colors.grey 
-                                    : Colors.blue.shade600,
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 32),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
-                              thickness: 1,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Text(
-                              'or continue with',
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.6),
-                                fontSize: 14,
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.3),
-                              thickness: 1,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _SocialLoginButton(
-                              onTap: _isLoading ? () {} : () {
-                                // TODO: Implement Apple login
-                              },
-                              imagePath: 'images/apple.png',
-                              text: 'Apple',
-                              imageHeight: 24,
-                              isEnabled: !_isLoading,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: _SocialLoginButton(
-                              onTap: _isLoading ? () {} : () {
-                                // TODO: Implement Google login
-                              },
-                              imagePath: 'images/google.png',
-                              text: 'Google',
-                              imageHeight: 24,
-                              isEnabled: !_isLoading,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
+    return AuthLayout(
+      title: 'Welcome back',
+      subtitle: 'Sign in to keep your home running smoothly',
+      footer: AuthSwitchPrompt(
+        prompt: "Don't have an account?",
+        action: 'Sign Up',
+        onTap: _isLoading ? null : () => widget.onTap(),
+      ),
+      child: AutofillGroup(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextInputField(
+              controller: _emailController,
+              labelText: 'Email address',
+              icon: Icons.alternate_email_rounded,
+              keyboardType: TextInputType.emailAddress,
+              textInputAction: TextInputAction.next,
+              autofillHints: const [AutofillHints.email],
+              onChanged: (_) => _clearError(),
+            ),
+            const SizedBox(height: 14),
+            TextInputField(
+              controller: _passwordController,
+              labelText: 'Password',
+              icon: Icons.lock_rounded,
+              obscureText: true,
+              textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.password],
+              onSubmitted: (_) => login(),
+              onChanged: (_) => _clearError(),
+            ),
+            AuthErrorBanner(message: _errorMessage),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton(
+                onPressed: _isLoading ? null : _forgotPassword,
+                child: const Text('Forgot password?'),
               ),
             ),
-          ),
+            const SizedBox(height: 6),
+            Button3D(
+              label: 'Sign In',
+              icon: Icons.login_rounded,
+              loading: _isLoading,
+              onPressed: login,
+            ),
+            const SizedBox(height: 24),
+            Row(
+              children: [
+                const Expanded(child: Divider()),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  child: Text('or continue with',
+                      style: TextStyle(color: context.textMuted, fontSize: 13)),
+                ),
+                const Expanded(child: Divider()),
+              ],
+            ),
+            const SizedBox(height: 18),
+            Row(
+              children: [
+                Expanded(
+                  child: _SocialLoginButton(
+                    imagePath: 'images/google.png',
+                    text: 'Google',
+                    enabled: !_isLoading,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: _SocialLoginButton(
+                    imagePath: 'images/apple.png',
+                    text: 'Apple',
+                    enabled: !_isLoading,
+                  ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -383,62 +197,43 @@ class _LoginState extends State<Login> {
 }
 
 class _SocialLoginButton extends StatelessWidget {
-  final VoidCallback onTap;
   final String imagePath;
   final String text;
-  final double imageHeight;
-  final bool isEnabled;
+  final bool enabled;
 
   const _SocialLoginButton({
-    required this.onTap,
     required this.imagePath,
     required this.text,
-    required this.imageHeight,
-    this.isEnabled = true,
+    required this.enabled,
   });
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: isEnabled ? onTap : null,
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-        decoration: BoxDecoration(
-          color: isEnabled 
-              ? Theme.of(context).colorScheme.tertiary
-              : Colors.grey.shade200,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: Theme.of(context).colorScheme.inversePrimary.withOpacity(0.1),
-            width: 1,
-          ),
-          boxShadow: isEnabled ? [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ] : null,
-        ),
+    return Opacity(
+      opacity: enabled ? 1 : 0.5,
+      child: DepthCard(
+        depth: 0.5,
+        radius: 16,
+        tilt: false,
+        padding: const EdgeInsets.symmetric(vertical: 13),
+        onTap: enabled
+            ? () => AppSnack.info(context, '$text sign-in is coming soon')
+            : null,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               imagePath,
-              height: imageHeight,
-              color: isEnabled ? null : Colors.grey,
+              height: 22,
+              color: text == 'Apple' && context.isDark ? Colors.white : null,
+              errorBuilder: (_, __, ___) => Icon(
+                  text == 'Apple' ? Icons.apple : Icons.g_mobiledata_rounded,
+                  color: AppColors.primary),
             ),
             const SizedBox(width: 8),
-            Text(
-              text,
-              style: TextStyle(
-                color: isEnabled 
-                    ? Theme.of(context).colorScheme.inversePrimary
-                    : Colors.grey,
-                fontSize: 15,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
+            Text(text,
+                style: const TextStyle(
+                    fontWeight: FontWeight.w700, fontSize: 14.5)),
           ],
         ),
       ),
