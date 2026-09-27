@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:home_care/models/products.dart';
+import 'package:intl/intl.dart';
 
 class ProductUtils {
   static String getDisplayName(String name) {
@@ -12,6 +14,17 @@ class ProductUtils {
   static String getTypeName(String type) {
     return type.split('.').last;
   }
+
+  static String typeKey(Category category) =>
+      category.toString().split('.').last;
+
+  /// Human-friendly category label, e.g. "Air Conditioner".
+  static String categoryName(Category category) => switch (category) {
+        Category.AirConditioner => 'Air Conditioner',
+        Category.WashingMachine => 'Washing Machine',
+        Category.VacuumCleaner => 'Vacuum Cleaner',
+        _ => typeKey(category),
+      };
 
   static String getImagePath(String type) {
     switch (type) {
@@ -39,95 +52,77 @@ class ProductUtils {
   static Color getColor(String type) {
     switch (type) {
       case 'Television':
-        return const Color(0xFFFF6B35); // Vibrant orange instead of light yellow
+        return const Color(0xFFFF6B35);
       case 'Refrigerator':
-        return const Color(0xFF10B981); // Emerald green
+        return const Color(0xFF10B981);
       case 'AirConditioner':
-        return const Color(0xFF3B82F6); // Blue
+        return const Color(0xFF3B82F6);
       case 'WashingMachine':
-        return const Color(0xFF8B5CF6); // Purple
+        return const Color(0xFF8B5CF6);
       case 'Laptop':
-        return const Color(0xFFF59E0B); // Amber/Orange
+        return const Color(0xFFF59E0B);
       case 'Speaker':
-        return const Color(0xFFEF4444); // Red
+        return const Color(0xFFEF4444);
       case 'VacuumCleaner':
-        return const Color(0xFFEC4899); // Pink
+        return const Color(0xFFEC4899);
       case 'Fan':
-        return const Color(0xFF84CC16); // Lime green instead of yellow
+        return const Color(0xFF84CC16);
       default:
-        return const Color(0xFF6B7280); // Gray
+        return const Color(0xFF6B7280);
     }
   }
 
-  // New method for text colors that are visible in both light and dark modes
-  static Color getTextColor(String type, bool isDarkMode) {
-    if (isDarkMode) {
-      // Bright colors for dark mode
-      switch (type) {
-        case 'Television':
-          return const Color(0xFFFF8A65); // Light orange
-        case 'Refrigerator':
-          return const Color(0xFF4ADE80); // Light green
-        case 'AirConditioner':
-          return const Color(0xFF60A5FA); // Light blue
-        case 'WashingMachine':
-          return const Color(0xFFA78BFA); // Light purple
-        case 'Laptop':
-          return const Color(0xFFFBBF24); // Light amber
-        case 'Speaker':
-          return const Color(0xFFF87171); // Light red
-        case 'VacuumCleaner':
-          return const Color(0xFFF472B6); // Light pink
-        case 'Fan':
-          return const Color(0xFFA3E635); // Light lime
-        default:
-          return const Color(0xFF9CA3AF); // Light gray
-      }
-    } else {
-      // Dark colors for light mode - using the same vibrant colors but darker shades
-      switch (type) {
-        case 'Television':
-          return const Color(0xFFEA580C); // Dark orange
-        case 'Refrigerator':
-          return const Color(0xFF059669); // Dark green
-        case 'AirConditioner':
-          return const Color(0xFF2563EB); // Dark blue
-        case 'WashingMachine':
-          return const Color(0xFF7C3AED); // Dark purple
-        case 'Laptop':
-          return const Color(0xFFD97706); // Dark amber
-        case 'Speaker':
-          return const Color(0xFFDC2626); // Dark red
-        case 'VacuumCleaner':
-          return const Color(0xFFDB2777); // Dark pink
-        case 'Fan':
-          return const Color(0xFF65A30D); // Dark lime
-        default:
-          return const Color(0xFF4B5563); // Dark gray
-      }
-    }
-  }
+  static Color colorOf(Category category) => getColor(typeKey(category));
 
   static IconData getIconData(String type) {
     switch (type.toLowerCase()) {
       case 'television':
-        return Icons.tv;
+        return Icons.tv_rounded;
       case 'refrigerator':
-        return Icons.kitchen;
+        return Icons.kitchen_rounded;
       case 'airconditioner':
-        return Icons.ac_unit;
+        return Icons.ac_unit_rounded;
       case 'washingmachine':
-        return Icons.local_laundry_service;
+        return Icons.local_laundry_service_rounded;
       case 'laptop':
-        return Icons.laptop_mac;
+        return Icons.laptop_mac_rounded;
       case 'speaker':
-        return Icons.speaker;
+        return Icons.speaker_rounded;
       case 'vacuumcleaner':
-        return Icons.cleaning_services;
+        return Icons.cleaning_services_rounded;
       case 'fan':
-        return Icons.toys;
+        return Icons.toys_rounded;
       default:
-        return Icons.devices_other;
+        return Icons.devices_other_rounded;
     }
+  }
+
+  static IconData iconOf(Category category) => getIconData(typeKey(category));
+
+  static String formatDate(DateTime date) => DateFormat.yMMMd().format(date);
+
+  static String formatMoney(double value) {
+    if (value >= 1000000) {
+      return '\$${(value / 1000000).toStringAsFixed(1)}M';
+    }
+    if (value >= 10000) return '\$${(value / 1000).toStringAsFixed(1)}K';
+    return NumberFormat.currency(symbol: '\$', decimalDigits: 0).format(value);
+  }
+
+  /// Plain-text summary used by the "copy details" action.
+  static String shareText(Products p) {
+    final lines = <String>[
+      p.name,
+      'Category: ${categoryName(p.type)}',
+      if (p.brand != null) 'Brand: ${p.brand}',
+      if (p.serialNumber != null) 'Serial: ${p.serialNumber}',
+      'Location: ${p.location}',
+      'Purchased: ${formatDate(p.purchasedDate)}',
+      'Warranty until: ${formatDate(p.warrantyPeriod)}',
+      if (p.price != null) 'Price: ${formatMoney(p.price!)}',
+      'Support: ${p.contactNumber}',
+      if (p.notes != null) 'Notes: ${p.notes}',
+    ];
+    return lines.join('\n');
   }
 }
