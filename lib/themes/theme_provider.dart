@@ -41,9 +41,7 @@ class ThemeProvider with ChangeNotifier {
     try {
       final prefs = await SharedPreferences.getInstance();
       final stored = prefs.getString(_prefsKey);
-      final mode = ThemeMode.values
-          .where((m) => m.name == stored)
-          .firstOrNull;
+      final mode = ThemeMode.values.where((m) => m.name == stored).firstOrNull;
       if (mode != null && mode != _themeMode) {
         _themeMode = mode;
         notifyListeners();

@@ -8,7 +8,8 @@ ThemeData buildAppTheme(Brightness brightness) {
   final background =
       isDark ? AppColors.darkBackground : AppColors.lightBackground;
   final surface = isDark ? AppColors.darkSurface : AppColors.lightSurface;
-  final surfaceAlt = isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt;
+  final surfaceAlt =
+      isDark ? AppColors.darkSurfaceAlt : AppColors.lightSurfaceAlt;
   final text = isDark ? AppColors.darkText : AppColors.lightText;
   final muted = isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
   final outline = isDark ? AppColors.darkOutline : AppColors.lightOutline;
@@ -18,7 +19,8 @@ ThemeData buildAppTheme(Brightness brightness) {
     primary: AppColors.primary,
     onPrimary: Colors.white,
     primaryContainer: AppColors.primary.withValues(alpha: 0.14),
-    onPrimaryContainer: isDark ? const Color(0xFFC7C8FF) : AppColors.primaryDark,
+    onPrimaryContainer:
+        isDark ? const Color(0xFFC7C8FF) : AppColors.primaryDark,
     secondary: AppColors.secondary,
     onSecondary: Colors.white,
     tertiary: AppColors.accent,
@@ -73,13 +75,16 @@ ThemeData buildAppTheme(Brightness brightness) {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: isDark ? surfaceAlt.withValues(alpha: 0.6) : const Color(0xFFF5F6FC),
+      fillColor:
+          isDark ? surfaceAlt.withValues(alpha: 0.6) : const Color(0xFFF5F6FC),
       contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
       hintStyle: TextStyle(color: muted, fontWeight: FontWeight.w500),
       labelStyle: TextStyle(color: muted, fontWeight: FontWeight.w500),
       prefixIconColor: muted,
-      border: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: outline)),
-      enabledBorder: OutlineInputBorder(borderRadius: radius, borderSide: BorderSide(color: outline)),
+      border: OutlineInputBorder(
+          borderRadius: radius, borderSide: BorderSide(color: outline)),
+      enabledBorder: OutlineInputBorder(
+          borderRadius: radius, borderSide: BorderSide(color: outline)),
       focusedBorder: OutlineInputBorder(
         borderRadius: radius,
         borderSide: const BorderSide(color: AppColors.primary, width: 1.8),

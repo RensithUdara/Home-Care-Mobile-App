@@ -59,7 +59,8 @@ class LegalPage extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppColors.info.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(18),
-                border: Border.all(color: AppColors.info.withValues(alpha: 0.3)),
+                border:
+                    Border.all(color: AppColors.info.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [

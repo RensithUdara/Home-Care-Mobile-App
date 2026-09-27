@@ -124,44 +124,45 @@ class _DepthCardState extends State<DepthCard> {
 
     if (!_interactive) return card;
 
-    return LayoutBuilder(builder: (context, constraints) {
-      final size = Size(constraints.maxWidth,
-          constraints.maxHeight.isFinite ? constraints.maxHeight : 200);
-      return GestureDetector(
-        onTapDown: (d) {
-          setState(() => _pressed = true);
-          _updateTilt(d.localPosition, size);
+    // Size is read at tap time rather than via LayoutBuilder so the card
+    // still works inside intrinsic layouts (e.g. IntrinsicHeight).
+    return GestureDetector(
+      onTapDown: (d) {
+        setState(() => _pressed = true);
+        final box = context.findRenderObject() as RenderBox?;
+        if (box != null && box.hasSize) {
+          _updateTilt(d.localPosition, box.size);
+        }
+      },
+      onTapUp: (_) => _release(),
+      onTapCancel: _release,
+      onTap: widget.onTap == null
+          ? null
+          : () {
+              HapticFeedback.selectionClick();
+              widget.onTap!();
+            },
+      onLongPress: widget.onLongPress,
+      child: TweenAnimationBuilder<Offset>(
+        tween: Tween(end: _tilt),
+        duration: const Duration(milliseconds: 180),
+        builder: (context, tilt, child) {
+          return AnimatedScale(
+            scale: _pressed ? 0.97 : 1,
+            duration: const Duration(milliseconds: 160),
+            child: Transform(
+              alignment: Alignment.center,
+              transform: Matrix4.identity()
+                ..setEntry(3, 2, 0.0012)
+                ..rotateX(-tilt.dy * 0.16)
+                ..rotateY(tilt.dx * 0.16),
+              child: child,
+            ),
+          );
         },
-        onTapUp: (_) => _release(),
-        onTapCancel: _release,
-        onTap: widget.onTap == null
-            ? null
-            : () {
-                HapticFeedback.selectionClick();
-                widget.onTap!();
-              },
-        onLongPress: widget.onLongPress,
-        child: TweenAnimationBuilder<Offset>(
-          tween: Tween(end: _tilt),
-          duration: const Duration(milliseconds: 180),
-          builder: (context, tilt, child) {
-            return AnimatedScale(
-              scale: _pressed ? 0.97 : 1,
-              duration: const Duration(milliseconds: 160),
-              child: Transform(
-                alignment: Alignment.center,
-                transform: Matrix4.identity()
-                  ..setEntry(3, 2, 0.0012)
-                  ..rotateX(-tilt.dy * 0.16)
-                  ..rotateY(tilt.dx * 0.16),
-                child: child,
-              ),
-            );
-          },
-          child: card,
-        ),
-      );
-    });
+        child: card,
+      ),
+    );
   }
 }
 
@@ -267,13 +268,14 @@ class _Button3DState extends State<Button3D> {
 
   @override
   Widget build(BuildContext context) {
-    final edgeColor = widget.edgeColor ??
-        AppColors.darken(widget.gradient.colors.last, 0.18);
+    final edgeColor =
+        widget.edgeColor ?? AppColors.darken(widget.gradient.colors.last, 0.18);
     final offset = _down ? _edge : 0.0;
 
     final face = AnimatedContainer(
       duration: const Duration(milliseconds: 90),
       height: widget.height,
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       margin: EdgeInsets.only(top: offset, bottom: _edge - offset),
       decoration: BoxDecoration(
         gradient: widget.gradient,
@@ -388,9 +390,21 @@ class _FloatingOrbsState extends State<FloatingOrbs>
           final t = _c.value * 2 * math.pi;
           return Stack(
             children: [
-              _orb(right: -40 + 10 * math.sin(t), top: -30 + 8 * math.cos(t), size: 170, alpha: 0.12),
-              _orb(left: -50 + 8 * math.cos(t), bottom: -60 + 10 * math.sin(t), size: 190, alpha: 0.09),
-              _orb(right: 70 + 12 * math.cos(t), bottom: 20 + 6 * math.sin(t), size: 60, alpha: 0.14),
+              _orb(
+                  right: -40 + 10 * math.sin(t),
+                  top: -30 + 8 * math.cos(t),
+                  size: 170,
+                  alpha: 0.12),
+              _orb(
+                  left: -50 + 8 * math.cos(t),
+                  bottom: -60 + 10 * math.sin(t),
+                  size: 190,
+                  alpha: 0.09),
+              _orb(
+                  right: 70 + 12 * math.cos(t),
+                  bottom: 20 + 6 * math.sin(t),
+                  size: 60,
+                  alpha: 0.14),
             ],
           );
         },

@@ -75,9 +75,9 @@ class _SplashScreenState extends State<SplashScreen>
                   FadeTransition(
                     opacity: text,
                     child: SlideTransition(
-                      position: Tween(
-                              begin: const Offset(0, 0.4), end: Offset.zero)
-                          .animate(text),
+                      position:
+                          Tween(begin: const Offset(0, 0.4), end: Offset.zero)
+                              .animate(text),
                       child: Column(
                         children: [
                           const Text(

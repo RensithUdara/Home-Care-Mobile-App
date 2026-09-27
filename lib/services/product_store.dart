@@ -37,10 +37,9 @@ class ProductStore extends ChangeNotifier {
       _products.where((p) => p.warrantyStatus == status).toList();
 
   /// Expired or expiring soon — what the notification badge counts.
-  List<Products> get needsAttention => _products
-      .where((p) => p.warrantyStatus != WarrantyStatus.active)
-      .toList()
-    ..sort((a, b) => a.daysLeft.compareTo(b.daysLeft));
+  List<Products> get needsAttention =>
+      _products.where((p) => p.warrantyStatus != WarrantyStatus.active).toList()
+        ..sort((a, b) => a.daysLeft.compareTo(b.daysLeft));
 
   double get totalValue =>
       _products.fold(0.0, (sum, p) => sum + (p.price ?? 0));
@@ -96,8 +95,7 @@ class ProductStore extends ChangeNotifier {
     notifyListeners();
   }
 
-  Products? byId(String id) =>
-      _products.where((p) => p.id == id).firstOrNull;
+  Products? byId(String id) => _products.where((p) => p.id == id).firstOrNull;
 
   static List<Products> sorted(List<Products> list, ProductSort sort) {
     final copy = [...list];

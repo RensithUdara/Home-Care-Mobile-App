@@ -11,7 +11,6 @@ import 'package:home_care/screens/product.dart';
 import 'package:home_care/services/product_store.dart';
 import 'package:home_care/themes/app_colors.dart';
 import 'package:home_care/utils/product_utils.dart';
-import 'package:home_care/utils/warranty.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -139,10 +138,10 @@ class _HomeTabState extends State<HomeTab> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _actionTile(sheetContext, Icons.open_in_new_rounded, 'Open details',
-                  AppColors.primary, () => _open(p)),
-              _actionTile(sheetContext, Icons.edit_rounded, 'Edit',
-                  AppColors.info, () {
+              _actionTile(sheetContext, Icons.open_in_new_rounded,
+                  'Open details', AppColors.primary, () => _open(p)),
+              _actionTile(
+                  sheetContext, Icons.edit_rounded, 'Edit', AppColors.info, () {
                 ProductFormSheet.show(context,
                     uid: store.uid, product: p, onSaved: store.refresh);
               }),
@@ -286,7 +285,8 @@ class _HomeTabState extends State<HomeTab> {
             height: 44,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: Colors.white.withValues(alpha: 0.7), width: 2),
+              border: Border.all(
+                  color: Colors.white.withValues(alpha: 0.7), width: 2),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.2),
@@ -434,7 +434,8 @@ class _HomeTabState extends State<HomeTab> {
             border: InputBorder.none,
             enabledBorder: InputBorder.none,
             focusedBorder: InputBorder.none,
-            prefixIcon: const Icon(Icons.search_rounded, color: AppColors.primary),
+            prefixIcon:
+                const Icon(Icons.search_rounded, color: AppColors.primary),
             suffixIcon: _searchController.text.isEmpty
                 ? null
                 : IconButton(
@@ -464,7 +465,8 @@ class _HomeTabState extends State<HomeTab> {
           clipBehavior: Clip.none,
           padding: const EdgeInsets.symmetric(horizontal: 20),
           children: [
-            _chip(null, 'All', Icons.apps_rounded, store.count, AppColors.primary),
+            _chip(null, 'All', Icons.apps_rounded, store.count,
+                AppColors.primary),
             for (final c in cats)
               _chip(c, ProductUtils.categoryName(c), ProductUtils.iconOf(c),
                   counts[c]!.length, ProductUtils.colorOf(c)),
@@ -474,7 +476,8 @@ class _HomeTabState extends State<HomeTab> {
     );
   }
 
-  Widget _chip(Category? c, String label, IconData icon, int count, Color color) {
+  Widget _chip(
+      Category? c, String label, IconData icon, int count, Color color) {
     final selected = _selectedCategory == c;
     return Padding(
       padding: const EdgeInsets.only(right: 10),
@@ -549,7 +552,8 @@ class _HomeTabState extends State<HomeTab> {
             tooltip: 'Sort',
             initialValue: _sort,
             icon: Icon(Icons.swap_vert_rounded, color: context.textPrimary),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             color: context.surface,
             onSelected: (s) => setState(() => _sort = s),
             itemBuilder: (_) => [
@@ -563,7 +567,8 @@ class _HomeTabState extends State<HomeTab> {
                             ? Icons.radio_button_checked_rounded
                             : Icons.radio_button_off_rounded,
                         size: 18,
-                        color: s == _sort ? AppColors.primary : context.textMuted,
+                        color:
+                            s == _sort ? AppColors.primary : context.textMuted,
                       ),
                       const SizedBox(width: 10),
                       Text(s.label),
@@ -577,7 +582,8 @@ class _HomeTabState extends State<HomeTab> {
             onPressed: _toggleView,
             icon: AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
-              transitionBuilder: (c, a) => RotationTransition(turns: a, child: c),
+              transitionBuilder: (c, a) =>
+                  RotationTransition(turns: a, child: c),
               child: Icon(
                 _grid ? Icons.view_agenda_rounded : Icons.grid_view_rounded,
                 key: ValueKey(_grid),
@@ -668,7 +674,7 @@ class _HomeTabState extends State<HomeTab> {
     final filtering =
         _searchController.text.isNotEmpty || _selectedCategory != null;
     if (filtering && store.count > 0) {
-      return EmptyState(
+      return const EmptyState(
         icon: Icons.search_off_rounded,
         title: 'No matches',
         message: 'Try a different search term or category.',

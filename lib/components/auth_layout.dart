@@ -206,7 +206,8 @@ class AuthSwitchPrompt extends StatelessWidget {
         TextButton(
           onPressed: onTap,
           child: Text(action,
-              style: const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
+              style:
+                  const TextStyle(fontSize: 14.5, fontWeight: FontWeight.w800)),
         ),
       ],
     );

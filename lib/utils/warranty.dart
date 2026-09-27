@@ -35,8 +35,8 @@ extension ProductWarranty on Products {
 
   /// Whole days until the warranty ends; negative once it has expired.
   int get daysLeft {
-    final end = DateTime(
-        warrantyPeriod.year, warrantyPeriod.month, warrantyPeriod.day);
+    final end =
+        DateTime(warrantyPeriod.year, warrantyPeriod.month, warrantyPeriod.day);
     return end.difference(_today).inDays;
   }
 
@@ -74,7 +74,8 @@ extension ProductWarranty on Products {
 String _humanize(int days) {
   if (days >= 365) {
     final years = days / 365;
-    final rounded = years >= 10 ? years.round().toString() : years.toStringAsFixed(1);
+    final rounded =
+        years >= 10 ? years.round().toString() : years.toStringAsFixed(1);
     return '${rounded.replaceAll('.0', '')} yr${years >= 1.05 ? 's' : ''}';
   }
   if (days >= 60) return '${(days / 30).round()} mo';

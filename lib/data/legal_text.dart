@@ -1,7 +1,7 @@
 // Legal copy shown on the Terms of Service and Privacy Policy pages.
 
 const String termsOfServiceText =
-'''By using Home Care App, you agree to these terms and conditions.
+    '''By using Home Care App, you agree to these terms and conditions.
 
 1. ACCEPTANCE OF TERMS
 By accessing and using this app, you accept and agree to be bound by the terms and provision of this agreement.
@@ -48,7 +48,7 @@ You may not use our service:
 By continuing to use Home Care App, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.''';
 
 const String privacyPolicyText =
-'''Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use Home Care App.
+    '''Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your information when you use Home Care App.
 
 INFORMATION WE COLLECT
 

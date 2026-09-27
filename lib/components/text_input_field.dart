@@ -55,9 +55,8 @@ class _TextInputFieldState extends State<TextInputField> {
       duration: const Duration(milliseconds: 200),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
-        boxShadow: focused
-            ? AppShadows.glow(AppColors.primary, strength: 0.55)
-            : null,
+        boxShadow:
+            focused ? AppShadows.glow(AppColors.primary, strength: 0.55) : null,
       ),
       child: TextField(
         focusNode: _focus,
@@ -88,8 +87,7 @@ class _TextInputFieldState extends State<TextInputField> {
                     color: context.textMuted,
                     size: 21,
                   ),
-                  onPressed: () =>
-                      setState(() => _obscureText = !_obscureText),
+                  onPressed: () => setState(() => _obscureText = !_obscureText),
                 )
               : null,
         ),

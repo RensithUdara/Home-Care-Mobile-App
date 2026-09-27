@@ -34,14 +34,13 @@ class ProductFormSheet extends StatefulWidget {
       isScrollControlled: true,
       useSafeArea: true,
       builder: (context) => Padding(
-        padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: ConstrainedBox(
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.92,
           ),
-          child: ProductFormSheet(
-              uid: uid, onSaved: onSaved, product: product),
+          child: ProductFormSheet(uid: uid, onSaved: onSaved, product: product),
         ),
       ),
     );
@@ -93,7 +92,15 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
 
   @override
   void dispose() {
-    for (final c in [_name, _brand, _location, _contact, _price, _serial, _notes]) {
+    for (final c in [
+      _name,
+      _brand,
+      _location,
+      _contact,
+      _price,
+      _serial,
+      _notes
+    ]) {
       c.dispose();
     }
     super.dispose();
@@ -106,8 +113,8 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
   DateTime _addMonths(DateTime from, int months) {
     final target = DateTime(from.year, from.month + months, 1);
     final lastDay = DateTime(target.year, target.month + 1, 0).day;
-    return DateTime(target.year, target.month,
-        from.day > lastDay ? lastDay : from.day);
+    return DateTime(
+        target.year, target.month, from.day > lastDay ? lastDay : from.day);
   }
 
   void _applyPreset(int months) {
@@ -147,7 +154,8 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
 
   Future<void> _save() async {
     _clearError();
-    final contact = int.tryParse(_contact.text.replaceAll(RegExp(r'[\s\-()+]'), ''));
+    final contact =
+        int.tryParse(_contact.text.replaceAll(RegExp(r'[\s\-()+]'), ''));
     final priceText = _price.text.trim().replaceAll(',', '');
     final price = priceText.isEmpty ? null : double.tryParse(priceText);
 
@@ -210,14 +218,16 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
           widget.isEditing
               ? '${product.name} updated'
               : '${product.name} added to your home',
-          style: const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style:
+              const TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
         ),
       ));
     } catch (e) {
       if (mounted) {
         setState(() {
           _saving = false;
-          _error = 'Could not save: ${e.toString().replaceFirst('Exception: ', '')}';
+          _error =
+              'Could not save: ${e.toString().replaceFirst('Exception: ', '')}';
         });
       }
     }
@@ -258,18 +268,22 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
               ],
             ),
             const SizedBox(height: 12),
-            _field(_contact, 'Support contact number', Icons.support_agent_rounded,
+            _field(
+                _contact, 'Support contact number', Icons.support_agent_rounded,
                 keyboard: TextInputType.phone),
             const SizedBox(height: 12),
             Row(
               children: [
                 Expanded(
-                  child: _field(_price, 'Price (optional)', Icons.payments_rounded,
-                      keyboard: const TextInputType.numberWithOptions(decimal: true)),
+                  child: _field(
+                      _price, 'Price (optional)', Icons.payments_rounded,
+                      keyboard:
+                          const TextInputType.numberWithOptions(decimal: true)),
                 ),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: _field(_serial, 'Serial no. (optional)', Icons.qr_code_rounded),
+                  child: _field(
+                      _serial, 'Serial no. (optional)', Icons.qr_code_rounded),
                 ),
               ],
             ),
@@ -292,12 +306,12 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final m in _presets)
-                  _presetChip(m),
+                for (final m in _presets) _presetChip(m),
               ],
             ),
             _label('Notes'),
-            _field(_notes, 'Model, store, receipt location…', Icons.sticky_note_2_rounded,
+            _field(_notes, 'Model, store, receipt location…',
+                Icons.sticky_note_2_rounded,
                 maxLines: 3),
             if (_error.isNotEmpty) ...[
               const SizedBox(height: 16),
@@ -306,16 +320,19 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                 decoration: BoxDecoration(
                   color: AppColors.danger.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(color: AppColors.danger.withValues(alpha: 0.35)),
+                  border: Border.all(
+                      color: AppColors.danger.withValues(alpha: 0.35)),
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.error_rounded, color: AppColors.danger, size: 20),
+                    const Icon(Icons.error_rounded,
+                        color: AppColors.danger, size: 20),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(_error,
                           style: const TextStyle(
-                              color: AppColors.danger, fontWeight: FontWeight.w600)),
+                              color: AppColors.danger,
+                              fontWeight: FontWeight.w600)),
                     ),
                   ],
                 ),
@@ -400,7 +417,9 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
           gradient: selected ? AppColors.shade(color) : null,
           color: selected ? null : context.surface,
           border: Border.all(
-            color: selected ? Colors.white.withValues(alpha: 0.3) : context.outline,
+            color: selected
+                ? Colors.white.withValues(alpha: 0.3)
+                : context.outline,
           ),
           boxShadow: selected
               ? AppShadows.glow(color)
@@ -431,7 +450,8 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
     );
   }
 
-  Widget _dateTile(String label, DateTime? date, IconData icon, VoidCallback onTap) {
+  Widget _dateTile(
+      String label, DateTime? date, IconData icon, VoidCallback onTap) {
     return DepthCard(
       onTap: onTap,
       tilt: false,
@@ -450,13 +470,16 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
                     style: TextStyle(fontSize: 11, color: context.textMuted)),
                 const SizedBox(height: 2),
                 Text(
-                  date == null ? 'Select' : DateFormat('MMM d, yyyy').format(date),
+                  date == null
+                      ? 'Select'
+                      : DateFormat('MMM d, yyyy').format(date),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontWeight: FontWeight.w800,
                     fontSize: 13.5,
-                    color: date == null ? context.textMuted : context.textPrimary,
+                    color:
+                        date == null ? context.textMuted : context.textPrimary,
                   ),
                 ),
               ],
@@ -481,7 +504,9 @@ class _ProductFormSheetState extends State<ProductFormSheet> {
           gradient: selected ? AppColors.brandGradient : null,
           color: selected ? null : context.surfaceAlt,
           borderRadius: BorderRadius.circular(20),
-          boxShadow: selected ? AppShadows.glow(AppColors.primary, strength: 0.7) : null,
+          boxShadow: selected
+              ? AppShadows.glow(AppColors.primary, strength: 0.7)
+              : null,
         ),
         child: Text(
           '+ $label',

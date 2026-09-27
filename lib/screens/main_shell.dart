@@ -36,8 +36,8 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final attention = context.select<ProductStore, int>(
-        (s) => s.needsAttention.length);
+    final attention =
+        context.select<ProductStore, int>((s) => s.needsAttention.length);
 
     return Scaffold(
       extendBody: true,
@@ -130,7 +130,8 @@ class _NavBar extends StatelessWidget {
                 AnimatedContainer(
                   duration: const Duration(milliseconds: 240),
                   curve: Curves.easeOutBack,
-                  padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
                   decoration: BoxDecoration(
                     gradient: selected ? AppColors.brandGradient : null,
                     borderRadius: BorderRadius.circular(14),
@@ -205,7 +206,8 @@ class _AddButtonState extends State<_AddButton> {
             shape: BoxShape.circle,
             gradient: AppColors.brandGradient,
             border: Border.all(color: context.background, width: 4),
-            boxShadow: AppShadows.glow(AppColors.primary, strength: _down ? 0.5 : 1.3),
+            boxShadow:
+                AppShadows.glow(AppColors.primary, strength: _down ? 0.5 : 1.3),
           ),
           child: Stack(
             alignment: Alignment.center,

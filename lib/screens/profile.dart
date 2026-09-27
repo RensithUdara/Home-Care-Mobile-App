@@ -33,10 +33,18 @@ class _ProfilePageState extends State<ProfilePage> {
   String _phoneNumber = '';
 
   static const _notificationPrefs = [
-    ('notif_warranty', 'Warranty expiry alerts',
-        'Get reminded before warranties expire', true),
-    ('notif_new_product', 'New product added',
-        'Confirmation when an appliance is added', true),
+    (
+      'notif_warranty',
+      'Warranty expiry alerts',
+      'Get reminded before warranties expire',
+      true
+    ),
+    (
+      'notif_new_product',
+      'New product added',
+      'Confirmation when an appliance is added',
+      true
+    ),
     ('notif_updates', 'App updates', 'Hear about new features', false),
     ('notif_tips', 'Tips & tricks', 'Helpful tips for using the app', false),
   ];
@@ -199,7 +207,9 @@ class _ProfilePageState extends State<ProfilePage> {
         builder: (sheetContext, setSheet) {
           Future<void> submit() async {
             setSheet(() => error = '');
-            if (current.text.isEmpty || next.text.isEmpty || confirm.text.isEmpty) {
+            if (current.text.isEmpty ||
+                next.text.isEmpty ||
+                confirm.text.isEmpty) {
               setSheet(() => error = 'Please fill all fields');
               return;
             }
@@ -214,18 +224,22 @@ class _ProfilePageState extends State<ProfilePage> {
             setSheet(() => saving = true);
             try {
               final user = FirebaseAuth.instance.currentUser!;
-              await user.reauthenticateWithCredential(EmailAuthProvider.credential(
-                  email: user.email!, password: current.text));
+              await user.reauthenticateWithCredential(
+                  EmailAuthProvider.credential(
+                      email: user.email!, password: current.text));
               await user.updatePassword(next.text);
               if (!sheetContext.mounted) return;
               Navigator.pop(sheetContext);
-              if (mounted) AppSnack.success(context, 'Password changed successfully');
+              if (mounted) {
+                AppSnack.success(context, 'Password changed successfully');
+              }
             } on FirebaseAuthException catch (e) {
               setSheet(() {
                 saving = false;
-                error = e.code == 'wrong-password' || e.code == 'invalid-credential'
-                    ? 'Your current password is incorrect'
-                    : 'Failed to change password: ${e.message}';
+                error =
+                    e.code == 'wrong-password' || e.code == 'invalid-credential'
+                        ? 'Your current password is incorrect'
+                        : 'Failed to change password: ${e.message}';
               });
             } catch (e) {
               setSheet(() {
@@ -260,9 +274,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    field(current, 'Current password', Icons.lock_outline_rounded),
+                    field(current, 'Current password',
+                        Icons.lock_outline_rounded),
                     field(next, 'New password', Icons.lock_rounded),
-                    field(confirm, 'Confirm new password', Icons.lock_reset_rounded),
+                    field(confirm, 'Confirm new password',
+                        Icons.lock_reset_rounded),
                     if (error.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.only(bottom: 12),
@@ -350,20 +366,34 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showFAQ() {
     const faqs = [
-      ('How do I add a new appliance?',
-          'Tap the + button in the middle of the bottom bar and fill in the product details, including warranty information. Use the quick presets (1 year, 2 years…) to fill in the warranty end date.'),
-      ('How can I track warranty expiration?',
-          'Open the Warranty tab for a timeline of every warranty. Items expiring within 30 days are highlighted and counted on the bell icon on the Home screen.'),
-      ('Can I edit product information?',
-          'Yes — open any product and tap the pencil icon, or long-press a card on the Home screen for quick actions.'),
-      ('How do I delete a product?',
-          'Open the product and tap the trash icon, or switch Home to list view and swipe a card to the left. You can undo right after deleting.'),
-      ('What does the Insights tab show?',
-          'A home health score, category breakdown, upcoming warranty expiries by month, total value and more.'),
-      ('Can I backup my data?',
-          'Your data is automatically backed up to the cloud while you\'re signed in. You can also export everything via Profile → Export data.'),
-      ('How do I change themes?',
-          'Go to Profile → Appearance and choose System, Light or Dark.'),
+      (
+        'How do I add a new appliance?',
+        'Tap the + button in the middle of the bottom bar and fill in the product details, including warranty information. Use the quick presets (1 year, 2 years…) to fill in the warranty end date.'
+      ),
+      (
+        'How can I track warranty expiration?',
+        'Open the Warranty tab for a timeline of every warranty. Items expiring within 30 days are highlighted and counted on the bell icon on the Home screen.'
+      ),
+      (
+        'Can I edit product information?',
+        'Yes — open any product and tap the pencil icon, or long-press a card on the Home screen for quick actions.'
+      ),
+      (
+        'How do I delete a product?',
+        'Open the product and tap the trash icon, or switch Home to list view and swipe a card to the left. You can undo right after deleting.'
+      ),
+      (
+        'What does the Insights tab show?',
+        'A home health score, category breakdown, upcoming warranty expiries by month, total value and more.'
+      ),
+      (
+        'Can I backup my data?',
+        'Your data is automatically backed up to the cloud while you\'re signed in. You can also export everything via Profile → Export data.'
+      ),
+      (
+        'How do I change themes?',
+        'Go to Profile → Appearance and choose System, Light or Dark.'
+      ),
     ];
 
     showModalBottomSheet(
@@ -476,7 +506,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       if (ok) {
                         Navigator.pop(sheetContext);
                         if (mounted) {
-                          AppSnack.success(context, 'Thank you for your feedback!');
+                          AppSnack.success(
+                              context, 'Thank you for your feedback!');
                         }
                       } else {
                         setSheet(() => sending = false);
@@ -531,7 +562,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                     selected: {severity},
                     showSelectedIcon: false,
-                    onSelectionChanged: (s) => setSheet(() => severity = s.first),
+                    onSelectionChanged: (s) =>
+                        setSheet(() => severity = s.first),
                   ),
                   const SizedBox(height: 12),
                   TextField(
@@ -588,7 +620,10 @@ class _ProfilePageState extends State<ProfilePage> {
       });
       return true;
     } catch (e) {
-      if (mounted) AppSnack.error(context, 'Could not send right now. Please try again later.');
+      if (mounted) {
+        AppSnack.error(
+            context, 'Could not send right now. Please try again later.');
+      }
       return false;
     }
   }
@@ -694,8 +729,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 14),
               Text('© 2024 Home Care Team',
-                  style: TextStyle(
-                      color: dialogContext.textMuted, fontSize: 12)),
+                  style:
+                      TextStyle(color: dialogContext.textMuted, fontSize: 12)),
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () => Navigator.pop(dialogContext),
@@ -734,7 +769,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     'Your account, profile and all saved appliances will be permanently deleted. Enter your password to confirm.',
-                    style: TextStyle(color: sheetContext.textMuted, height: 1.45),
+                    style:
+                        TextStyle(color: sheetContext.textMuted, height: 1.45),
                   ),
                   const SizedBox(height: 16),
                   TextField(
@@ -815,8 +851,8 @@ class _ProfilePageState extends State<ProfilePage> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => LegalPage(
-            title: title, body: body, icon: icon, contactNote: note),
+        builder: (_) =>
+            LegalPage(title: title, body: body, icon: icon, contactNote: note),
       ),
     );
   }
@@ -849,7 +885,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     icon: Icons.person_rounded,
                     color: AppColors.primary,
                     title: 'Edit profile',
-                    subtitle: _phoneNumber.isEmpty ? 'Name & phone' : _phoneNumber,
+                    subtitle:
+                        _phoneNumber.isEmpty ? 'Name & phone' : _phoneNumber,
                     onTap: _showEditProfile,
                   ),
                   _SettingsTile(
@@ -958,7 +995,8 @@ class _ProfilePageState extends State<ProfilePage> {
               Center(
                 child: TextButton(
                   onPressed: _showDeleteAccount,
-                  style: TextButton.styleFrom(foregroundColor: AppColors.danger),
+                  style:
+                      TextButton.styleFrom(foregroundColor: AppColors.danger),
                   child: const Text('Delete account'),
                 ),
               ),
@@ -1018,10 +1056,11 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   _headerStat('${store.count}', 'Appliances'),
                   const SizedBox(width: 10),
-                  _headerStat('${store.needsAttention.length}', 'Need attention'),
-                  const SizedBox(width: 10),
                   _headerStat(
-                      ProductUtils.formatMoney(store.totalValue), 'Total value'),
+                      '${store.needsAttention.length}', 'Need attention'),
+                  const SizedBox(width: 10),
+                  _headerStat(ProductUtils.formatMoney(store.totalValue),
+                      'Total value'),
                 ],
               ),
             ],
@@ -1107,7 +1146,8 @@ class _Avatar3D extends StatelessWidget {
             fontSize: 32,
             fontWeight: FontWeight.w800,
             shadows: [
-              Shadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 3)),
+              Shadow(
+                  color: Colors.black26, blurRadius: 6, offset: Offset(0, 3)),
             ],
           ),
         ),

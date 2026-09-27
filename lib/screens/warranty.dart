@@ -152,7 +152,8 @@ class _WarrantyTabState extends State<WarrantyTab> {
                     style: TextStyle(
                       fontWeight: FontWeight.w800,
                       fontSize: 13,
-                      color: _filter == o.$1 ? Colors.white : context.textPrimary,
+                      color:
+                          _filter == o.$1 ? Colors.white : context.textPrimary,
                     ),
                   ),
                 ),
@@ -246,7 +247,8 @@ class _TimelineItem extends StatelessWidget {
                             ],
                           ),
                         ),
-                        _DateBadge(date: product.warrantyPeriod, color: status.color),
+                        _DateBadge(
+                            date: product.warrantyPeriod, color: status.color),
                       ],
                     ),
                     const SizedBox(height: 12),
@@ -300,17 +302,21 @@ class _DateBadge extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 2),
             decoration: BoxDecoration(
               gradient: AppColors.shade(color),
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(11)),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(11)),
             ),
             child: Text(
               DateFormat('MMM').format(date).toUpperCase(),
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  color: Colors.white, fontSize: 9.5, fontWeight: FontWeight.w800),
+                  color: Colors.white,
+                  fontSize: 9.5,
+                  fontWeight: FontWeight.w800),
             ),
           ),
           Text('${date.day}',
-              style: const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
+              style:
+                  const TextStyle(fontSize: 17, fontWeight: FontWeight.w800)),
           Text('${date.year}',
               style: TextStyle(fontSize: 9, color: context.textMuted)),
           const SizedBox(height: 2),

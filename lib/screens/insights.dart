@@ -60,7 +60,8 @@ class InsightsTab extends StatelessWidget {
                   const SizedBox(height: 16),
                   Entrance(index: 1, child: _StatusRow(store: store)),
                   const SectionHeader(
-                      title: 'By category', padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
+                      title: 'By category',
+                      padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
                   Entrance(index: 2, child: _CategoryDonut(store: store)),
                   const SectionHeader(
                       title: 'Warranties ending — next 12 months',
@@ -73,10 +74,12 @@ class InsightsTab extends StatelessWidget {
                     Entrance(index: 4, child: _ValueBars(store: store)),
                   ],
                   const SectionHeader(
-                      title: 'Rooms', padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
+                      title: 'Rooms',
+                      padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
                   Entrance(index: 5, child: _Rooms(products: products)),
                   const SectionHeader(
-                      title: 'Fun facts', padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
+                      title: 'Fun facts',
+                      padding: EdgeInsets.fromLTRB(0, 26, 0, 12)),
                   Entrance(index: 6, child: _Facts(products: products)),
                 ],
               ),
@@ -310,7 +313,8 @@ class _ExpiryBars extends StatelessWidget {
             .where((p) =>
                 p.warrantyPeriod.year == m.year &&
                 p.warrantyPeriod.month == m.month &&
-                !p.warrantyPeriod.isBefore(DateTime(now.year, now.month, now.day)))
+                !p.warrantyPeriod
+                    .isBefore(DateTime(now.year, now.month, now.day)))
             .length,
     ];
     final maxCount = counts.fold<int>(0, math.max);
@@ -392,8 +396,8 @@ class _ValueBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final values = store.byCategory.map((k, v) =>
-        MapEntry(k, v.fold<double>(0, (s, p) => s + (p.price ?? 0))));
+    final values = store.byCategory.map(
+        (k, v) => MapEntry(k, v.fold<double>(0, (s, p) => s + (p.price ?? 0))));
     final entries = values.entries.where((e) => e.value > 0).toList()
       ..sort((a, b) => b.value.compareTo(a.value));
     final maxV = entries.isEmpty ? 1.0 : entries.first.value;
@@ -520,8 +524,8 @@ class _Rooms extends StatelessWidget {
                             fontWeight: FontWeight.w800, fontSize: 13.5)),
                     Text(
                         '${entries[i].value} item${entries[i].value == 1 ? '' : 's'}',
-                        style:
-                            TextStyle(fontSize: 11.5, color: context.textMuted)),
+                        style: TextStyle(
+                            fontSize: 11.5, color: context.textMuted)),
                   ],
                 ),
               ],
@@ -549,16 +553,29 @@ class _Facts extends StatelessWidget {
         30.4;
 
     final facts = [
-      (Icons.history_rounded, 'Oldest appliance', oldest.name,
-          '${oldest.ageLabel} old', AppColors.secondary),
-      (Icons.fiber_new_rounded, 'Newest addition', newest.name,
-          'Bought ${ProductUtils.formatDate(newest.purchasedDate)}',
-          AppColors.success),
-      (Icons.timelapse_rounded, 'Average warranty',
-          avgMonths >= 12
-              ? '${(avgMonths / 12).toStringAsFixed(1)} years'
-              : '${avgMonths.round()} months',
-          'Across ${products.length} appliances', AppColors.info),
+      (
+        Icons.history_rounded,
+        'Oldest appliance',
+        oldest.name,
+        '${oldest.ageLabel} old',
+        AppColors.secondary
+      ),
+      (
+        Icons.fiber_new_rounded,
+        'Newest addition',
+        newest.name,
+        'Bought ${ProductUtils.formatDate(newest.purchasedDate)}',
+        AppColors.success
+      ),
+      (
+        Icons.timelapse_rounded,
+        'Average warranty',
+        avgMonths >= 12
+            ? '${(avgMonths / 12).toStringAsFixed(1)} years'
+            : '${avgMonths.round()} months',
+        'Across ${products.length} appliances',
+        AppColors.info
+      ),
     ];
 
     return Column(

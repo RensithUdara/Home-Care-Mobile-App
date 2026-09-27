@@ -390,22 +390,40 @@ class _ProductPageState extends State<ProductPage> {
 
   Widget _buildInfoGrid(Products product, String contact) {
     final tiles = <(IconData, String, String, Color)>[
-      (Icons.shopping_bag_rounded, 'Purchased',
-          ProductUtils.formatDate(product.purchasedDate), AppColors.info),
-      (Icons.hourglass_bottom_rounded, 'Age', product.ageLabel,
-          AppColors.secondary),
+      (
+        Icons.shopping_bag_rounded,
+        'Purchased',
+        ProductUtils.formatDate(product.purchasedDate),
+        AppColors.info
+      ),
+      (
+        Icons.hourglass_bottom_rounded,
+        'Age',
+        product.ageLabel,
+        AppColors.secondary
+      ),
       (Icons.support_agent_rounded, 'Support', contact, AppColors.warning),
-      (Icons.payments_rounded, 'Price',
-          product.price == null ? '—' : ProductUtils.formatMoney(product.price!),
-          AppColors.success),
+      (
+        Icons.payments_rounded,
+        'Price',
+        product.price == null ? '—' : ProductUtils.formatMoney(product.price!),
+        AppColors.success
+      ),
       if (product.serialNumber != null)
-        (Icons.qr_code_2_rounded, 'Serial no.', product.serialNumber!,
-            AppColors.accent),
-      (Icons.tag_rounded, 'Product ID',
-          product.id.length >= 8
-              ? product.id.substring(0, 8).toUpperCase()
-              : product.id.toUpperCase(),
-          const Color(0xFF64748B)),
+        (
+          Icons.qr_code_2_rounded,
+          'Serial no.',
+          product.serialNumber!,
+          AppColors.accent
+        ),
+      (
+        Icons.tag_rounded,
+        'Product ID',
+        product.id.length >= 8
+            ? product.id.substring(0, 8).toUpperCase()
+            : product.id.toUpperCase(),
+        const Color(0xFF64748B)
+      ),
     ];
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),

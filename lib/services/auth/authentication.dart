@@ -18,8 +18,15 @@ class AuthServices {
         // Profile details are nice-to-have; never fail sign-up over them.
         try {
           await user.updateDisplayName(name.trim());
-          await FirebaseFirestore.instance.collection('users').doc(user.uid).set(
-            {'name': name.trim(), 'email': email, 'updatedAt': FieldValue.serverTimestamp()},
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set(
+            {
+              'name': name.trim(),
+              'email': email,
+              'updatedAt': FieldValue.serverTimestamp()
+            },
             SetOptions(merge: true),
           );
         } catch (_) {}
@@ -69,7 +76,7 @@ class AuthServices {
         return 'Too many failed attempts. Please try again later.';
       case 'operation-not-allowed':
         return 'Email/password accounts are not enabled.';
-      
+
       // Registration errors
       case 'email-already-in-use':
         return 'An account already exists with this email address.';
@@ -77,13 +84,13 @@ class AuthServices {
         return 'Password should be at least 6 characters long.';
       case 'invalid-credential':
         return 'Invalid email or password. Please check your credentials.';
-      
+
       // Network errors
       case 'network-request-failed':
         return 'Network error. Please check your internet connection.';
       case 'timeout':
         return 'Request timed out. Please try again.';
-      
+
       // Default error
       default:
         return 'An unexpected error occurred. Please try again.';
@@ -103,13 +110,13 @@ class AuthServices {
   // Password strength checker
   static int getPasswordStrength(String password) {
     int strength = 0;
-    
+
     if (password.length >= 8) strength++;
     if (password.contains(RegExp(r'[A-Z]'))) strength++;
     if (password.contains(RegExp(r'[a-z]'))) strength++;
     if (password.contains(RegExp(r'[0-9]'))) strength++;
     if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength++;
-    
+
     return strength;
   }
 }

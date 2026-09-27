@@ -154,15 +154,15 @@ class _AppBarIconButtonState extends State<AppBarIconButton> {
                 top: -5,
                 right: -5,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
                   constraints: const BoxConstraints(minWidth: 19),
                   decoration: BoxDecoration(
                     gradient: AppColors.sunsetGradient,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                        color: widget.onGradient
-                            ? Colors.white
-                            : context.surface,
+                        color:
+                            widget.onGradient ? Colors.white : context.surface,
                         width: 2),
                   ),
                   child: Text(
