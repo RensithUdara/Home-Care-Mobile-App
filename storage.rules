@@ -4,10 +4,27 @@ rules_version = '2';
 // files, and uploads must be images under 10 MB.
 service firebase.storage {
   match /b/{bucket}/o {
-    match /users/{uid}/{allPaths=**} {
-      allow read, delete: if request.auth != null && request.auth.uid == uid;
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function product(productId) {
+      return firestore.get(/databases/(default)/documents/products/$(productId));
+    }
+
+    function isProductHouseholdMember(productId) {
+      return signedIn()
+        && product(productId).data.householdId is string
+        && request.auth.uid in firestore.get(
+          /databases/(default)/documents/households/$(product(productId).data.householdId)
+        ).data.memberIds;
+    }
+
+    match /users/{uid}/products/{productId}/{fileName} {
+      allow read, delete: if signedIn()
+        && (request.auth.uid == uid || isProductHouseholdMember(productId));
       allow create, update: if request.auth != null
-        && request.auth.uid == uid
+        && (request.auth.uid == uid || isProductHouseholdMember(productId))
         && request.resource.size < 10 * 1024 * 1024
         && request.resource.contentType.matches('image/.*');
     }

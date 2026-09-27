@@ -1,0 +1,59 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function isHouseholdMember(householdId) {
+      return signedIn()
+        && householdId is string
+        && exists(/databases/$(database)/documents/households/$(householdId))
+        && request.auth.uid in get(/databases/$(database)/documents/households/$(householdId)).data.memberIds;
+    }
+
+    function productAccess(data) {
+      return isOwner(data.uid) || isHouseholdMember(data.householdId);
+    }
+
+    match /users/{userId} {
+      allow get, list: if signedIn();
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId);
+    }
+
+    match /households/{householdId} {
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == request.auth.uid
+        && request.auth.uid in request.resource.data.memberIds;
+      allow get, list: if signedIn()
+        && (request.auth.uid in resource.data.memberIds
+          || request.auth.token.email in resource.data.inviteEmails);
+      allow update: if signedIn()
+        && request.auth.uid in resource.data.memberIds
+        && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if signedIn() && resource.data.ownerUid == request.auth.uid;
+    }
+
+    match /products/{productId} {
+      allow get, list: if signedIn() && productAccess(resource.data);
+      allow create: if signedIn()
+        && request.resource.data.uid == request.auth.uid
+        && productAccess(request.resource.data);
+      allow update: if signedIn()
+        && productAccess(resource.data)
+        && productAccess(request.resource.data);
+      allow delete: if signedIn() && productAccess(resource.data);
+    }
+
+    match /feedback/{feedbackId} {
+      allow create: if signedIn();
+      allow read, update, delete: if false;
+    }
+  }
+}
